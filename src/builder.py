@@ -31,6 +31,31 @@ class CardBuilder:
         bg_color = tuple(self.spec.get("background_color", [255, 255, 255]))
         self.card = Image.new("RGB", (width, height), bg_color)
         self.draw = ImageDraw.Draw(self.card)
+        self.element_positions = {}
+
+    def _calculate_absolute_position(self, element: dict) -> tuple:
+        """
+        Calculates the absolute position of an element,
+        resolving relative positioning.
+        Args:
+            element (dict): The element dictionary.
+        Returns:
+            tuple: The absolute (x, y) position of the element.
+        """
+        # If the element has no 'relative_to', return its position directly
+        if "relative_to" not in element:
+            return tuple(element.get("position", [0, 0]))
+
+        # If the element has 'relative_to', resolve based on the reference element and anchor
+        relative_id, anchor = element["relative_to"]
+        if relative_id not in self.element_positions:
+            raise ValueError(f"Element with id '{relative_id}' not found for relative positioning.")
+
+        parent_bbox = self.element_positions[relative_id]
+        anchor_point = apply_anchor(parent_bbox, anchor)
+
+        offset = tuple(element.get("position", [0, 0]))
+        return tuple(map(operator.add, anchor_point, offset))
 
     def _draw_text(self, element: dict):
         """
@@ -64,14 +89,23 @@ class CardBuilder:
             element["fill"] = element.pop("color")
 
         # Apply anchor manually (because PIL does not support anchor for multiline text)
+        original_pos = self._calculate_absolute_position(element)
+        element["position"] = original_pos
+
         if "anchor" in element:
             bbox = self.draw.textbbox((0, 0), element["text"], font=element.get("font"))
             anchor_point = apply_anchor(bbox, element.pop("anchor"))
-            original_pos = element["position"]
             element["position"] = tuple(map(operator.sub, original_pos, anchor_point))
 
         # Unpack the element dictionary and draw the text
-        self.draw.text(element.pop("position"), element.pop("text"), **element)
+        pos = element.pop("position")
+        text = element.pop("text")
+        self.draw.text(pos, text, **element)
+
+        # Store position if id is provided
+        if "id" in element:
+            bbox = self.draw.textbbox(pos, text, font=element.get("font"))
+            self.element_positions[element["id"]] = bbox
 
     def _draw_image(self, element):
         """
@@ -96,12 +130,22 @@ class CardBuilder:
         position = tuple(element.get("position", [0, 0]))
 
         # Apply anchor if specified (because PIL does not support anchor for images)
+        position = self._calculate_absolute_position(element)
         if "anchor" in element:
             anchor_point = apply_anchor((img.width, img.height), element.pop("anchor"))
             position = tuple(map(operator.sub, position, anchor_point))
 
         # Paste the image onto the card at the specified position
         self.card.paste(img, position)
+
+        # Store position if id is provided
+        if "id" in element:
+            self.element_positions[element["id"]] = (
+                position[0],
+                position[1],
+                position[0] + img.width,
+                position[1] + img.height,
+            )
 
     def build(self, output_path):
         """

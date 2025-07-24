@@ -4,31 +4,47 @@
   "background_color": [200, 200, 200],
   "elements": [
     {
+      "id": "title",
       "type": "text",
       "text": "Welcome to the Mansion",
       "font_path": "arial.ttf",
-      "font_size": 20,
+      "font_size": 18,
+      "align": "center",
       "position": [125, 15],
       "color": [0, 0, 0],
-      "align": "center",
       "anchor": "top-center"
     },
     {
+      "id": "image",
       "type": "image",
       "path": "resources/example.webp",
       "size": [200, 200],
-      "position": [125, 50],
+      "position": [0, 15],
+      "relative_to": ["title", "bottom-center"],
       "anchor": "top-center"
     },
     {
+      "id": "description",
       "type": "text",
       "text": "Here, every corner whispers elegance and every moment is wrapped in charm.",
       "font_path": "arial.ttf",
       "font_size": 12,
-      "position": [125, 280],
+      "position": [0, 15],
+      "relative_to": ["image", "bottom-center"],
       "color": [0, 0, 0],
       "width": 200,
       "align": "center",
+      "anchor": "top-center"
+    },
+    {
+      "type": "text",
+      "text": "- A humble developer -",
+      "font_path": "arial.ttf",
+      "font_size": 10,
+      "align": "center",
+      "position": [0, 15],
+      "relative_to": ["description", "bottom-center"],
+      "color": [50, 50, 50],
       "anchor": "top-center"
     }
   ]
