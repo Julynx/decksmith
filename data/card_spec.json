@@ -11,23 +11,25 @@
       "position": [125, 15],
       "color": [0, 0, 0],
       "align": "center",
-      "anchor": "mt"
+      "anchor": "top-center"
     },
     {
       "type": "image",
       "path": "resources/example.webp",
       "size": [200, 200],
-      "position": [25, 50]
+      "position": [125, 50],
+      "anchor": "top-center"
     },
     {
       "type": "text",
       "text": "Here, every corner whispers elegance and every moment is wrapped in charm.",
       "font_path": "arial.ttf",
       "font_size": 12,
-      "position": [0, 280],
+      "position": [125, 280],
       "color": [0, 0, 0],
       "width": 200,
-      "align": "center"
+      "align": "center",
+      "anchor": "top-center"
     }
   ]
 }

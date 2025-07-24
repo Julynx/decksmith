@@ -1,10 +1,12 @@
 """
-This module contains the CardBuilder class, 
+This module contains the CardBuilder class,
 which is used to create card images based on a JSON specification.
 """
+
 import json
 from PIL import Image, ImageDraw, ImageFont
-from utils import get_wrapped_text
+from .utils import get_wrapped_text, apply_anchor
+import operator
 
 
 class CardBuilder:
@@ -15,6 +17,7 @@ class CardBuilder:
         card (Image): The PIL Image object representing the card.
         draw (ImageDraw): The PIL ImageDraw object for drawing on the card.
     """
+
     def __init__(self, spec_path):
         """
         Initializes the CardBuilder with a JSON specification file.
@@ -23,18 +26,18 @@ class CardBuilder:
         """
         with open(spec_path, "r", encoding="utf-8") as f:
             self.spec = json.load(f)
-        width = self.spec.get("width", 800)
-        height = self.spec.get("height", 600)
+        width = self.spec.get("width", 250)
+        height = self.spec.get("height", 350)
         bg_color = tuple(self.spec.get("background_color", [255, 255, 255]))
         self.card = Image.new("RGB", (width, height), bg_color)
         self.draw = ImageDraw.Draw(self.card)
 
-    def _draw_text(self, element:dict):
+    def _draw_text(self, element: dict):
         """
         Draws text on the card based on the provided element dictionary.
         Args:
-            element (dict): A dictionary containing text properties such as 
-                            'text', 'font_path', 'font_size', 'position', 
+            element (dict): A dictionary containing text properties such as
+                            'text', 'font_path', 'font_size', 'position',
                             'color', and 'width'.
         """
         assert element.pop("type") == "text", "Element type must be 'text'"
@@ -60,23 +63,44 @@ class CardBuilder:
         if "color" in element:
             element["fill"] = element.pop("color")
 
+        # Apply anchor manually (because PIL does not support anchor for multiline text)
+        if "anchor" in element:
+            bbox = self.draw.textbbox((0, 0), element["text"], font=element.get("font"))
+            anchor_point = apply_anchor(bbox, element.pop("anchor"))
+            original_pos = element["position"]
+            element["position"] = tuple(map(operator.sub, original_pos, anchor_point))
+
         # Unpack the element dictionary and draw the text
         self.draw.text(element.pop("position"), element.pop("text"), **element)
-
 
     def _draw_image(self, element):
         """
         Draws an image on the card based on the provided element dictionary.
         Args:
-            element (dict): A dictionary containing image properties such as 
+            element (dict): A dictionary containing image properties such as
                             'path', 'size', and 'position'.
         """
+        # Ensure the element type is 'image'
+        assert element.pop("type") == "image", "Element type must be 'image'"
+
+        # Load the image from the specified path
         path = element["path"]
         img = Image.open(path)
+
+        # Resize the image if a size is specified
         size = element.get("size")
         if size:
             img = img.resize(tuple(size))
+
+        # Convert position to a tuple
         position = tuple(element.get("position", [0, 0]))
+
+        # Apply anchor if specified (because PIL does not support anchor for images)
+        if "anchor" in element:
+            anchor_point = apply_anchor((img.width, img.height), element.pop("anchor"))
+            position = tuple(map(operator.sub, position, anchor_point))
+
+        # Paste the image onto the card at the specified position
         self.card.paste(img, position)
 
     def build(self, output_path):
@@ -97,5 +121,5 @@ class CardBuilder:
 
 
 if __name__ == "__main__":
-    builder = CardBuilder("card_spec.json")
-    builder.build("output_card.png")
+    builder = CardBuilder("data/card_spec.json")
+    builder.build("output/card.png")
