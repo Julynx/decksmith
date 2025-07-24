@@ -3,10 +3,9 @@ This module contains the CardBuilder class,
 which is used to create card images based on a JSON specification.
 """
 
-import json
-from PIL import Image, ImageDraw, ImageFont
-from .utils import get_wrapped_text, apply_anchor
 import operator
+from PIL import Image, ImageDraw, ImageFont
+from utils import get_wrapped_text, apply_anchor
 
 
 class CardBuilder:
@@ -18,14 +17,13 @@ class CardBuilder:
         draw (ImageDraw): The PIL ImageDraw object for drawing on the card.
     """
 
-    def __init__(self, spec_path):
+    def __init__(self, spec: dict):
         """
         Initializes the CardBuilder with a JSON specification file.
         Args:
             spec_path (str): Path to the JSON specification file.
         """
-        with open(spec_path, "r", encoding="utf-8") as f:
-            self.spec = json.load(f)
+        self.spec = spec
         width = self.spec.get("width", 250)
         height = self.spec.get("height", 350)
         bg_color = tuple(self.spec.get("background_color", [255, 255, 255]))

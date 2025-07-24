@@ -6,7 +6,7 @@
     {
       "id": "title",
       "type": "text",
-      "text": "Welcome to the Mansion",
+      "text": "%title%",
       "font_path": "arial.ttf",
       "font_size": 18,
       "align": "center",
@@ -17,7 +17,7 @@
     {
       "id": "image",
       "type": "image",
-      "path": "resources/example.webp",
+      "path": "%image%",
       "size": [200, 200],
       "position": [0, 15],
       "relative_to": ["title", "bottom-center"],
@@ -26,7 +26,7 @@
     {
       "id": "description",
       "type": "text",
-      "text": "Here, every corner whispers elegance and every moment is wrapped in charm.",
+      "text": "%description%",
       "font_path": "arial.ttf",
       "font_size": 12,
       "position": [0, 15],

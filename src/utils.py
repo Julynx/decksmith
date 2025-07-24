@@ -80,3 +80,4 @@ def apply_anchor(size: tuple, anchor: str):
         if anchor == "bottom-right":
             return (x2, y2)
         raise ValueError(f"Unknown anchor: {anchor}")
+    return None
