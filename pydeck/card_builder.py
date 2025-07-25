@@ -47,9 +47,7 @@ class CardBuilder:
         # If the element has 'relative_to', resolve based on the reference element and anchor
         relative_id, anchor = element["relative_to"]
         if relative_id not in self.element_positions:
-            raise ValueError(
-                f"Element with id '{relative_id}' not found for relative positioning."
-            )
+            raise ValueError(f"Element with id '{relative_id}' not found for relative positioning.")
 
         parent_bbox = self.element_positions[relative_id]
         anchor_point = apply_anchor(parent_bbox, anchor)
@@ -76,9 +74,7 @@ class CardBuilder:
 
         # Split text according to the specified width
         if line_length := element.pop("width", False):
-            element["text"] = get_wrapped_text(
-                element["text"], element["font"], line_length
-            )
+            element["text"] = get_wrapped_text(element["text"], element["font"], line_length)
 
         # Convert position and color to tuples
         if position := element.pop("position", False):
@@ -102,7 +98,21 @@ class CardBuilder:
         # Unpack the element dictionary and draw the text
         pos = element.pop("position")
         text = element.pop("text")
-        self.draw.text(pos, text, **element)
+        self.draw.text(
+            pos,
+            text,
+            fill=element.get("fill", None),
+            font=element.get("font", None),
+            anchor=element.get("anchor", None),
+            spacing=element.get("spacing", 4),
+            align=element.get("align", "left"),
+            direction=element.get("direction", None),
+            features=element.get("features", None),
+            language=element.get("language", None),
+            stroke_width=element.get("stroke_width", 0),
+            stroke_fill=element.get("stroke_fill", None),
+            embedded_color=element.get("embedded_color", False),
+        )
 
         # Store position if id is provided
         if "id" in element:
@@ -355,9 +365,7 @@ class CardBuilder:
         Raises:
             AssertionError: If the element type is not 'regular-polygon'.
         """
-        assert (
-            element.pop("type") == "regular-polygon"
-        ), "Element type must be 'regular-polygon'"
+        assert element.pop("type") == "regular-polygon", "Element type must be 'regular-polygon'"
 
         radius = element["radius"]
         size = (radius * 2, radius * 2)
