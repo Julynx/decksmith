@@ -42,12 +42,23 @@ class DeckBuilder:
 
         def replace_in_value(value):
             if isinstance(value, str):
+                stripped_value = value.strip()
+                # First, check for an exact macro match to preserve type
+                for key in row:
+                    if stripped_value == f"%{key}%":
+                        return row[key]  # Return the raw value, preserving type
+
+                # If no exact match, perform standard string replacement for all macros
                 for key, val in row.items():
                     value = value.replace(f"%{key}%", str(val))
-            elif isinstance(value, list):
-                value = [replace_in_value(v) for v in value]
-            elif isinstance(value, dict):
-                value = {k: replace_in_value(v) for k, v in value.items()}
+                return value
+
+            if isinstance(value, list):
+                return [replace_in_value(v) for v in value]
+
+            if isinstance(value, dict):
+                return {k: replace_in_value(v) for k, v in value.items()}
+
             return value
 
         with open(self.spec_path, "r", encoding="utf-8") as f:

@@ -18,9 +18,26 @@
       "id": "image",
       "type": "image",
       "path": "%image%",
-      "size": [200, 200],
+      "filters": {
+        "crop_top": "%crop-top%",
+        "resize": [200, 200],
+        "flip": "vertical"
+      },
       "position": [0, 15],
       "relative_to": ["title", "bottom-center"],
+      "anchor": "top-center"
+    },
+    {
+      "id": "overlay-text",
+      "type": "text",
+      "text": "Best Mansion Ever",
+      "font_path": "arial.ttf",
+      "font_size": 14,
+      "position": [0, 50],
+      "relative_to": ["image", "top-center"],
+      "color": [255, 255, 255],
+      "width": 200,
+      "align": "center",
       "anchor": "top-center"
     },
     {

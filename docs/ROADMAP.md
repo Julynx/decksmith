@@ -9,12 +9,13 @@
 - [ ] Publish an initial version to GitHub and PyPI
 
 ### Card Builder
+- [x] Image filters: crop-top / bottom / left / right / square, resize
 - [ ] Verify support for transparent images
 - [ ] Verify support for symbols and special characters, such as japanese characters
 - [ ] Add a new type "shape" with fill and stroke
 
 ### Deck Builder
-- [ ] Think about how to improve the DeckBuilder by adding new features here
+- [x] Mantain type for macros like %colname% (e.g. size="%size%" should be an int, cannot use str.replace)
 
 ### Export Module
 - [ ] Implement export to PDF with real page size using ReportLab

@@ -123,10 +123,33 @@ class CardBuilder:
         path = element["path"]
         img = Image.open(path)
 
-        # Resize the image if a size is specified
-        size = element.get("size")
-        if size:
-            img = img.resize(tuple(size))
+        # Apply filters if specified
+        if "filters" in element:
+            for filter_name, filter_value in element["filters"].items():
+                if filter_name == "crop_top":
+                    img = img.crop((0, filter_value, img.width, img.height))
+                elif filter_name == "crop_bottom":
+                    img = img.crop((0, 0, img.width, img.height - filter_value))
+                elif filter_name == "crop_left":
+                    img = img.crop((filter_value, 0, img.width, img.height))
+                elif filter_name == "crop_right":
+                    img = img.crop((0, 0, img.width - filter_value, img.height))
+                elif filter_name == "crop_square":
+                    x, y, w, h = filter_value
+                    img = img.crop((x, y, x + w, y + h))
+                elif filter_name == "resize":
+                    img = img.resize(tuple(filter_value))
+                elif filter_name == "rotate":
+                    img = img.rotate(filter_value, expand=True)
+                elif filter_name == "flip":
+                    if filter_value == "horizontal":
+                        # pylint: disable=E1101
+                        img = img.transpose(Image.FLIP_LEFT_RIGHT)
+                    elif filter_value == "vertical":
+                        # pylint: disable=E1101
+                        img = img.transpose(Image.FLIP_TOP_BOTTOM)
+                else:
+                    raise ValueError(f"Unknown filter: {filter_name}")
 
         # Convert position to a tuple
         position = tuple(element.get("position", [0, 0]))
