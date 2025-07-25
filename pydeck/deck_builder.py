@@ -4,9 +4,12 @@ which is used to create a deck of cards based on a JSON specification
 and a CSV file.
 """
 
+import concurrent.futures
 import json
 from pathlib import Path
+
 import pandas as pd
+
 from .card_builder import CardBuilder
 
 
@@ -19,7 +22,7 @@ class DeckBuilder:
         cards (list): List of CardBuilder instances for each card in the deck.
     """
 
-    def __init__(self, spec_path: str, csv_path: str):
+    def __init__(self, spec_path: str, csv_path: str = None):
         """
         Initializes the DeckBuilder with a JSON specification file and a CSV file.
         Args:
@@ -69,8 +72,20 @@ class DeckBuilder:
         """
         Builds the deck of cards by reading the CSV file and creating CardBuilder instances.
         """
+        if not self.csv_path:
+            with open(self.spec_path, "r", encoding="utf-8") as f:
+                spec = json.load(f)
+            card_builder = CardBuilder(spec)
+            card_builder.build(Path(output_path) / "card_1.png")
+            return
+
         df = pd.read_csv(self.csv_path, encoding="utf-8", sep=";", header=0)
-        for idx, row in df.iterrows():
+
+        def build_card(row_tuple):
+            idx, row = row_tuple
             spec = self._replace_macros(row.to_dict())
             card_builder = CardBuilder(spec)
             card_builder.build(Path(output_path) / f"card_{idx + 1}.png")
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            list(executor.map(build_card, df.iterrows()))

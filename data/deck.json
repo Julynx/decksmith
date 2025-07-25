@@ -54,6 +54,7 @@
       "anchor": "top-center"
     },
     {
+      "id": "footer",
       "type": "text",
       "text": "- A humble developer -",
       "font_path": "arial.ttf",

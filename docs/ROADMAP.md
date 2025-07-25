@@ -10,9 +10,9 @@
 
 ### Card Builder
 - [x] Image filters: crop-top / bottom / left / right / square, resize
+- [x] Add a new type "shape" with fill and stroke
 - [ ] Verify support for transparent images
 - [ ] Verify support for symbols and special characters, such as japanese characters
-- [ ] Add a new type "shape" with fill and stroke
 
 ### Deck Builder
 - [x] Mantain type for macros like %colname% (e.g. size="%size%" should be an int, cannot use str.replace)
@@ -21,7 +21,6 @@
 - [ ] Implement export to PDF with real page size using ReportLab
 
 ## Nice to have features
-- [ ] As cards are independent, implement concurrent processing of cards
+- [x] As cards are independent, implement concurrent processing of cards
 - [ ] More macros to position elements to the center of the canvas for example
 - [ ] Define different json schemas depending on the index of the card or other properties (consider if this is really needed)
-  

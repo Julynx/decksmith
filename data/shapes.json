@@ -1,0 +1,115 @@
+{
+    "width": 200,
+    "height": 200,
+    "background_color": [200, 200, 200],
+    "elements": [
+        {
+            "id": "circle",
+            "type": "circle",
+            "position": [100, 65],
+            "radius": 20,
+            "fill": [255, 0, 0],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "center"
+        },
+        {
+            "id": "ellipse",
+            "type": "ellipse",
+            "position": [0, 10],
+            "relative_to": ["circle", "bottom-center"],
+            "size": [100, 50],
+            "fill": [0, 255, 0],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "top-center"
+        },
+        {
+            "id": "star",
+            "type": "polygon",
+            "position": [0, -10],
+            "relative_to": ["circle", "top-center"],
+            "points": [
+                [0, -10],
+                [3, -3],
+                [10, -3],
+                [4, 2],
+                [6, 10],
+                [0, 5],
+                [-6, 10],
+                [-4, 2],
+                [-10, -3],
+                [-3, -3]
+            ],
+            "fill": [0, 0, 255],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "bottom-center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [-10, 10],
+            "relative_to": ["ellipse", "center"],
+            "radius": 5,
+            "sides": 6,
+            "rotation": 45,
+            "fill": [255, 0, 255],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [10, -10],
+            "relative_to": ["ellipse", "center"],
+            "radius": 5,
+            "sides": 6,
+            "rotation": 45,
+            "fill": [255, 0, 255],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [-25, -10],
+            "relative_to": ["ellipse", "center"],
+            "radius": 5,
+            "sides": 6,
+            "rotation": 45,
+            "fill": [255, 0, 255],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [25, 10],
+            "relative_to": ["ellipse", "center"],
+            "radius": 5,
+            "sides": 6,
+            "rotation": 45,
+            "fill": [255, 0, 255],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "center"
+        },
+        {
+            "type": "rectangle",
+            "position": [0, 10],
+            "relative_to": ["ellipse", "bottom-center"],
+            "size": [20, 30],
+            "fill": [0, 255, 255],
+            "outline": [0, 0, 0],
+            "width": 2,
+            "anchor": "top-center",
+            "radius": 4,
+            "corners": [
+                false,
+                false,
+                true,
+                true
+            ]
+        }
+    ]
+}

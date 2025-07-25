@@ -172,6 +172,292 @@ class CardBuilder:
                 position[1] + img.height,
             )
 
+    def _draw_shape_circle(self, element):
+        """
+        Draws a circle on the card based on the provided element dictionary.
+        Args:
+            element (dict): A dictionary containing circle properties such as
+                            'position', 'radius', 'fill', 'outline', 'width', and 'anchor'.
+
+        Raises:
+            AssertionError: If the element type is not 'circle'.
+        """
+        assert element.pop("type") == "circle", "Element type must be 'circle'"
+
+        radius = element["radius"]
+        size = (radius * 2, radius * 2)
+
+        # Calculate absolute position for the element's anchor
+        absolute_pos = self._calculate_absolute_position(element)
+
+        # Convert fill and outline to a tuple if specified
+        if "fill" in element:
+            element["fill"] = tuple(element["fill"])
+        if "outline" in element:
+            element["outline"] = tuple(element["outline"])
+
+        # Apply anchor if specified
+        if "anchor" in element:
+            # anchor_offset is the offset of the anchor from the top-left corner
+            anchor_offset = apply_anchor(size, element.pop("anchor"))
+            # top_left is the target position minus the anchor offset
+            absolute_pos = tuple(map(operator.sub, absolute_pos, anchor_offset))
+
+        # The center of the circle is the top-left position + radius
+        center_pos = (absolute_pos[0] + radius, absolute_pos[1] + radius)
+
+        # Draw the circle
+        self.draw.circle(
+            center_pos,
+            radius,
+            fill=element.get("fill", None),
+            outline=element.get("outline", None),
+            width=element.get("width", 1),
+        )
+
+        # Store position if id is provided
+        if "id" in element:
+            # The stored bbox is based on the top-left position
+            self.element_positions[element["id"]] = (
+                absolute_pos[0],
+                absolute_pos[1],
+                absolute_pos[0] + size[0],
+                absolute_pos[1] + size[1],
+            )
+
+    def _draw_shape_ellipse(self, element):
+        """
+        Draws an ellipse on the card based on the provided element dictionary.
+
+        Args:
+            element (dict): A dictionary containing ellipse properties such as
+                            'position', 'size', 'fill', 'outline', 'width', and 'anchor'.
+
+        Raises:
+            AssertionError: If the element type is not 'ellipse'.
+        """
+        assert element.pop("type") == "ellipse", "Element type must be 'ellipse'"
+
+        # Get size
+        size = element["size"]
+
+        # Calculate absolute position
+        position = self._calculate_absolute_position(element)
+
+        # Convert fill and outline to a tuple if specified
+        if "fill" in element:
+            element["fill"] = tuple(element["fill"])
+        if "outline" in element:
+            element["outline"] = tuple(element["outline"])
+
+        # Apply anchor if specified
+        if "anchor" in element:
+            # For anchoring, we need an offset from the top-left corner.
+            # We calculate this offset based on the element's size.
+            anchor_offset = apply_anchor(size, element.pop("anchor"))
+            # We subtract the offset from the calculated absolute position
+            # to get the top-left corner of the bounding box.
+            position = tuple(map(operator.sub, position, anchor_offset))
+
+        # Compute bounding box from the final position and size
+        bounding_box = (
+            position[0],
+            position[1],
+            position[0] + size[0],
+            position[1] + size[1],
+        )
+
+        # Draw the ellipse
+        self.draw.ellipse(
+            bounding_box,
+            fill=element.get("fill", None),
+            outline=element.get("outline", None),
+            width=element.get("width", 1),
+        )
+
+        # Store position if id is provided
+        if "id" in element:
+            self.element_positions[element["id"]] = bounding_box
+
+    def _draw_shape_polygon(self, element):
+        """
+        Draws a polygon on the card based on the provided element dictionary.
+        Args:
+            element (dict): A dictionary containing polygon properties such as
+                            'position', 'points', 'fill', 'outline', 'width', and 'anchor'.
+        Raises:
+            AssertionError: If the element type is not 'polygon'.
+        """
+        assert element.pop("type") == "polygon", "Element type must be 'polygon'"
+
+        # Get points and convert to tuples
+        points = element.get("points", [])
+        if not points:
+            return
+        points = [tuple(p) for p in points]
+
+        # Compute bounding box relative to (0,0)
+        min_x = min(p[0] for p in points)
+        max_x = max(p[0] for p in points)
+        min_y = min(p[1] for p in points)
+        max_y = max(p[1] for p in points)
+        bounding_box = (min_x, min_y, max_x, max_y)
+
+        # Calculate absolute position for the element's anchor
+        absolute_pos = self._calculate_absolute_position(element)
+
+        # Convert fill and outline to a tuple if specified
+        if "fill" in element:
+            element["fill"] = tuple(element["fill"])
+        if "outline" in element:
+            element["outline"] = tuple(element["outline"])
+
+        # This will be the top-left offset for the points
+        offset = absolute_pos
+
+        # Apply anchor if specified
+        if "anchor" in element:
+            # anchor_point is the coordinate of the anchor within the relative bbox
+            anchor_point = apply_anchor(bounding_box, element.pop("anchor"))
+            # The final offset is the target position minus the anchor point's relative coord
+            offset = tuple(map(operator.sub, absolute_pos, anchor_point))
+
+        # Translate points by the final offset
+        final_points = [(p[0] + offset[0], p[1] + offset[1]) for p in points]
+
+        # Draw the polygon
+        self.draw.polygon(
+            final_points,
+            fill=element.get("fill", None),
+            outline=element.get("outline", None),
+            width=element.get("width", 1),
+        )
+
+        # Store position if id is provided
+        if "id" in element:
+            # The stored bbox is the relative bbox translated by the offset
+            self.element_positions[element["id"]] = (
+                min_x + offset[0],
+                min_y + offset[1],
+                max_x + offset[0],
+                max_y + offset[1],
+            )
+
+    def _draw_shape_regular_polygon(self, element):
+        """
+        Draws a regular polygon on the card based on the provided element dictionary.
+
+        Args:
+            element (dict): A dictionary containing regular polygon properties such as
+                            'position', 'radius', 'sides', 'rotation', 'fill', 'outline',
+                            'width', and 'anchor'.
+
+        Raises:
+            AssertionError: If the element type is not 'regular-polygon'.
+        """
+        assert (
+            element.pop("type") == "regular-polygon"
+        ), "Element type must be 'regular-polygon'"
+
+        radius = element["radius"]
+        size = (radius * 2, radius * 2)
+
+        # Calculate absolute position for the element's anchor
+        absolute_pos = self._calculate_absolute_position(element)
+
+        # Convert fill and outline to a tuple if specified
+        if "fill" in element:
+            element["fill"] = tuple(element["fill"])
+        if "outline" in element:
+            element["outline"] = tuple(element["outline"])
+
+        # Apply anchor if specified
+        if "anchor" in element:
+            # anchor_offset is the offset of the anchor from the top-left corner
+            anchor_offset = apply_anchor(size, element.pop("anchor"))
+            # top_left is the target position minus the anchor offset
+            absolute_pos = tuple(map(operator.sub, absolute_pos, anchor_offset))
+
+        # The center of the polygon is the top-left position + radius
+        center_pos = (absolute_pos[0] + radius, absolute_pos[1] + radius)
+
+        # Draw the regular polygon
+        self.draw.regular_polygon(
+            (center_pos[0], center_pos[1], radius),
+            n_sides=element["sides"],
+            rotation=element.get("rotation", 0),
+            fill=element.get("fill", None),
+            outline=element.get("outline", None),
+            width=element.get("width", 1),
+        )
+
+        # Store position if id is provided
+        if "id" in element:
+            # The stored bbox is based on the top-left position
+            self.element_positions[element["id"]] = (
+                absolute_pos[0],
+                absolute_pos[1],
+                absolute_pos[0] + size[0],
+                absolute_pos[1] + size[1],
+            )
+
+    def _draw_shape_rectangle(self, element):
+        """
+        Draws a rectangle on the card based on the provided element dictionary.
+
+        Args:
+            element (dict): A dictionary containing rectangle properties such as
+                            'size', 'fill', 'outline', 'width', 'corners', 'position', and 'anchor'.
+        Raises:
+            AssertionError: If the element type is not 'rectangle'.
+        """
+        assert element.pop("type") == "rectangle", "Element type must be 'rectangle'"
+
+        # Get size
+        size = element["size"]
+
+        # Calculate absolute position
+        position = self._calculate_absolute_position(element)
+
+        # Convert fill, outline and corners to a tuple if specified
+        if "fill" in element:
+            element["fill"] = tuple(element["fill"])
+        if "outline" in element:
+            element["outline"] = tuple(element["outline"])
+        if "corners" in element:
+            element["corners"] = tuple(element["corners"])
+
+        # Apply anchor if specified
+        if "anchor" in element:
+            # For anchoring, we need an offset from the top-left corner.
+            # We calculate this offset based on the element's size.
+            anchor_offset = apply_anchor(size, element.pop("anchor"))
+            # We subtract the offset from the calculated absolute position
+            # to get the top-left corner of the bounding box.
+            position = tuple(map(operator.sub, position, anchor_offset))
+
+        # Compute bounding box from the final position and size
+        bounding_box = (
+            position[0],
+            position[1],
+            position[0] + size[0],
+            position[1] + size[1],
+        )
+
+        # Draw the rectangle
+        self.draw.rounded_rectangle(
+            bounding_box,
+            radius=element.get("radius", 0),
+            fill=element.get("fill", None),
+            outline=element.get("outline", None),
+            width=element.get("width", 1),
+            corners=element.get("corners", None),
+        )
+
+        # Store position if id is provided
+        if "id" in element:
+            self.element_positions[element["id"]] = bounding_box
+
     def build(self, output_path):
         """
         Builds the card image by drawing all elements specified in the JSON.
@@ -179,16 +465,20 @@ class CardBuilder:
             output_path (str): The path where the card image will be saved.
         """
         for el in self.spec.get("elements", []):
-            el_type = el["type"]
+            el_type = el.get("type")
             if el_type == "text":
                 self._draw_text(el)
             elif el_type == "image":
                 self._draw_image(el)
-            # extend with more element types here
+            elif el_type == "circle":
+                self._draw_shape_circle(el)
+            elif el_type == "ellipse":
+                self._draw_shape_ellipse(el)
+            elif el_type == "polygon":
+                self._draw_shape_polygon(el)
+            elif el_type == "regular-polygon":
+                self._draw_shape_regular_polygon(el)
+            elif el_type == "rectangle":
+                self._draw_shape_rectangle(el)
         self.card.save(output_path)
         print(f"Card saved to {output_path}")
-
-
-if __name__ == "__main__":
-    builder = CardBuilder("data/card_spec.json")
-    builder.build("output/card.png")
