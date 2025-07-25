@@ -3,8 +3,8 @@
 ## Essential features
 
 ### Entire Application
+- [x] Transform into a cli application with "pydeck init", "pydeck build", etc.
 - [ ] Proper error handling and extensive logging
-- [ ] Transform into a cli application with "pydeck init", "pydeck build", etc.
 - [ ] Create a proper documentation with examples
 - [ ] Publish an initial version to GitHub and PyPI
 
