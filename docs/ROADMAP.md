@@ -4,7 +4,8 @@
 
 ### Entire Application
 - [x] Transform into a cli application with "pydeck init", "pydeck build", etc.
-- [ ] Proper error handling and extensive logging
+- [x] Basic tests
+- [x] Basic error handling in cli with error messages
 - [ ] Create a proper documentation with examples
 - [ ] Publish an initial version to GitHub and PyPI
 
@@ -22,5 +23,6 @@
 
 ## Nice to have features
 - [x] As cards are independent, implement concurrent processing of cards
+- [ ] Extensive logging
 - [ ] More macros to position elements to the center of the canvas for example
 - [ ] Define different json schemas depending on the index of the card or other properties (consider if this is really needed)

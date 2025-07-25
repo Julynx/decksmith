@@ -489,4 +489,4 @@ class CardBuilder:
             elif el_type == "rectangle":
                 self._draw_shape_rectangle(el)
         self.card.save(output_path)
-        print(f"Card saved to {output_path}")
+        print(f"(✔) Card saved to {output_path}")
