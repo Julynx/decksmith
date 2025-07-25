@@ -1,0 +1,26 @@
+# ROADMAP.md
+
+## Essential features
+
+### Entire Application
+- [ ] Proper error handling and extensive logging
+- [ ] Transform into a cli application with "pydeck init", "pydeck build", etc.
+- [ ] Create a proper documentation with examples
+- [ ] Publish an initial version to GitHub and PyPI
+
+### Card Builder
+- [ ] Verify support for transparent images
+- [ ] Verify support for symbols and special characters, such as japanese characters
+- [ ] Add a new type "shape" with fill and stroke
+
+### Deck Builder
+- [ ] Think about how to improve the DeckBuilder by adding new features here
+
+### Export Module
+- [ ] Implement export to PDF with real page size using ReportLab
+
+## Nice to have features
+- [ ] As cards are independent, implement concurrent processing of cards
+- [ ] More macros to position elements to the center of the canvas for example
+- [ ] Define different json schemas depending on the index of the card or other properties (consider if this is really needed)
+  

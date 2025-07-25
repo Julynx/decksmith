@@ -5,7 +5,7 @@ which is used to create card images based on a JSON specification.
 
 import operator
 from PIL import Image, ImageDraw, ImageFont
-from utils import get_wrapped_text, apply_anchor
+from .utils import get_wrapped_text, apply_anchor
 
 
 class CardBuilder:
@@ -47,7 +47,9 @@ class CardBuilder:
         # If the element has 'relative_to', resolve based on the reference element and anchor
         relative_id, anchor = element["relative_to"]
         if relative_id not in self.element_positions:
-            raise ValueError(f"Element with id '{relative_id}' not found for relative positioning.")
+            raise ValueError(
+                f"Element with id '{relative_id}' not found for relative positioning."
+            )
 
         parent_bbox = self.element_positions[relative_id]
         anchor_point = apply_anchor(parent_bbox, anchor)
@@ -74,7 +76,9 @@ class CardBuilder:
 
         # Split text according to the specified width
         if line_length := element.pop("width", False):
-            element["text"] = get_wrapped_text(element["text"], element["font"], line_length)
+            element["text"] = get_wrapped_text(
+                element["text"], element["font"], line_length
+            )
 
         # Convert position and color to tuples
         if position := element.pop("position", False):

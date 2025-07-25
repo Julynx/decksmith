@@ -7,7 +7,7 @@ and a CSV file.
 import json
 from pathlib import Path
 import pandas as pd
-from card_builder import CardBuilder
+from .card_builder import CardBuilder
 
 
 class DeckBuilder:
@@ -39,6 +39,7 @@ class DeckBuilder:
         Returns:
             dict: The updated card specification with macros replaced.
         """
+
         def replace_in_value(value):
             if isinstance(value, str):
                 for key, val in row.items():
@@ -53,13 +54,11 @@ class DeckBuilder:
             spec = json.load(f)
         return replace_in_value(spec)
 
-    def build(self, output_path: str):
+    def build_deck(self, output_path: str):
         """
         Builds the deck of cards by reading the CSV file and creating CardBuilder instances.
-        Returns:
-            list: A list of CardBuilder instances for each card in the deck.
         """
-        df = pd.read_csv(self.csv_path, encoding="utf-8", sep=";")
+        df = pd.read_csv(self.csv_path, encoding="utf-8", sep=";", header=0)
         for idx, row in df.iterrows():
             spec = self._replace_macros(row.to_dict())
             card_builder = CardBuilder(spec)

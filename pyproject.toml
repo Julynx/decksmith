@@ -1,0 +1,20 @@
+[project]
+name = "pydeck"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "click",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pydeck*"]
+namespaces = false
+
+[tool.setuptools.package-data]
+pydeck = ["../templates/*"]
+
+[project.scripts]
+pydeck = "pydeck.main:cli"
