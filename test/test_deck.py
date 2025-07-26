@@ -19,7 +19,7 @@ def test_shapes_deck():
     # Given
     shapes_json_path = TEST_DATA_PATH / "shapes.json"
     output_card_path = TEST_OUTPUT_PATH / "card_1.png"
-    expected_hash = "54da15e2ff079563f919f95cbc0236d72b4ba7669520a1ec2c1fd01a835ee7be"
+    expected_hash = "c66a9d5fc3f2d4efdce1453d226c83f234726464c8eb1587f01440abdde24513"
 
     # When
     deck_builder = DeckBuilder(shapes_json_path)
@@ -39,8 +39,8 @@ def test_example_deck():
     deck_csv_path = TEST_DATA_PATH / "deck.csv"
     output_card_1_path = TEST_OUTPUT_PATH / "card_1.png"
     output_card_2_path = TEST_OUTPUT_PATH / "card_2.png"
-    expected_hash_1 = "cf37526ff2cefc15060e1daa63450148bb42fc997d5ae141093562fb2d6857e8"
-    expected_hash_2 = "24480d94916b9e8574f65334032598ae830e1eb64abd70ca219301f4c6bece8a"
+    expected_hash_1 = "4bf2752cd9172b187ba3bd68cf2d4d3cee8a6a660374e230e1a3f56042bade60"
+    expected_hash_2 = "2863f4c45155e4ebfcf6e148a531ac6fb79eae3b97f0fa2b25aba2e073cd4203"
 
     # When
     deck_builder = DeckBuilder(deck_json_path, deck_csv_path)

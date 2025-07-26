@@ -76,7 +76,7 @@ class CardBuilder:
         # Convert font_path to a font object
         if font_path := element.pop("font_path", False):
             font_size = element.pop("font_size", 12)
-            element["font"] = ImageFont.truetype(font_path, font_size)
+            element["font"] = ImageFont.truetype(font_path, font_size, encoding="unic")
         else:
             element["font"] = ImageFont.load_default()
 
