@@ -12,7 +12,7 @@
 ### Card Builder
 - [x] Image filters: crop-top / bottom / left / right / square, resize
 - [x] Add a new type "shape" with fill and stroke
-- [ ] Verify support for transparent images
+- [x] Verify support for transparent images
 - [ ] Verify support for symbols and special characters, such as japanese characters
 
 ### Deck Builder

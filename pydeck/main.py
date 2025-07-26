@@ -6,7 +6,7 @@ import os
 import shutil
 from importlib import resources
 
-# import traceback
+import traceback
 
 import click
 from pydeck.deck_builder import DeckBuilder
@@ -47,6 +47,8 @@ def build(output, spec, data):
         builder.build_deck(output)
     # pylint: disable=W0718
     except Exception as exc:
+        with open("log.txt", "w", encoding="utf-8") as log:
+            log.write(traceback.format_exc())
         # print(f"{traceback.format_exc()}", end="\n")
         print(f"(x) Error building deck '{data}' from spec '{spec}':")
         print(" " * 4 + f"{exc}")

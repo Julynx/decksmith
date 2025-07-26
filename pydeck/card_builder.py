@@ -4,6 +4,7 @@ which is used to create card images based on a JSON specification.
 """
 
 import operator
+import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from .utils import get_wrapped_text, apply_anchor
 
@@ -26,9 +27,9 @@ class CardBuilder:
         self.spec = spec
         width = self.spec.get("width", 250)
         height = self.spec.get("height", 350)
-        bg_color = tuple(self.spec.get("background_color", [255, 255, 255]))
-        self.card = Image.new("RGB", (width, height), bg_color)
-        self.draw = ImageDraw.Draw(self.card)
+        bg_color = tuple(self.spec.get("background_color", (255, 255, 255, 0)))
+        self.card = Image.new("RGBA", (width, height), bg_color)
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
         self.element_positions = {}
 
     def _calculate_absolute_position(self, element: dict) -> tuple:
@@ -47,7 +48,9 @@ class CardBuilder:
         # If the element has 'relative_to', resolve based on the reference element and anchor
         relative_id, anchor = element["relative_to"]
         if relative_id not in self.element_positions:
-            raise ValueError(f"Element with id '{relative_id}' not found for relative positioning.")
+            raise ValueError(
+                f"Element with id '{relative_id}' not found for relative positioning."
+            )
 
         parent_bbox = self.element_positions[relative_id]
         anchor_point = apply_anchor(parent_bbox, anchor)
@@ -65,6 +68,11 @@ class CardBuilder:
         """
         assert element.pop("type") == "text", "Element type must be 'text'"
 
+        # print(f"DEBUG: {element["text"]=}")
+
+        if pd.isna(element["text"]):
+            element["text"] = " "
+
         # Convert font_path to a font object
         if font_path := element.pop("font_path", False):
             font_size = element.pop("font_size", 12)
@@ -74,7 +82,9 @@ class CardBuilder:
 
         # Split text according to the specified width
         if line_length := element.pop("width", False):
-            element["text"] = get_wrapped_text(element["text"], element["font"], line_length)
+            element["text"] = get_wrapped_text(
+                element["text"], element["font"], line_length
+            )
 
         # Convert position and color to tuples
         if position := element.pop("position", False):
@@ -82,28 +92,32 @@ class CardBuilder:
         if color := element.pop("color", False):
             element["fill"] = tuple(color)
 
-        # Rename color to fill
-        if "color" in element:
-            element["fill"] = element.pop("color")
-
         # Apply anchor manually (because PIL does not support anchor for multiline text)
         original_pos = self._calculate_absolute_position(element)
         element["position"] = original_pos
 
         if "anchor" in element:
-            bbox = self.draw.textbbox((0, 0), element["text"], font=element.get("font"))
+            bbox = self.draw.textbbox(
+                xy=(0, 0),
+                text=element.get("text"),
+                font=element["font"],
+                spacing=element.get("spacing", 4),
+                align=element.get("align", "left"),
+                direction=element.get("direction", None),
+                features=element.get("features", None),
+                language=element.get("language", None),
+                stroke_width=element.get("stroke_width", 0),
+                embedded_color=element.get("embedded_color", False),
+            )
             anchor_point = apply_anchor(bbox, element.pop("anchor"))
             element["position"] = tuple(map(operator.sub, original_pos, anchor_point))
 
         # Unpack the element dictionary and draw the text
-        pos = element.pop("position")
-        text = element.pop("text")
         self.draw.text(
-            pos,
-            text,
+            xy=element.get("position"),
+            text=element.get("text"),
             fill=element.get("fill", None),
-            font=element.get("font", None),
-            anchor=element.get("anchor", None),
+            font=element["font"],
             spacing=element.get("spacing", 4),
             align=element.get("align", "left"),
             direction=element.get("direction", None),
@@ -116,7 +130,18 @@ class CardBuilder:
 
         # Store position if id is provided
         if "id" in element:
-            bbox = self.draw.textbbox(pos, text, font=element.get("font"))
+            bbox = self.draw.textbbox(
+                xy=element.get("position"),
+                text=element.get("text"),
+                font=element["font"],
+                spacing=element.get("spacing", 4),
+                align=element.get("align", "left"),
+                direction=element.get("direction", None),
+                features=element.get("features", None),
+                language=element.get("language", None),
+                stroke_width=element.get("stroke_width", 0),
+                embedded_color=element.get("embedded_color", False),
+            )
             self.element_positions[element["id"]] = bbox
 
     def _draw_image(self, element):
@@ -124,7 +149,7 @@ class CardBuilder:
         Draws an image on the card based on the provided element dictionary.
         Args:
             element (dict): A dictionary containing image properties such as
-                            'path', 'size', and 'position'.
+                            'path', 'size', 'filters', and 'position'.
         """
         # Ensure the element type is 'image'
         assert element.pop("type") == "image", "Element type must be 'image'"
@@ -137,18 +162,83 @@ class CardBuilder:
         if "filters" in element:
             for filter_name, filter_value in element["filters"].items():
                 if filter_name == "crop_top":
-                    img = img.crop((0, filter_value, img.width, img.height))
+                    if filter_value < 0:
+                        img = img.convert("RGBA")
+                        new_img = Image.new(
+                            "RGBA",
+                            (img.width, img.height - filter_value),
+                            (0, 0, 0, 0),
+                        )
+                        new_img.paste(img, (0, -filter_value))
+                        img = new_img
+                    else:
+                        img = img.crop((0, filter_value, img.width, img.height))
                 elif filter_name == "crop_bottom":
-                    img = img.crop((0, 0, img.width, img.height - filter_value))
+                    if filter_value < 0:
+                        img = img.convert("RGBA")
+                        new_img = Image.new(
+                            "RGBA",
+                            (img.width, img.height - filter_value),
+                            (0, 0, 0, 0),
+                        )
+                        new_img.paste(img, (0, 0))
+                        img = new_img
+                    else:
+                        img = img.crop((0, 0, img.width, img.height - filter_value))
                 elif filter_name == "crop_left":
-                    img = img.crop((filter_value, 0, img.width, img.height))
+                    if filter_value < 0:
+                        img = img.convert("RGBA")
+                        new_img = Image.new(
+                            "RGBA",
+                            (img.width - filter_value, img.height),
+                            (0, 0, 0, 0),
+                        )
+                        new_img.paste(img, (-filter_value, 0))
+                        img = new_img
+                    else:
+                        img = img.crop((filter_value, 0, img.width, img.height))
                 elif filter_name == "crop_right":
-                    img = img.crop((0, 0, img.width - filter_value, img.height))
+                    if filter_value < 0:
+                        img = img.convert("RGBA")
+                        new_img = Image.new(
+                            "RGBA",
+                            (img.width - filter_value, img.height),
+                            (0, 0, 0, 0),
+                        )
+                        new_img.paste(img, (0, 0))
+                        img = new_img
+                    else:
+                        img = img.crop((0, 0, img.width - filter_value, img.height))
                 elif filter_name == "crop_square":
+                    img = img.convert("RGBA")
                     x, y, w, h = filter_value
-                    img = img.crop((x, y, x + w, y + h))
+                    new_img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+                    src_x1 = max(0, x)
+                    src_y1 = max(0, y)
+                    src_x2 = min(img.width, x + w)
+                    src_y2 = min(img.height, y + h)
+                    if src_x1 < src_x2 and src_y1 < src_y2:
+                        src_w = src_x2 - src_x1
+                        src_h = src_y2 - src_y1
+                        src_img = img.crop(
+                            (src_x1, src_y1, src_x1 + src_w, src_y1 + src_h)
+                        )
+                        dst_x = src_x1 - x
+                        dst_y = src_y1 - y
+                        new_img.paste(src_img, (dst_x, dst_y))
+                    img = new_img
                 elif filter_name == "resize":
-                    img = img.resize(tuple(filter_value))
+                    new_width, new_height = filter_value
+                    if new_width is None and new_height is None:
+                        continue
+                    if new_width is None or new_height is None:
+                        original_width, original_height = img.size
+                        aspect_ratio = original_width / float(original_height)
+                        if new_width is None:
+                            new_width = int(new_height * aspect_ratio)
+                        else:  # new_height is None
+                            new_height = int(new_width / aspect_ratio)
+                    img = img.resize((new_width, new_height))
                 elif filter_name == "rotate":
                     img = img.rotate(filter_value, expand=True)
                 elif filter_name == "flip":
@@ -171,7 +261,10 @@ class CardBuilder:
             position = tuple(map(operator.sub, position, anchor_point))
 
         # Paste the image onto the card at the specified position
-        self.card.paste(img, position)
+        if img.mode == "RGBA":
+            self.card.paste(img, position, mask=img)
+        else:
+            self.card.paste(img, position)
 
         # Store position if id is provided
         if "id" in element:
@@ -365,7 +458,9 @@ class CardBuilder:
         Raises:
             AssertionError: If the element type is not 'regular-polygon'.
         """
-        assert element.pop("type") == "regular-polygon", "Element type must be 'regular-polygon'"
+        assert (
+            element.pop("type") == "regular-polygon"
+        ), "Element type must be 'regular-polygon'"
 
         radius = element["radius"]
         size = (radius * 2, radius * 2)

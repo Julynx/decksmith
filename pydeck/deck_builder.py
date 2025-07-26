@@ -89,3 +89,6 @@ class DeckBuilder:
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             list(executor.map(build_card, df.iterrows()))
+
+        # for row_tuple in df.iterrows():
+        #     build_card(row_tuple)
