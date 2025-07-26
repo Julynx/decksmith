@@ -10,10 +10,11 @@
 - [ ] Publish an initial version to GitHub and PyPI
 
 ### Card Builder
-- [x] Image filters: crop-top / bottom / left / right / square, resize
+- [x] Image filters: crop-top / bottom / left / right / box, resize
 - [x] Add a new type "shape" with fill and stroke
 - [x] Verify support for transparent images
 - [x] Verify support for symbols and special characters, such as japanese characters
+- [x] Font variants (Bold, Semibold...)
 
 ### Deck Builder
 - [x] Mantain type for macros like %colname% (e.g. size="%size%" should be an int, cannot use str.replace)

@@ -77,6 +77,9 @@ class CardBuilder:
         if font_path := element.pop("font_path", False):
             font_size = element.pop("font_size", 12)
             element["font"] = ImageFont.truetype(font_path, font_size, encoding="unic")
+            if "font_variant" in element:
+                print(f"DEBUG: Font has variants {element["font"].get_variation_names()}")
+                element["font"].set_variation_by_name(element["font_variant"])
         else:
             element["font"] = ImageFont.load_default()
 
