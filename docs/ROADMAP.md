@@ -20,7 +20,8 @@
 - [x] Mantain type for macros like %colname% (e.g. size="%size%" should be an int, cannot use str.replace)
 
 ### Export Module
-- [ ] Implement export to PDF with real page size using ReportLab
+- [x] Implement export to PDF with real page size using ReportLab
+- [x] Fix layout issues with rotated images
 
 ## Nice to have features
 - [x] As cards are independent, implement concurrent processing of cards
