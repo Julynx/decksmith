@@ -209,7 +209,7 @@ class CardBuilder:
                         img = new_img
                     else:
                         img = img.crop((0, 0, img.width - filter_value, img.height))
-                elif filter_name == "crop_square":
+                elif filter_name == "crop_box":
                     img = img.convert("RGBA")
                     x, y, w, h = filter_value
                     new_img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
