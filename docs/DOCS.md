@@ -276,6 +276,11 @@ You can reference columns from `deck.csv` in `deck.json` by their name enclosed 
 
 Running `decksmith build` will create an `output` folder containing two card images, each with its own greeting in a different color.
 
+<p float="left">
+  <img src="assets/card_1.png" width="200" />
+  <img src="assets/card_2.png" width="200" />
+</p>
+
 ### Exporting to PDF
 
 Finally, you can export the deck to PDF by running the command:
