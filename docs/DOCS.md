@@ -1,14 +1,14 @@
-# Documentation for PyDeck
+# Documentation for DeckSmith
 
 ## Getting started
 
 ### Installation
 
-To begin, install PyDeck by opening a Terminal and entering `pip install pydeck`.
+To begin, install DeckSmith by opening a Terminal and entering `pip install decksmith`.
 
-### pydeck init
+### decksmith init
 
-Create a new folder and run `pydeck init` inside.
+Create a new folder and run `decksmith init` inside.
 
 This will create two different files:
 - `deck.json` defines the structure for the cards in the deck. The different elements that compose a card, such as text blocks, images, and shapes, are declared here, along with their sizes, positions, and other attributes. Edit this file with your favorite text editor to add and remove elements or modify their properties.
@@ -254,14 +254,14 @@ You can reference columns from `deck.csv` in `deck.json` by their name enclosed 
 
 #### Building the deck
 
-Running `pydeck build` will create an `output` folder containing two card images, each with its own greeting in a different color.
+Running `decksmith build` will create an `output` folder containing two card images, each with its own greeting in a different color.
 
 #### Exporting to PDF
 
 Finally, you can export the deck to PDF by running the command:
 
 ```bash
-pydeck export --width 63.5 --height 88.9 --gap 0.2 output
+decksmith export --width 63.5 --height 88.9 --gap 0.2 output
 ```
 
 The `--width` and `--height` flags define the real-world width and height in mm for each card, and the `--gap` flag adds a small line or gap between the cards, to facilitate the job of cutting them, which is especially useful for cards with no border and a similar background color.

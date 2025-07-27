@@ -1,5 +1,5 @@
 [project]
-name = "pydeck"
+name = "decksmith"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -19,11 +19,11 @@ test = [
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["pydeck*", "test*"]
+include = ["decksmith*", "test*"]
 namespaces = false
 
 [tool.setuptools.package-data]
-pydeck = ["../templates/*"]
+decksmith = ["../templates/*"]
 
 [project.scripts]
-pydeck = "pydeck.main:cli"
+decksmith = "decksmith.main:cli"

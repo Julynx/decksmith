@@ -1,8 +1,8 @@
-# PyDeck
+# DeckSmith
 
 A command-line application to dynamically generate decks of cards from a JSON specification and a CSV data file, inspired by nandeck.
 
-Pydeck is ideal for automating the creation of all kinds of decks, including TCG decks, tarot decks, business cards, and even slides.
+DeckSmith is ideal for automating the creation of all kinds of decks, including TCG decks, tarot decks, business cards, and even slides.
 
 ## Features
 

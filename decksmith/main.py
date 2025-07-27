@@ -9,8 +9,8 @@ from importlib import resources
 import traceback
 
 import click
-from pydeck.deck_builder import DeckBuilder
-from pydeck.export import PdfExporter
+from decksmith.deck_builder import DeckBuilder
+from decksmith.export import PdfExporter
 
 
 @click.group()

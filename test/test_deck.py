@@ -2,7 +2,7 @@ import hashlib
 import os
 from pathlib import Path
 
-from pydeck.deck_builder import DeckBuilder
+from decksmith.deck_builder import DeckBuilder
 
 # Define paths
 TEST_DATA_PATH = Path("test/data")

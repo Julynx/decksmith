@@ -3,7 +3,7 @@
 ## Essential features
 
 ### Entire Application
-- [x] Transform into a cli application with "pydeck init", "pydeck build", etc.
+- [x] Transform into a cli application with "decksmith init", "decksmith build", etc.
 - [x] Basic tests
 - [x] Basic error handling in cli with error messages
 - [x] Create a proper documentation with examples
