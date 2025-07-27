@@ -74,14 +74,19 @@ class CardBuilder:
             element["text"] = " "
 
         # Convert font_path to a font object
+        font_size = element.pop("font_size", 10)
         if font_path := element.pop("font_path", False):
-            font_size = element.pop("font_size", 12)
-            element["font"] = ImageFont.truetype(font_path, font_size, encoding="unic")
-            if "font_variant" in element:
-                # print(f"DEBUG: Font has variants {element["font"].get_variation_names()}")
-                element["font"].set_variation_by_name(element["font_variant"])
+            element["font"] = ImageFont.truetype(
+                font_path,
+                font_size,
+                encoding="unic",
+            )
         else:
-            element["font"] = ImageFont.load_default()
+            element["font"] = ImageFont.load_default(font_size)
+
+        # Apply font_variant
+        if font_variant := element.pop("font_variant"):
+            element["font"].set_variation_by_name(font_variant)
 
         # Split text according to the specified width
         if line_length := element.pop("width", False):
@@ -513,7 +518,8 @@ class CardBuilder:
 
         Args:
             element (dict): A dictionary containing rectangle properties such as
-                            'size', 'fill', 'outline', 'width', 'radius', 'corners', 'position', and 'anchor'.
+                            'size', 'fill', 'outline', 'width', 'radius', 'corners',
+                            'position', and 'anchor'.
         Raises:
             AssertionError: If the element type is not 'rectangle'.
         """

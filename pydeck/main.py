@@ -35,7 +35,9 @@ def init():
 
 @cli.command()
 @click.option("--output", default="output", help="The output directory for the deck.")
-@click.option("--spec", default="deck.json", help="The path to the deck specification file.")
+@click.option(
+    "--spec", default="deck.json", help="The path to the deck specification file."
+)
 @click.option("--data", default="deck.csv", help="The path to the data file.")
 def build(output, spec, data):
     """Builds the deck of cards."""
@@ -62,8 +64,12 @@ def build(output, spec, data):
 @click.argument("image_folder")
 @click.option("--output", default="output.pdf", help="The output PDF file path.")
 @click.option("--page-size", default="A4", help="The page size (e.g., A4).")
-@click.option("--width", type=float, default=63.5, help="The width of the images in mm.")
-@click.option("--height", type=float, default=88.9, help="The height of the images in mm.")
+@click.option(
+    "--width", type=float, default=63.5, help="The width of the images in mm."
+)
+@click.option(
+    "--height", type=float, default=88.9, help="The height of the images in mm."
+)
 @click.option("--gap", type=float, default=0, help="The gap between images in pixels.")
 @click.option(
     "--margins",
@@ -92,7 +98,6 @@ def export(image_folder, output, page_size, width, height, gap, margins):
             log.write(traceback.format_exc())
         print(f"(x) Error exporting images to '{output}':")
         print(" " * 4 + f"{exc}")
-        return
 
 
 if __name__ == "__main__":

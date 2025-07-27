@@ -96,8 +96,12 @@ class PdfExporter:
                 else (self.image_height, self.image_width)
             )
 
-            cols = int((page_width - 2 * self.margins[0] + self.gap) / (img_w + self.gap))
-            rows = int((page_height - 2 * self.margins[1] + self.gap) / (img_h + self.gap))
+            cols = int(
+                (page_width - 2 * self.margins[0] + self.gap) / (img_w + self.gap)
+            )
+            rows = int(
+                (page_height - 2 * self.margins[1] + self.gap) / (img_h + self.gap)
+            )
 
             if cols * rows > best_fit:
                 best_fit = cols * rows

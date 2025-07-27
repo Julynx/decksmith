@@ -6,7 +6,8 @@
 - [x] Transform into a cli application with "pydeck init", "pydeck build", etc.
 - [x] Basic tests
 - [x] Basic error handling in cli with error messages
-- [ ] Create a proper documentation with examples
+- [x] Create a proper documentation with examples
+- [ ] Validation of fields and values
 - [ ] Publish an initial version to GitHub and PyPI
 
 ### Card Builder
