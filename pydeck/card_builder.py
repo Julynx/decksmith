@@ -109,7 +109,7 @@ class CardBuilder:
                 xy=(0, 0),
                 text=element.get("text"),
                 font=element["font"],
-                spacing=element.get("spacing", 4),
+                spacing=element.get("line_spacing", 4),
                 align=element.get("align", "left"),
                 direction=element.get("direction", None),
                 features=element.get("features", None),
@@ -126,13 +126,13 @@ class CardBuilder:
             text=element.get("text"),
             fill=element.get("color", None),
             font=element["font"],
-            spacing=element.get("spacing", 4),
+            spacing=element.get("line_spacing", 4),
             align=element.get("align", "left"),
             direction=element.get("direction", None),
             features=element.get("features", None),
             language=element.get("language", None),
             stroke_width=element.get("stroke_width", 0),
-            stroke_fill=element.get("stroke_fill", None),
+            stroke_fill=element.get("stroke_color", None),
             embedded_color=element.get("embedded_color", False),
         )
 
@@ -142,7 +142,7 @@ class CardBuilder:
                 xy=element.get("position"),
                 text=element.get("text"),
                 font=element["font"],
-                spacing=element.get("spacing", 4),
+                spacing=element.get("line_spacing", 4),
                 align=element.get("align", "left"),
                 direction=element.get("direction", None),
                 features=element.get("features", None),
@@ -288,7 +288,7 @@ class CardBuilder:
         Draws a circle on the card based on the provided element dictionary.
         Args:
             element (dict): A dictionary containing circle properties such as
-                            'position', 'radius', 'fill', 'outline', 'width', and 'anchor'.
+                            'position', 'radius', 'color', 'outline', 'width', and 'anchor'.
 
         Raises:
             AssertionError: If the element type is not 'circle'.
@@ -301,7 +301,7 @@ class CardBuilder:
         # Calculate absolute position for the element's anchor
         absolute_pos = self._calculate_absolute_position(element)
 
-        # Convert fill and outline to a tuple if specified
+        # Convert color and outline to a tuple if specified
         if "color" in element:
             element["fill"] = tuple(element["color"])
         if "outline_color" in element:
@@ -342,7 +342,7 @@ class CardBuilder:
 
         Args:
             element (dict): A dictionary containing ellipse properties such as
-                            'position', 'size', 'fill', 'outline', 'width', and 'anchor'.
+                            'position', 'size', 'color', 'outline', 'width', and 'anchor'.
 
         Raises:
             AssertionError: If the element type is not 'ellipse'.
@@ -355,7 +355,7 @@ class CardBuilder:
         # Calculate absolute position
         position = self._calculate_absolute_position(element)
 
-        # Convert fill and outline to a tuple if specified
+        # Convert color and outline to a tuple if specified
         if "color" in element:
             element["fill"] = tuple(element["color"])
         if "outline_color" in element:
@@ -395,7 +395,7 @@ class CardBuilder:
         Draws a polygon on the card based on the provided element dictionary.
         Args:
             element (dict): A dictionary containing polygon properties such as
-                            'position', 'points', 'fill', 'outline', 'width', and 'anchor'.
+                            'position', 'points', 'color', 'outline', 'width', and 'anchor'.
         Raises:
             AssertionError: If the element type is not 'polygon'.
         """
@@ -417,7 +417,7 @@ class CardBuilder:
         # Calculate absolute position for the element's anchor
         absolute_pos = self._calculate_absolute_position(element)
 
-        # Convert fill and outline to a tuple if specified
+        # Convert color and outline to a tuple if specified
         if "color" in element:
             element["fill"] = tuple(element["color"])
         if "outline_color" in element:
@@ -460,7 +460,7 @@ class CardBuilder:
 
         Args:
             element (dict): A dictionary containing regular polygon properties such as
-                            'position', 'radius', 'sides', 'rotation', 'fill', 'outline',
+                            'position', 'radius', 'sides', 'rotation', 'color', 'outline',
                             'width', and 'anchor'.
 
         Raises:
@@ -476,7 +476,7 @@ class CardBuilder:
         # Calculate absolute position for the element's anchor
         absolute_pos = self._calculate_absolute_position(element)
 
-        # Convert fill and outline to a tuple if specified
+        # Convert color and outline to a tuple if specified
         if "color" in element:
             element["fill"] = tuple(element["color"])
         if "outline_color" in element:
@@ -518,7 +518,7 @@ class CardBuilder:
 
         Args:
             element (dict): A dictionary containing rectangle properties such as
-                            'size', 'fill', 'outline', 'width', 'radius', 'corners',
+                            'size', 'color', 'outline', 'width', 'radius', 'corners',
                             'position', and 'anchor'.
         Raises:
             AssertionError: If the element type is not 'rectangle'.
@@ -531,7 +531,7 @@ class CardBuilder:
         # Calculate absolute position
         position = self._calculate_absolute_position(element)
 
-        # Convert fill, outline and corners to a tuple if specified
+        # Convert color, outline and corners to a tuple if specified
         if "color" in element:
             element["fill"] = tuple(element["color"])
         if "outline_color" in element:

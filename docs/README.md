@@ -6,17 +6,17 @@ Pydeck is ideal for automating the creation of all kinds of decks, including TCG
 
 ## Features
 
-Initialize a sample project and edit it instead of starting from scratch.
+- Initialize a sample project and edit it instead of starting from scratch.
 
-Include images, text, and different kinds of shapes.
+- Include images, text, and different kinds of shapes.
 
-Link any field to a column in the CSV file.
+- Link any field to a column in the CSV file.
 
-Position elements absolutely or relative to other elements, using anchors to simplify placement
+- Position elements absolutely or relative to other elements, using anchors to simplify placement
 
-Transform images using filters like crop, resize, rotate, or flip.
+- Transform images using filters like crop, resize, rotate, or flip.
 
-Build card images and export to PDF for printing.
+- Build card images and export to PDF for printing.
 
 ## Getting started
 

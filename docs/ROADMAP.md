@@ -13,7 +13,7 @@
 
 ### Card Builder
 - [x] Image filters: crop-top / bottom / left / right / box, resize
-- [x] Add a new type "shape" with fill and stroke
+- [x] Add a new type "shape" with color and stroke
 - [x] Verify support for transparent images
 - [x] Verify support for symbols and special characters, such as japanese characters
 - [x] Font variants (Bold, Semibold...)
@@ -26,9 +26,8 @@
 - [x] Fix layout issues with rotated images
 
 ## Naming
-- [ ] Text:
+- [x] Text:
       "spacing"     -> "line_spacing"
-      "width"       -> "max_width"
       "stroke_fill" -> "stroke_color"
 
 ## Nice to have features

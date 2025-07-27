@@ -75,15 +75,15 @@ An element of type `text` can have the following attributes:
     "font_path": "arial.ttf",
     "font_size": 10,
     "font_variant": "Regular | Bold | ..",
-    "spacing": 4,
+    "line_spacing": 4,
     "width": 300,
     "align": "left | center | justify | ..",
     "stroke_width": 1,
-    "stroke_fill": [255, 255, 255]
+    "stroke_color": [255, 255, 255]
 }
 ```
 
-The `spacing` attribute defines the vertical space in pixels between lines of text.
+The `line_spacing` attribute defines the vertical space in pixels between lines of text.
 
 The `width` attribute limits the width in pixels for each line before the text wraps to the next line.
 
