@@ -8,7 +8,7 @@
 - [x] Basic error handling in cli with error messages
 - [x] Create a proper documentation with examples
 - [x] Validation of fields and values
-- [ ] Improve the default template
+- [x] Improve the default template
 - [ ] Publish an initial version to GitHub and PyPI
 
 ### Card Builder

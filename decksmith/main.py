@@ -25,9 +25,9 @@ def init():
         click.echo("(!) Project already initialized.")
         return
 
-    with resources.path("templates", "deck.json") as template_path:
+    with resources.path("decksmith.templates", "deck.json") as template_path:
         shutil.copy(template_path, "deck.json")
-    with resources.path("templates", "deck.csv") as template_path:
+    with resources.path("decksmith.templates", "deck.csv") as template_path:
         shutil.copy(template_path, "deck.csv")
 
     click.echo("(✔) Initialized new project from templates.")

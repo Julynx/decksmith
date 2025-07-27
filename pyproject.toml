@@ -1,8 +1,12 @@
 [project]
 name = "decksmith"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
+version = "0.1.1"
+description = "A command-line application to dynamically generate decks of cards from a JSON specification and a CSV data file, inspired by nandeck."
+authors = [
+    {name = "Julio Cabria", email = "juliocabria@tutanota.com"},
+]
+license = "GPL-2.0-only"
+readme = "docs/README.md"
 requires-python = ">=3.13"
 dependencies = [
     "click",
@@ -13,17 +17,42 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = [
+dev = [
     "pytest",
+    "poetry",
 ]
+
+[tool.poetry]
+name = "decksmith"
+version = "0.1.1"
+description = "A command-line application to dynamically generate decks of cards from a JSON specification and a CSV data file, inspired by nandeck."
+authors = ["Julio Cabria <juliocabria@tutanota.com>"]
+license = "GPL-2.0-only"
+readme = "docs/README.md"
+homepage = "https://github.com/Julynx/decksmith"
+packages = [
+    { include = "decksmith" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.13"
+click = "*"
+jval = "1.0.6"
+pandas = "*"
+pillow = ">=11.3.0"
+reportlab = ">=4.4.3"
+
+[tool.poetry.scripts]
+decksmith = "decksmith.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["decksmith*", "test*"]
 namespaces = false
 
-[tool.setuptools.package-data]
-decksmith = ["../templates/*"]
-
 [project.scripts]
 decksmith = "decksmith.main:cli"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

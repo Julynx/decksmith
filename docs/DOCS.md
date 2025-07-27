@@ -142,7 +142,7 @@ The `circle` shape is defined by a center `position` and a `radius`.
 {
     # ...
     "position": [1000, 650],
-    "radius": 200,
+    "radius": 200
     # ...
 }
 ```
@@ -155,7 +155,7 @@ The ellipse will be drawn inside the box, its curve being tangent to its sides.
 ```python
 {
     # ...
-    "size": [1000, 500],
+    "size": [1000, 500]
     # ...
 }
 ```
@@ -169,7 +169,7 @@ The `polygon` shape is defined by a list of `points` that will be used as vertic
     # ...
     "points": [[0, -100], [30, -30], [100, -30], [40, 20],
                [60, 100], [0, 50], [-60, 100], [-40, 20],
-               [-100, -30], [-30, -30]],
+               [-100, -30], [-30, -30]]
     # ...
 }
 ```
@@ -185,7 +185,7 @@ a certain number of `sides`, and a `rotation` angle.
     "position": [-100, 100],
     "radius": 50,
     "sides": 6,
-    "rotation": 45,
+    "rotation": 45
     # ...
 }
 ```
@@ -199,7 +199,7 @@ The `rectangle` shape is described by a `size`, and can have its `corners` round
     # ...
     "size": [200, 300],
     "corners": [False, False, True, True]
-    "corner_radius": 40,
+    "corner_radius": 40
     # ...
 }
 ```
@@ -224,7 +224,7 @@ You can reference columns from `deck.csv` in `deck.json` by their name enclosed 
 {
     "width": 250,
     "height": 350,
-    "background_color": [180, 180, 180],
+    "background_color": [100, 100, 100],
     "elements": [
         {
             "id": "name",
@@ -234,7 +234,7 @@ You can reference columns from `deck.csv` in `deck.json` by their name enclosed 
             "color": ["%r%", "%g%", "%b%"],
             "align": "center",
             "position": [125, 25],
-            "anchor": "top-center",
+            "anchor": "top-center"
         },
         {
             "id": "greeting",
@@ -246,7 +246,7 @@ You can reference columns from `deck.csv` in `deck.json` by their name enclosed 
             "width": 200,
             "position": [0, 25],
             "relative_to": ["name", "bottom-center"],
-            "anchor": "top-center",
+            "anchor": "top-center"
         }
     ]
 }
