@@ -4,7 +4,7 @@
 
 <br>
 <p align="center">
-  <img width="600" src="assets/decksmith.png">
+  <img width="600" src="https://raw.githubusercontent.com/Julynx/decksmith/refs/heads/main/docs/assets/decksmith.png">
 </p>
 <br>
 
