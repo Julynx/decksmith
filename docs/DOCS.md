@@ -1,12 +1,32 @@
 # Documentation for DeckSmith
 
+## Contents
+
+- [Getting started](#getting-started)
+  - [Installation](#installation)
+  - [Creating a project](#creating-a-project)
+- [`deck.json` syntax](#deckjson-syntax)
+  - [Common attributes](#common-attributes)
+  - [Positioning](#positioning)
+  - [Text](#text)
+  - [Images](#images)
+  - [Shapes](#shapes)
+    - [Circle](#circle)
+    - [Ellipse](#ellipse)
+    - [Polygon](#polygon)
+    - [Regular polygon](#regular-polygon)
+    - [Rectangle](#rectangle)
+- [Basic example with `deck.csv`](#basic-example-with-deckcsv)
+  - [Building the deck](#building-the-deck)
+  - [Exporting to PDF](#exporting-to-pdf)
+
 ## Getting started
 
 ### Installation
 
 To begin, install DeckSmith by opening a Terminal and entering `pip install decksmith`.
 
-### decksmith init
+### Creating a project
 
 Create a new folder and run `decksmith init` inside.
 
@@ -14,7 +34,7 @@ This will create two different files:
 - `deck.json` defines the structure for the cards in the deck. The different elements that compose a card, such as text blocks, images, and shapes, are declared here, along with their sizes, positions, and other attributes. Edit this file with your favorite text editor to add and remove elements or modify their properties.
 - `deck.csv` is a data file that holds the contents for the cards of the deck, with each row representing one card. The columns of this file represent dynamic fields that can be referenced in the JSON by name as `%column_name%`. Adding a new card to the deck is as easy as creating a new row in this file.
 
-### `deck.json` syntax
+## `deck.json` syntax
 
 The basic structure of a card is defined as:
 
@@ -30,7 +50,7 @@ The basic structure of a card is defined as:
 
 The `elements` array can contain objects of different types, such as `text`, `image`, `circle`, `rectangle`, etc.
 
-#### Common attributes
+### Common attributes
 
 All objects, regardless of their type, share the following attributes:
 
@@ -44,7 +64,7 @@ All objects, regardless of their type, share the following attributes:
 }
 ```
 
-#### Positioning
+### Positioning
 
 The `anchor` attribute defines the point or corner of the element that will be used to position it within the card.
 For example, declaring an element with `"position": [50, 50]` and `"anchor": "center"` means the center of the object will be in the coordinates `[50, 50]`. Using an anchor of `bottom-left` will position the bottom-left corner of the object in that position instead.
@@ -60,7 +80,7 @@ The possible anchors are:
 
 The `relative_to` attribute allows positioning elements relative to other elements by referencing their `id`, and an `anchor` point for the referenced element. The element will be positioned according to its own `anchor` and the `relative_to` anchor for the other element.
 
-#### Text
+### Text
 
 An element of type `text` can have the following attributes:
 
@@ -87,7 +107,7 @@ The `line_spacing` attribute defines the vertical space in pixels between lines 
 
 The `width` attribute limits the width in pixels for each line before the text wraps to the next line.
 
-#### Images
+### Images
 
 An element of type `image` can have the following attributes:
 
@@ -115,7 +135,7 @@ An element of type `image` can have the following attributes:
 
 Positive values in a `crop_xxxx` filter will cut rows/columns of pixels from that side of the image moving inwards, while negative values will add rows/columns of transparent pixels to that side of the image moving outwards.
 
-#### Shapes
+### Shapes
 
 The following attributes are common to all shapes:
 
@@ -134,7 +154,7 @@ The following attributes are common to all shapes:
 }
 ```
 
-##### Circle
+#### Circle
 
 The `circle` shape is defined by a center `position` and a `radius`.
 
@@ -147,7 +167,7 @@ The `circle` shape is defined by a center `position` and a `radius`.
 }
 ```
 
-##### Ellipse
+#### Ellipse
 
 The `ellipse` shape is defined by a bounding `size` box.
 The ellipse will be drawn inside the box, its curve being tangent to its sides.
@@ -160,7 +180,7 @@ The ellipse will be drawn inside the box, its curve being tangent to its sides.
 }
 ```
 
-##### Polygon
+#### Polygon
 
 The `polygon` shape is defined by a list of `points` that will be used as vertices.
 
@@ -174,7 +194,7 @@ The `polygon` shape is defined by a list of `points` that will be used as vertic
 }
 ```
 
-##### Regular polygon
+#### Regular polygon
 
 The `regular-polygon` shape is constructed from a bounding circle (center `position`, `radius`),
 a certain number of `sides`, and a `rotation` angle.
@@ -190,7 +210,7 @@ a certain number of `sides`, and a `rotation` angle.
 }
 ```
 
-##### Rectangle
+#### Rectangle
 
 The `rectangle` shape is described by a `size`, and can have its `corners` rounded by a given `corner_radius`.
 
@@ -206,7 +226,7 @@ The `rectangle` shape is described by a `size`, and can have its `corners` round
 
 The `corners` attribute defines which corners should be rounded (`true`) or straight (`false`).
 
-### Basic example with `deck.csv`
+## Basic example with `deck.csv`
 
 The `deck.csv` file is a semicolon-separated table with a title row and a data row for each card in the deck.
 
@@ -252,11 +272,11 @@ You can reference columns from `deck.csv` in `deck.json` by their name enclosed 
 }
 ```
 
-#### Building the deck
+### Building the deck
 
 Running `decksmith build` will create an `output` folder containing two card images, each with its own greeting in a different color.
 
-#### Exporting to PDF
+### Exporting to PDF
 
 Finally, you can export the deck to PDF by running the command:
 
