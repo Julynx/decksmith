@@ -93,7 +93,7 @@ class CardBuilder:
         if position := element.pop("position", False):
             element["position"] = tuple(position)
         if color := element.pop("color", False):
-            element["fill"] = tuple(color)
+            element["color"] = tuple(color)
 
         # Apply anchor manually (because PIL does not support anchor for multiline text)
         original_pos = self._calculate_absolute_position(element)
@@ -119,7 +119,7 @@ class CardBuilder:
         self.draw.text(
             xy=element.get("position"),
             text=element.get("text"),
-            fill=element.get("fill", None),
+            fill=element.get("color", None),
             font=element["font"],
             spacing=element.get("spacing", 4),
             align=element.get("align", "left"),
@@ -152,7 +152,7 @@ class CardBuilder:
         Draws an image on the card based on the provided element dictionary.
         Args:
             element (dict): A dictionary containing image properties such as
-                            'path', 'size', 'filters', and 'position'.
+                            'path', 'filters', and 'position'.
         """
         # Ensure the element type is 'image'
         assert element.pop("type") == "image", "Element type must be 'image'"
@@ -297,10 +297,10 @@ class CardBuilder:
         absolute_pos = self._calculate_absolute_position(element)
 
         # Convert fill and outline to a tuple if specified
-        if "fill" in element:
-            element["fill"] = tuple(element["fill"])
-        if "outline" in element:
-            element["outline"] = tuple(element["outline"])
+        if "color" in element:
+            element["fill"] = tuple(element["color"])
+        if "outline_color" in element:
+            element["outline_color"] = tuple(element["outline_color"])
 
         # Apply anchor if specified
         if "anchor" in element:
@@ -317,8 +317,8 @@ class CardBuilder:
             center_pos,
             radius,
             fill=element.get("fill", None),
-            outline=element.get("outline", None),
-            width=element.get("width", 1),
+            outline=element.get("outline_color", None),
+            width=element.get("outline_width", 1),
         )
 
         # Store position if id is provided
@@ -351,10 +351,10 @@ class CardBuilder:
         position = self._calculate_absolute_position(element)
 
         # Convert fill and outline to a tuple if specified
-        if "fill" in element:
-            element["fill"] = tuple(element["fill"])
-        if "outline" in element:
-            element["outline"] = tuple(element["outline"])
+        if "color" in element:
+            element["fill"] = tuple(element["color"])
+        if "outline_color" in element:
+            element["outline_color"] = tuple(element["outline_color"])
 
         # Apply anchor if specified
         if "anchor" in element:
@@ -377,8 +377,8 @@ class CardBuilder:
         self.draw.ellipse(
             bounding_box,
             fill=element.get("fill", None),
-            outline=element.get("outline", None),
-            width=element.get("width", 1),
+            outline=element.get("outline_color", None),
+            width=element.get("outline_width", 1),
         )
 
         # Store position if id is provided
@@ -413,10 +413,10 @@ class CardBuilder:
         absolute_pos = self._calculate_absolute_position(element)
 
         # Convert fill and outline to a tuple if specified
-        if "fill" in element:
-            element["fill"] = tuple(element["fill"])
-        if "outline" in element:
-            element["outline"] = tuple(element["outline"])
+        if "color" in element:
+            element["fill"] = tuple(element["color"])
+        if "outline_color" in element:
+            element["outline_color"] = tuple(element["outline_color"])
 
         # This will be the top-left offset for the points
         offset = absolute_pos
@@ -435,8 +435,8 @@ class CardBuilder:
         self.draw.polygon(
             final_points,
             fill=element.get("fill", None),
-            outline=element.get("outline", None),
-            width=element.get("width", 1),
+            outline=element.get("outline_color", None),
+            width=element.get("outline_width", 1),
         )
 
         # Store position if id is provided
@@ -472,10 +472,10 @@ class CardBuilder:
         absolute_pos = self._calculate_absolute_position(element)
 
         # Convert fill and outline to a tuple if specified
-        if "fill" in element:
-            element["fill"] = tuple(element["fill"])
-        if "outline" in element:
-            element["outline"] = tuple(element["outline"])
+        if "color" in element:
+            element["fill"] = tuple(element["color"])
+        if "outline_color" in element:
+            element["outline_color"] = tuple(element["outline_color"])
 
         # Apply anchor if specified
         if "anchor" in element:
@@ -493,8 +493,8 @@ class CardBuilder:
             n_sides=element["sides"],
             rotation=element.get("rotation", 0),
             fill=element.get("fill", None),
-            outline=element.get("outline", None),
-            width=element.get("width", 1),
+            outline=element.get("outline_color", None),
+            width=element.get("outline_width", 1),
         )
 
         # Store position if id is provided
@@ -513,7 +513,7 @@ class CardBuilder:
 
         Args:
             element (dict): A dictionary containing rectangle properties such as
-                            'size', 'fill', 'outline', 'width', 'corners', 'position', and 'anchor'.
+                            'size', 'fill', 'outline', 'width', 'radius', 'corners', 'position', and 'anchor'.
         Raises:
             AssertionError: If the element type is not 'rectangle'.
         """
@@ -526,10 +526,10 @@ class CardBuilder:
         position = self._calculate_absolute_position(element)
 
         # Convert fill, outline and corners to a tuple if specified
-        if "fill" in element:
-            element["fill"] = tuple(element["fill"])
-        if "outline" in element:
-            element["outline"] = tuple(element["outline"])
+        if "color" in element:
+            element["fill"] = tuple(element["color"])
+        if "outline_color" in element:
+            element["outline_color"] = tuple(element["outline_color"])
         if "corners" in element:
             element["corners"] = tuple(element["corners"])
 
@@ -553,10 +553,10 @@ class CardBuilder:
         # Draw the rectangle
         self.draw.rounded_rectangle(
             bounding_box,
-            radius=element.get("radius", 0),
+            radius=element.get("corner_radius", 0),
             fill=element.get("fill", None),
-            outline=element.get("outline", None),
-            width=element.get("width", 1),
+            outline=element.get("outline_color", None),
+            width=element.get("outline_width", 1),
             corners=element.get("corners", None),
         )
 

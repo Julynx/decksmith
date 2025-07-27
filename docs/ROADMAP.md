@@ -23,6 +23,12 @@
 - [x] Implement export to PDF with real page size using ReportLab
 - [x] Fix layout issues with rotated images
 
+## Naming
+- [ ] Text:
+      "spacing"     -> "line_spacing"
+      "width"       -> "max_width"
+      "stroke_fill" -> "stroke_color"
+
 ## Nice to have features
 - [x] As cards are independent, implement concurrent processing of cards
 - [ ] Extensive logging

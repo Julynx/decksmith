@@ -8,9 +8,9 @@
             "type": "circle",
             "position": [1000, 650],
             "radius": 200,
-            "fill": [255, 0, 0],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [255, 0, 0],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "center"
         },
         {
@@ -19,9 +19,9 @@
             "position": [0, 100],
             "relative_to": ["circle", "bottom-center"],
             "size": [1000, 500],
-            "fill": [0, 255, 0],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [0, 255, 0],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "top-center"
         },
         {
@@ -41,9 +41,9 @@
                 [-100, -30],
                 [-30, -30]
             ],
-            "fill": [0, 0, 255],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [0, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "bottom-center"
         },
         {
@@ -53,9 +53,9 @@
             "radius": 50,
             "sides": 6,
             "rotation": 45,
-            "fill": [255, 0, 255],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "center"
         },
         {
@@ -65,9 +65,9 @@
             "radius": 50,
             "sides": 6,
             "rotation": 45,
-            "fill": [255, 0, 255],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "center"
         },
         {
@@ -77,9 +77,9 @@
             "radius": 50,
             "sides": 6,
             "rotation": 45,
-            "fill": [255, 0, 255],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "center"
         },
         {
@@ -89,9 +89,9 @@
             "radius": 50,
             "sides": 6,
             "rotation": 45,
-            "fill": [255, 0, 255],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "center"
         },
         {
@@ -99,17 +99,12 @@
             "position": [0, 100],
             "relative_to": ["ellipse", "bottom-center"],
             "size": [200, 300],
-            "fill": [0, 255, 255],
-            "outline": [0, 0, 0],
-            "width": 20,
+            "color": [0, 255, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
             "anchor": "top-center",
-            "radius": 40,
-            "corners": [
-                false,
-                false,
-                true,
-                true
-            ]
+            "corner_radius": 40,
+            "corners": [false, false, true, true]
         }
     ]
 }
