@@ -12,7 +12,7 @@ DeckSmith is ideal for automating the creation of all kinds of decks, including 
 
 ## Features
 
-- [Initialize a sample project and edit it instead of starting from scratch](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#decksmith-init)
+- [Initialize a sample project and edit it instead of starting from scratch](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#creating-a-project)
 
 - [Include images](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#images), [text](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#text), [and different kinds of shapes](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#shapes)
 
