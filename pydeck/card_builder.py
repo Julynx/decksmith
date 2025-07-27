@@ -85,7 +85,7 @@ class CardBuilder:
             element["font"] = ImageFont.load_default(font_size)
 
         # Apply font_variant
-        if font_variant := element.pop("font_variant"):
+        if font_variant := element.pop("font_variant", None):
             element["font"].set_variation_by_name(font_variant)
 
         # Split text according to the specified width
@@ -95,10 +95,13 @@ class CardBuilder:
             )
 
         # Convert position and color to tuples
-        if position := element.pop("position", False):
+        if position := element.pop("position", [0, 0]):
             element["position"] = tuple(position)
-        if color := element.pop("color", False):
+        if color := element.pop("color", [0, 0, 0]):
             element["color"] = tuple(color)
+        if stroke_color := element.pop("stroke_color", None):
+            element["stroke_color"] = tuple(stroke_color) \
+                if stroke_color is not None else stroke_color
 
         # Apply anchor manually (because PIL does not support anchor for multiline text)
         original_pos = self._calculate_absolute_position(element)
@@ -518,12 +521,14 @@ class CardBuilder:
 
         Args:
             element (dict): A dictionary containing rectangle properties such as
-                            'size', 'color', 'outline', 'width', 'radius', 'corners',
-                            'position', and 'anchor'.
+                            'size', 'color', 'outline_color', 'width', 'radius', 
+                            'corners', 'position', and 'anchor'.
         Raises:
             AssertionError: If the element type is not 'rectangle'.
         """
         assert element.pop("type") == "rectangle", "Element type must be 'rectangle'"
+
+        # print(f"DEBUG: {element=}")
 
         # Get size
         size = element["size"]
@@ -555,6 +560,8 @@ class CardBuilder:
             position[0] + size[0],
             position[1] + size[1],
         )
+
+        # print(f"DEBUG: Transformed {element=}")
 
         # Draw the rectangle
         self.draw.rounded_rectangle(
