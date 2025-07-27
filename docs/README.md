@@ -20,4 +20,4 @@ DeckSmith is ideal for automating the creation of all kinds of decks, including 
 
 ## Getting started
 
-To start creating decks, check out [Getting Started](DOCS.md/#getting-started).
+To start creating decks, check out [Getting Started]([https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md/#getting-started).
