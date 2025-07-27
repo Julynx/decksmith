@@ -1,5 +1,0 @@
-title;description
-Welcome to DeckSmith!;To get started, edit "deck.csv" to add new cards, or "deck.json" to change their structure.
-Building the deck;Run "decksmith build" when you are ready to save the cards as images.
-Exporting to PDF;You can create a printable PDF with "decksmith export --width 63.5 --height 88.9 output" after building.
-Check out the guide;Visit "github.com/julynx/decksmith" to learn all the things you can do using DeckSmith. Enjoy!
