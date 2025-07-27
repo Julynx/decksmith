@@ -55,6 +55,15 @@ wheels = [
 ]
 
 [[package]]
+name = "jval"
+version = "1.0.6"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/a2/3e/803fe45f40a630909bb7e5c6fbf46544d0c5b4a4d5c9f1adc4131453c884/jval-1.0.6.tar.gz", hash = "sha256:7b64f65ef683e9c64d2cc71dfb95f96a983b61c58eafa9bfe729ad10f7e375e4", size = 12857 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/69/73/0d73f957ab5c902e54c44ebb103f94e1445ac25be939efef34f9088945cd/jval-1.0.6-py3-none-any.whl", hash = "sha256:febd23951df52b56d1ea54595a7f92745576a26f214b83669c288b1a89d3b3e0", size = 14493 },
+]
+
+[[package]]
 name = "numpy"
 version = "2.3.2"
 source = { registry = "https://pypi.org/simple" }
@@ -212,6 +221,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "click" },
+    { name = "jval" },
     { name = "pandas" },
     { name = "pillow" },
     { name = "reportlab" },
@@ -225,6 +235,7 @@ test = [
 [package.metadata]
 requires-dist = [
     { name = "click" },
+    { name = "jval", specifier = "==1.0.6" },
     { name = "pandas" },
     { name = "pillow", specifier = ">=11.3.0" },
     { name = "pytest", marker = "extra == 'test'" },

@@ -7,6 +7,7 @@ import operator
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from .utils import get_wrapped_text, apply_anchor
+from .validate import validate_card
 
 
 class CardBuilder:
@@ -100,8 +101,9 @@ class CardBuilder:
         if color := element.pop("color", [0, 0, 0]):
             element["color"] = tuple(color)
         if stroke_color := element.pop("stroke_color", None):
-            element["stroke_color"] = tuple(stroke_color) \
-                if stroke_color is not None else stroke_color
+            element["stroke_color"] = (
+                tuple(stroke_color) if stroke_color is not None else stroke_color
+            )
 
         # Apply anchor manually (because PIL does not support anchor for multiline text)
         original_pos = self._calculate_absolute_position(element)
@@ -521,7 +523,7 @@ class CardBuilder:
 
         Args:
             element (dict): A dictionary containing rectangle properties such as
-                            'size', 'color', 'outline_color', 'width', 'radius', 
+                            'size', 'color', 'outline_color', 'width', 'radius',
                             'corners', 'position', and 'anchor'.
         Raises:
             AssertionError: If the element type is not 'rectangle'.
@@ -583,6 +585,8 @@ class CardBuilder:
         Args:
             output_path (str): The path where the card image will be saved.
         """
+        validate_card(self.spec)
+
         for el in self.spec.get("elements", []):
             el_type = el.get("type")
             if el_type == "text":
