@@ -5,79 +5,79 @@ Python module for validating a dictionar
 from jval import validate
 
 ELEMENT_SPEC = {
-    "?*id": "<str>",
-    "*type": "<str>",
-    "?*position": ["<float>"],
-    "?*relative_to": ["<str>"],
-    "?*anchor": "<str>",
+    "?*id": "<?str>",
+    "*type": "<?str>",
+    "?*position": ["<?float>"],
+    "?*relative_to": ["<?str>"],
+    "?*anchor": "<?str>",
 }
 
 SPECS_FOR_TYPE = {
     "text": {
-        "*text": "<str>",
-        "?*color": ["<int>"],
-        "?*font_path": "<str>",
-        "?*font_size": "<int>",
-        "?*font_variant": "<str>",
-        "?*line_spacing": "<int>",
-        "?*width": "<int>",
-        "?*align": "<str>",
-        "?*stroke_width": "<int>",
-        "?*stroke_color": ["<int>"],
+        "*text": "<?str>",
+        "?*color": ["<?int>"],
+        "?*font_path": "<?str>",
+        "?*font_size": "<?int>",
+        "?*font_variant": "<?str>",
+        "?*line_spacing": "<?int>",
+        "?*width": "<?int>",
+        "?*align": "<?str>",
+        "?*stroke_width": "<?int>",
+        "?*stroke_color": ["<?int>"],
     },
     "image": {
-        "*path": "<str>",
+        "*path": "<?str>",
         "?*filters": {
-            "?*crop_top": "<int>",
-            "?*crop_bottom": "<int>",
-            "?*crop_left": "<int>",
-            "?*crop_right": "<int>",
-            "?*crop_box": ["<int>"],
-            "?*rotate": "<int>",
-            "?*flip": "<str>",
+            "?*crop_top": "<?int>",
+            "?*crop_bottom": "<?int>",
+            "?*crop_left": "<?int>",
+            "?*crop_right": "<?int>",
+            "?*crop_box": ["<?int>"],
+            "?*rotate": "<?int>",
+            "?*flip": "<?str>",
             "?*resize": ["<?int>"],
         },
     },
     "circle": {
-        "*radius": "<int>",
-        "?*color": ["<int>"],
-        "?*outline_color": ["<int>"],
-        "?*outline_width": "<int>",
+        "*radius": "<?int>",
+        "?*color": ["<?int>"],
+        "?*outline_color": ["<?int>"],
+        "?*outline_width": "<?int>",
     },
     "ellipse": {
-        "*size": ["<int>"],
-        "?*color": ["<int>"],
-        "?*outline_color": ["<int>"],
-        "?*outline_width": "<int>",
+        "*size": ["<?int>"],
+        "?*color": ["<?int>"],
+        "?*outline_color": ["<?int>"],
+        "?*outline_width": "<?int>",
     },
     "polygon": {
-        "*points": [["<int>"]],
-        "?*color": ["<int>"],
-        "?*outline_color": ["<int>"],
-        "?*outline_width": "<int>",
+        "*points": [["<?int>"]],
+        "?*color": ["<?int>"],
+        "?*outline_color": ["<?int>"],
+        "?*outline_width": "<?int>",
     },
     "regular-polygon": {
-        "*radius": "<int>",
-        "*sides": "<int>",
-        "?*rotation": "<int>",
-        "?*color": ["<int>"],
-        "?*outline_color": ["<int>"],
-        "?*outline_width": "<int>",
+        "*radius": "<?int>",
+        "*sides": "<?int>",
+        "?*rotation": "<?int>",
+        "?*color": ["<?int>"],
+        "?*outline_color": ["<?int>"],
+        "?*outline_width": "<?int>",
     },
     "rectangle": {
-        "*size": ["<int>"],
-        "?*corners": ["<bool>"],
-        "?*corner_radius": "<int>",
-        "?*color": ["<int>"],
-        "?*outline_color": ["<int>"],
-        "?*outline_width": "<int>",
+        "*size": ["<?int>"],
+        "?*corners": ["<?bool>"],
+        "?*corner_radius": "<?int>",
+        "?*color": ["<?int>"],
+        "?*outline_color": ["<?int>"],
+        "?*outline_width": "<?int>",
     },
 }
 
 CARD_SPEC = {
-    "*width": "<int>",
-    "*height": "<int>",
-    "?*background_color": ["<int>"],
+    "*width": "<?int>",
+    "*height": "<?int>",
+    "?*background_color": ["<?int>"],
     "*elements": [],
 }
 
@@ -106,3 +106,19 @@ def validate_card(card):
     for element in card["elements"]:
         # print(f"DEBUG: {element['type']}")
         validate_element(element, element["type"])
+
+
+def transform_card(card):
+    """
+    Perform certain automatic type casts on the card and its
+    elements. For example, cast the "text" property of elements
+    of type "text" to str, to support painting numbers as text.
+    Args:
+        card (dict): The card.
+    Return:
+        dict: The transformed card with all automatic casts applied.
+    """
+    for element in card.get("elements", []):
+        if element.get("type") == "text" and "text" in element:
+            element["text"] = str(element["text"])
+    return card

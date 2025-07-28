@@ -7,7 +7,7 @@ import operator
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 from .utils import get_wrapped_text, apply_anchor
-from .validate import validate_card
+from .validate import validate_card, transform_card
 
 
 class CardBuilder:
@@ -585,6 +585,7 @@ class CardBuilder:
         Args:
             output_path (str): The path where the card image will be saved.
         """
+        self.spec = transform_card(self.spec)
         validate_card(self.spec)
 
         for el in self.spec.get("elements", []):
