@@ -1,0 +1,144 @@
+{
+    "width": 2000,
+    "height": 2000,
+    "background_color": [200, 200, 200],
+    "elements": [
+        {
+            "id": "background",
+            "type": "image",
+            "position": [1000, 1000],
+            "anchor": "center",
+            "path": "test/resources/example.webp",
+            "filters": {
+                "crop_top": 50,
+                "crop_bottom": 50,
+                "crop_left": -50,
+                "crop_right": -50,
+                "crop_box": [50, 0, 1970, 980],
+                "rotate": 180,
+                "flip": "horizontal",
+                "resize": [null, 2000]
+            }
+        },
+        {
+            "id": "circle",
+            "type": "circle",
+            "position": [1000, 650],
+            "radius": 200,
+            "color": [255, 0, 0],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "center"
+        },
+        {
+            "id": "ellipse",
+            "type": "ellipse",
+            "position": [0, 100],
+            "relative_to": ["circle", "bottom-center"],
+            "size": [1000, 500],
+            "color": [0, 255, 0],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "top-center"
+        },
+        {
+            "id": "star",
+            "type": "polygon",
+            "position": [0, -100],
+            "relative_to": ["circle", "top-center"],
+            "points": [
+                [0, -100],
+                [30, -30],
+                [100, -30],
+                [40, 20],
+                [60, 100],
+                [0, 50],
+                [-60, 100],
+                [-40, 20],
+                [-100, -30],
+                [-30, -30]
+            ],
+            "color": [0, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "bottom-center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [-100, 100],
+            "relative_to": ["ellipse", "center"],
+            "radius": 50,
+            "sides": 6,
+            "rotation": 45,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [100, -100],
+            "relative_to": ["ellipse", "center"],
+            "radius": 50,
+            "sides": 6,
+            "rotation": 45,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [-250, -100],
+            "relative_to": ["ellipse", "center"],
+            "radius": 50,
+            "sides": 6,
+            "rotation": 45,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "center"
+        },
+        {
+            "type": "regular-polygon",
+            "position": [250, 100],
+            "relative_to": ["ellipse", "center"],
+            "radius": 50,
+            "sides": 6,
+            "rotation": 45,
+            "color": [255, 0, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "center"
+        },
+        {
+            "id": "rectangle",
+            "type": "rectangle",
+            "position": [0, 100],
+            "relative_to": ["ellipse", "bottom-center"],
+            "size": [200, 300],
+            "color": [0, 255, 255],
+            "outline_color": [0, 0, 0],
+            "outline_width": 20,
+            "anchor": "top-center",
+            "corner_radius": 40,
+            "corners": [false, false, true, true]
+        },
+        {
+            "type": "text",
+            "position": [50, 0],
+            "relative_to": ["rectangle", "middle-right"],
+            "anchor": "middle-left",
+            "text": "Merry Christmas!",
+            "color": [0, 0, 0],
+            "font_path": "test/resources/noto_sans_jp.ttf",
+            "font_size": 96,
+            "font_variant": "Bold",
+            "line_spacing": 4,
+            "width": 300,
+            "align": "left",
+            "stroke_width": 1,
+            "stroke_color": [255, 0, 0]
+        }
+    ]
+}

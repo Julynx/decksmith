@@ -1,6 +1,6 @@
 [project]
 name = "decksmith"
-version = "0.1.5"
+version = "0.1.6"
 description = "A command-line application to dynamically generate decks of cards from a JSON specification and a CSV data file, inspired by nandeck."
 authors = [
     {name = "Julio Cabria", email = "juliocabria@tutanota.com"},
@@ -24,7 +24,7 @@ dev = [
 
 [tool.poetry]
 name = "decksmith"
-version = "0.1.5"
+version = "0.1.6"
 description = "A command-line application to dynamically generate decks of cards from a JSON specification and a CSV data file, inspired by nandeck."
 authors = ["Julio Cabria <juliocabria@tutanota.com>"]
 license = "GPL-2.0-only"

@@ -8,11 +8,14 @@ from decksmith.deck_builder import DeckBuilder
 TEST_DATA_PATH = Path("test/data")
 TEST_1_OUTPUT_PATH = Path("test/output1")
 TEST_2_OUTPUT_PATH = Path("test/output2")
+TEST_3_OUTPUT_PATH = Path("test/output3")
+
 
 def setup_module():
     """Create the output directory before running tests."""
     TEST_1_OUTPUT_PATH.mkdir(exist_ok=True)
     TEST_2_OUTPUT_PATH.mkdir(exist_ok=True)
+    TEST_3_OUTPUT_PATH.mkdir(exist_ok=True)
 
 
 def test_shapes_deck():
@@ -55,3 +58,20 @@ def test_example_deck():
     with open(output_card_2_path, "rb") as f:
         file_hash_2 = hashlib.sha256(f.read()).hexdigest()
     assert file_hash_2 == expected_hash_2, "The output file hash does not match the expected value."
+
+
+def test_comprehensive():
+    """Test the example deck builder."""
+    # Given
+    deck_json_path = TEST_DATA_PATH / "comprehensive.json"
+    output_card_1_path = TEST_3_OUTPUT_PATH / "card_1.png"
+    expected_hash_1 = "760f88e6206971b28668ced5ae7f52cfbcfea5e601fa252af58d6d479300b08b"
+
+    # When
+    deck_builder = DeckBuilder(deck_json_path)
+    deck_builder.build_deck(TEST_3_OUTPUT_PATH)
+
+    # Then
+    with open(output_card_1_path, "rb") as f:
+        file_hash_1 = hashlib.sha256(f.read()).hexdigest()
+    assert file_hash_1 == expected_hash_1, "The output file hash does not match the expected value."
