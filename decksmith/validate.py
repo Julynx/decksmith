@@ -75,6 +75,7 @@ SPECS_FOR_TYPE = {
 }
 
 CARD_SPEC = {
+    "?*id": "<?str>",
     "*width": "<?int>",
     "*height": "<?int>",
     "?*background_color": ["<?int>"],

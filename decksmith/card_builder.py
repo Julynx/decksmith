@@ -32,6 +32,9 @@ class CardBuilder:
         self.card = Image.new("RGBA", (width, height), bg_color)
         self.draw = ImageDraw.Draw(self.card, "RGBA")
         self.element_positions = {}
+        # Store position if id is provided
+        if "id" in spec:
+            self.element_positions[self.spec["id"]] = (0, 0, width, height)
 
     def _calculate_absolute_position(self, element: dict) -> tuple:
         """
