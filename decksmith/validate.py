@@ -2,6 +2,7 @@
 Python module for validating a dictionar
 """
 
+import pandas as pd
 from jval import validate
 
 ELEMENT_SPEC = {
@@ -121,5 +122,9 @@ def transform_card(card):
     """
     for element in card.get("elements", []):
         if element.get("type") == "text" and "text" in element:
-            element["text"] = str(element["text"])
+            if pd.isna(element["text"]):
+                element["text"] = None
+            else:
+                element["text"] = str(element["text"])
+
     return card
