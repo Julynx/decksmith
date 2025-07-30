@@ -1,11 +1,13 @@
 """
-Python module for validating a dictionar
+This module provides functions for validating and transforming card specifications.
 """
+
+from typing import Dict, Any
 
 import pandas as pd
 from jval import validate
 
-ELEMENT_SPEC = {
+ELEMENT_SPEC: Dict[str, Any] = {
     "?*id": "<?str>",
     "*type": "<?str>",
     "?*position": ["<?float>"],
@@ -13,7 +15,7 @@ ELEMENT_SPEC = {
     "?*anchor": "<?str>",
 }
 
-SPECS_FOR_TYPE = {
+SPECS_FOR_TYPE: Dict[str, Dict[str, Any]] = {
     "text": {
         "*text": "<?str>",
         "?*color": ["<?int>"],
@@ -75,7 +77,7 @@ SPECS_FOR_TYPE = {
     },
 }
 
-CARD_SPEC = {
+CARD_SPEC: Dict[str, Any] = {
     "?*id": "<?str>",
     "*width": "<?int>",
     "*height": "<?int>",
@@ -84,7 +86,7 @@ CARD_SPEC = {
 }
 
 
-def validate_element(element, element_type):
+def validate_element(element: Dict[str, Any], element_type: str):
     """
     Validates an element of a card against a spec, raising an exception
     if it does not meet the spec.
@@ -96,12 +98,12 @@ def validate_element(element, element_type):
     validate(element, spec)
 
 
-def validate_card(card):
+def validate_card(card: Dict[str, Any]):
     """
     Validates a card against a spec, raising an exception
     if it does not meet the spec.
     Args:
-        card (dict): The card.
+        card (Dict[str, Any]): The card.
     """
     # print(f"DEBUG:\n{card=}")
     validate(card, CARD_SPEC)
@@ -110,15 +112,15 @@ def validate_card(card):
         validate_element(element, element["type"])
 
 
-def transform_card(card):
+def transform_card(card: Dict[str, Any]) -> Dict[str, Any]:
     """
     Perform certain automatic type casts on the card and its
     elements. For example, cast the "text" property of elements
     of type "text" to str, to support painting numbers as text.
     Args:
-        card (dict): The card.
+        card (Dict[str, Any]): The card.
     Return:
-        dict: The transformed card with all automatic casts applied.
+        Dict[str, Any]: The transformed card with all automatic casts applied.
     """
     for element in card.get("elements", []):
         if element.get("type") == "text" and "text" in element:

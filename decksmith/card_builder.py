@@ -4,8 +4,12 @@ which is used to create card images based on a JSON specification.
 """
 
 import operator
+from pathlib import Path
+from typing import Dict, Any, Tuple, List
+
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
+
 from .utils import get_wrapped_text, apply_anchor
 from .validate import validate_card, transform_card
 
@@ -14,29 +18,30 @@ class CardBuilder:
     """
     A class to build a card image based on a JSON specification.
     Attributes:
-        spec (dict): The JSON specification for the card.
-        card (Image): The PIL Image object representing the card.
-        draw (ImageDraw): The PIL ImageDraw object for drawing on the card.
+        spec (Dict[str, Any]): The JSON specification for the card.
+        card (Image.Image): The PIL Image object representing the card.
+        draw (ImageDraw.ImageDraw): The PIL ImageDraw object for drawing on the card.
+        element_positions (Dict[str, Tuple[int, int, int, int]]):
+            A dictionary mapping element IDs to their bounding boxes.
     """
 
-    def __init__(self, spec: dict):
+    def __init__(self, spec: Dict[str, Any]):
         """
-        Initializes the CardBuilder with a JSON specification file.
+        Initializes the CardBuilder with a JSON specification.
         Args:
-            spec_path (str): Path to the JSON specification file.
+            spec (Dict[str, Any]): The JSON specification for the card.
         """
         self.spec = spec
         width = self.spec.get("width", 250)
         height = self.spec.get("height", 350)
         bg_color = tuple(self.spec.get("background_color", (255, 255, 255, 0)))
-        self.card = Image.new("RGBA", (width, height), bg_color)
-        self.draw = ImageDraw.Draw(self.card, "RGBA")
-        self.element_positions = {}
-        # Store position if id is provided
+        self.card: Image.Image = Image.new("RGBA", (width, height), bg_color)
+        self.draw: ImageDraw.ImageDraw = ImageDraw.Draw(self.card, "RGBA")
+        self.element_positions: Dict[str, Tuple[int, int, int, int]] = {}
         if "id" in spec:
             self.element_positions[self.spec["id"]] = (0, 0, width, height)
 
-    def _calculate_absolute_position(self, element: dict) -> tuple:
+    def _calculate_absolute_position(self, element: Dict[str, Any]) -> Tuple[int, int]:
         """
         Calculates the absolute position of an element,
         resolving relative positioning.
@@ -62,13 +67,11 @@ class CardBuilder:
         offset = tuple(element.get("position", [0, 0]))
         return tuple(map(operator.add, anchor_point, offset))
 
-    def _draw_text(self, element: dict):
+    def _draw_text(self, element: Dict[str, Any]):
         """
         Draws text on the card based on the provided element dictionary.
         Args:
-            element (dict): A dictionary containing text properties such as
-                            'text', 'font_path', 'font_size', 'position',
-                            'color', and 'width'.
+            element (Dict[str, Any]): A dictionary containing text properties.
         """
         assert element.pop("type") == "text", "Element type must be 'text'"
 
@@ -160,12 +163,100 @@ class CardBuilder:
             )
             self.element_positions[element["id"]] = bbox
 
-    def _draw_image(self, element):
+    def _apply_image_filters(
+        self, img: Image.Image, filters: Dict[str, Any]
+    ) -> Image.Image:
+        for filter_name, filter_value in filters.items():
+            filter_method_name = f"_filter_{filter_name}"
+            filter_method = getattr(self, filter_method_name, self._filter_unsupported)
+            img = filter_method(img, filter_value)
+        return img
+
+    def _filter_unsupported(self, img: Image.Image, _: Any) -> Image.Image:
+        return img
+
+    def _filter_crop(self, img: Image.Image, crop_values: List[int]) -> Image.Image:
+        return img.crop(crop_values)
+
+    def _filter_crop_top(self, img: Image.Image, value: int) -> Image.Image:
+        if value < 0:
+            img = img.convert("RGBA")
+            new_img = Image.new("RGBA", (img.width, img.height - value), (0, 0, 0, 0))
+            new_img.paste(img, (0, -value))
+            return new_img
+        return img.crop((0, value, img.width, img.height))
+
+    def _filter_crop_bottom(self, img: Image.Image, value: int) -> Image.Image:
+        if value < 0:
+            img = img.convert("RGBA")
+            new_img = Image.new("RGBA", (img.width, img.height - value), (0, 0, 0, 0))
+            new_img.paste(img, (0, 0))
+            return new_img
+        return img.crop((0, 0, img.width, img.height - value))
+
+    def _filter_crop_left(self, img: Image.Image, value: int) -> Image.Image:
+        if value < 0:
+            img = img.convert("RGBA")
+            new_img = Image.new("RGBA", (img.width - value, img.height), (0, 0, 0, 0))
+            new_img.paste(img, (-value, 0))
+            return new_img
+        return img.crop((value, 0, img.width, img.height))
+
+    def _filter_crop_right(self, img: Image.Image, value: int) -> Image.Image:
+        if value < 0:
+            img = img.convert("RGBA")
+            new_img = Image.new("RGBA", (img.width - value, img.height), (0, 0, 0, 0))
+            new_img.paste(img, (0, 0))
+            return new_img
+        return img.crop((0, 0, img.width - value, img.height))
+
+    def _filter_crop_box(self, img: Image.Image, box: List[int]) -> Image.Image:
+        img = img.convert("RGBA")
+        x, y, w, h = box
+        new_img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        src_x1 = max(0, x)
+        src_y1 = max(0, y)
+        src_x2 = min(img.width, x + w)
+        src_y2 = min(img.height, y + h)
+        if src_x1 < src_x2 and src_y1 < src_y2:
+            src_w = src_x2 - src_x1
+            src_h = src_y2 - src_y1
+            src_img = img.crop((src_x1, src_y1, src_x1 + src_w, src_y1 + src_h))
+            dst_x = src_x1 - x
+            dst_y = src_y1 - y
+            new_img.paste(src_img, (dst_x, dst_y))
+        return new_img
+
+    def _filter_resize(self, img: Image.Image, size: Tuple[int, int]) -> Image.Image:
+        new_width, new_height = size
+        if new_width is None and new_height is None:
+            return img
+        if new_width is None or new_height is None:
+            original_width, original_height = img.size
+            aspect_ratio = original_width / float(original_height)
+            if new_width is None:
+                new_width = int(new_height * aspect_ratio)
+            else:
+                new_height = int(new_width / aspect_ratio)
+        return img.resize((new_width, new_height))
+
+    def _filter_rotate(self, img: Image.Image, angle: float) -> Image.Image:
+        return img.rotate(angle, expand=True)
+
+    def _filter_flip(self, img: Image.Image, direction: str) -> Image.Image:
+        if direction == "horizontal":
+            # pylint: disable=E1101
+            return img.transpose(Image.FLIP_LEFT_RIGHT)
+        if direction == "vertical":
+            # pylint: disable=E1101
+            return img.transpose(Image.FLIP_TOP_BOTTOM)
+        return img
+
+    def _draw_image(self, element: Dict[str, Any]):
         """
         Draws an image on the card based on the provided element dictionary.
         Args:
-            element (dict): A dictionary containing image properties such as
-                            'path', 'filters', and 'position'.
+            element (Dict[str, Any]): A dictionary containing image properties.
         """
         # Ensure the element type is 'image'
         assert element.pop("type") == "image", "Element type must be 'image'"
@@ -174,98 +265,7 @@ class CardBuilder:
         path = element["path"]
         img = Image.open(path)
 
-        # Apply filters if specified
-        if "filters" in element:
-            for filter_name, filter_value in element["filters"].items():
-                if filter_name == "crop_top":
-                    if filter_value < 0:
-                        img = img.convert("RGBA")
-                        new_img = Image.new(
-                            "RGBA",
-                            (img.width, img.height - filter_value),
-                            (0, 0, 0, 0),
-                        )
-                        new_img.paste(img, (0, -filter_value))
-                        img = new_img
-                    else:
-                        img = img.crop((0, filter_value, img.width, img.height))
-                elif filter_name == "crop_bottom":
-                    if filter_value < 0:
-                        img = img.convert("RGBA")
-                        new_img = Image.new(
-                            "RGBA",
-                            (img.width, img.height - filter_value),
-                            (0, 0, 0, 0),
-                        )
-                        new_img.paste(img, (0, 0))
-                        img = new_img
-                    else:
-                        img = img.crop((0, 0, img.width, img.height - filter_value))
-                elif filter_name == "crop_left":
-                    if filter_value < 0:
-                        img = img.convert("RGBA")
-                        new_img = Image.new(
-                            "RGBA",
-                            (img.width - filter_value, img.height),
-                            (0, 0, 0, 0),
-                        )
-                        new_img.paste(img, (-filter_value, 0))
-                        img = new_img
-                    else:
-                        img = img.crop((filter_value, 0, img.width, img.height))
-                elif filter_name == "crop_right":
-                    if filter_value < 0:
-                        img = img.convert("RGBA")
-                        new_img = Image.new(
-                            "RGBA",
-                            (img.width - filter_value, img.height),
-                            (0, 0, 0, 0),
-                        )
-                        new_img.paste(img, (0, 0))
-                        img = new_img
-                    else:
-                        img = img.crop((0, 0, img.width - filter_value, img.height))
-                elif filter_name == "crop_box":
-                    img = img.convert("RGBA")
-                    x, y, w, h = filter_value
-                    new_img = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-                    src_x1 = max(0, x)
-                    src_y1 = max(0, y)
-                    src_x2 = min(img.width, x + w)
-                    src_y2 = min(img.height, y + h)
-                    if src_x1 < src_x2 and src_y1 < src_y2:
-                        src_w = src_x2 - src_x1
-                        src_h = src_y2 - src_y1
-                        src_img = img.crop(
-                            (src_x1, src_y1, src_x1 + src_w, src_y1 + src_h)
-                        )
-                        dst_x = src_x1 - x
-                        dst_y = src_y1 - y
-                        new_img.paste(src_img, (dst_x, dst_y))
-                    img = new_img
-                elif filter_name == "resize":
-                    new_width, new_height = filter_value
-                    if new_width is None and new_height is None:
-                        continue
-                    if new_width is None or new_height is None:
-                        original_width, original_height = img.size
-                        aspect_ratio = original_width / float(original_height)
-                        if new_width is None:
-                            new_width = int(new_height * aspect_ratio)
-                        else:  # new_height is None
-                            new_height = int(new_width / aspect_ratio)
-                    img = img.resize((new_width, new_height))
-                elif filter_name == "rotate":
-                    img = img.rotate(filter_value, expand=True)
-                elif filter_name == "flip":
-                    if filter_value == "horizontal":
-                        # pylint: disable=E1101
-                        img = img.transpose(Image.FLIP_LEFT_RIGHT)
-                    elif filter_value == "vertical":
-                        # pylint: disable=E1101
-                        img = img.transpose(Image.FLIP_TOP_BOTTOM)
-                else:
-                    raise ValueError(f"Unknown filter: {filter_name}")
+        img = self._apply_image_filters(img, element.get("filters", {}))
 
         # Convert position to a tuple
         position = tuple(element.get("position", [0, 0]))
@@ -291,15 +291,11 @@ class CardBuilder:
                 position[1] + img.height,
             )
 
-    def _draw_shape_circle(self, element):
+    def _draw_shape_circle(self, element: Dict[str, Any]):
         """
         Draws a circle on the card based on the provided element dictionary.
         Args:
-            element (dict): A dictionary containing circle properties such as
-                            'position', 'radius', 'color', 'outline', 'width', and 'anchor'.
-
-        Raises:
-            AssertionError: If the element type is not 'circle'.
+            element (Dict[str, Any]): A dictionary containing circle properties.
         """
         assert element.pop("type") == "circle", "Element type must be 'circle'"
 
@@ -344,16 +340,11 @@ class CardBuilder:
                 absolute_pos[1] + size[1],
             )
 
-    def _draw_shape_ellipse(self, element):
+    def _draw_shape_ellipse(self, element: Dict[str, Any]):
         """
         Draws an ellipse on the card based on the provided element dictionary.
-
         Args:
-            element (dict): A dictionary containing ellipse properties such as
-                            'position', 'size', 'color', 'outline', 'width', and 'anchor'.
-
-        Raises:
-            AssertionError: If the element type is not 'ellipse'.
+            element (Dict[str, Any]): A dictionary containing ellipse properties.
         """
         assert element.pop("type") == "ellipse", "Element type must be 'ellipse'"
 
@@ -398,14 +389,11 @@ class CardBuilder:
         if "id" in element:
             self.element_positions[element["id"]] = bounding_box
 
-    def _draw_shape_polygon(self, element):
+    def _draw_shape_polygon(self, element: Dict[str, Any]):
         """
         Draws a polygon on the card based on the provided element dictionary.
         Args:
-            element (dict): A dictionary containing polygon properties such as
-                            'position', 'points', 'color', 'outline', 'width', and 'anchor'.
-        Raises:
-            AssertionError: If the element type is not 'polygon'.
+            element (Dict[str, Any]): A dictionary containing polygon properties.
         """
         assert element.pop("type") == "polygon", "Element type must be 'polygon'"
 
@@ -462,17 +450,11 @@ class CardBuilder:
                 max_y + offset[1],
             )
 
-    def _draw_shape_regular_polygon(self, element):
+    def _draw_shape_regular_polygon(self, element: Dict[str, Any]):
         """
         Draws a regular polygon on the card based on the provided element dictionary.
-
         Args:
-            element (dict): A dictionary containing regular polygon properties such as
-                            'position', 'radius', 'sides', 'rotation', 'color', 'outline',
-                            'width', and 'anchor'.
-
-        Raises:
-            AssertionError: If the element type is not 'regular-polygon'.
+            element (Dict[str, Any]): A dictionary containing regular polygon properties.
         """
         assert (
             element.pop("type") == "regular-polygon"
@@ -520,16 +502,11 @@ class CardBuilder:
                 absolute_pos[1] + size[1],
             )
 
-    def _draw_shape_rectangle(self, element):
+    def _draw_shape_rectangle(self, element: Dict[str, Any]):
         """
         Draws a rectangle on the card based on the provided element dictionary.
-
         Args:
-            element (dict): A dictionary containing rectangle properties such as
-                            'size', 'color', 'outline_color', 'width', 'radius',
-                            'corners', 'position', and 'anchor'.
-        Raises:
-            AssertionError: If the element type is not 'rectangle'.
+            element (Dict[str, Any]): A dictionary containing rectangle properties.
         """
         assert element.pop("type") == "rectangle", "Element type must be 'rectangle'"
 
@@ -582,30 +559,29 @@ class CardBuilder:
         if "id" in element:
             self.element_positions[element["id"]] = bounding_box
 
-    def build(self, output_path):
+    def build(self, output_path: Path):
         """
         Builds the card image by drawing all elements specified in the JSON.
         Args:
-            output_path (str): The path where the card image will be saved.
+            output_path (Path): The path where the card image will be saved.
         """
         self.spec = transform_card(self.spec)
         validate_card(self.spec)
 
-        for el in self.spec.get("elements", []):
-            el_type = el.get("type")
-            if el_type == "text":
-                self._draw_text(el)
-            elif el_type == "image":
-                self._draw_image(el)
-            elif el_type == "circle":
-                self._draw_shape_circle(el)
-            elif el_type == "ellipse":
-                self._draw_shape_ellipse(el)
-            elif el_type == "polygon":
-                self._draw_shape_polygon(el)
-            elif el_type == "regular-polygon":
-                self._draw_shape_regular_polygon(el)
-            elif el_type == "rectangle":
-                self._draw_shape_rectangle(el)
+        draw_methods = {
+            "text": self._draw_text,
+            "image": self._draw_image,
+            "circle": self._draw_shape_circle,
+            "ellipse": self._draw_shape_ellipse,
+            "polygon": self._draw_shape_polygon,
+            "regular-polygon": self._draw_shape_regular_polygon,
+            "rectangle": self._draw_shape_rectangle,
+        }
+
+        for element in self.spec.get("elements", []):
+            element_type = element.get("type")
+            if draw_method := draw_methods.get(element_type):
+                draw_method(element)
+
         self.card.save(output_path)
         print(f"(✔) Card saved to {output_path}")

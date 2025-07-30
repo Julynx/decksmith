@@ -14,29 +14,19 @@ from reportlab.pdfgen import canvas
 class PdfExporter:
     """
     A class to export images from a folder to a PDF file.
-
-    Attributes:
-        image_folder (Path): The folder containing the images to be exported.
-        image_paths (List[str]): A list of paths to the images to be exported.
-        output_path (str): The path to the output PDF file.
-        page_size (Tuple[float, float]): The size of the PDF pages.
-        image_width (float): The width of the images in mm.
-        image_height (float): The height of the images in mm.
-        gap (float): The gap between images in pixels.
-        margins (Tuple[float, float]): The horizontal and vertical margins of the pages.
     """
 
     def __init__(
         self,
-        image_folder: str,
-        output_path: str,
+        image_folder: Path,
+        output_path: Path,
         page_size_str: str = "A4",
         image_width: float = 63,
         image_height: float = 88,
         gap: float = 0,
         margins: Tuple[float, float] = (2, 2),
     ):
-        self.image_folder = Path(image_folder)
+        self.image_folder = image_folder
         self.image_paths = self._get_image_paths()
         self.output_path = output_path
         self.page_size = self._get_page_size(page_size_str)
@@ -44,9 +34,9 @@ class PdfExporter:
         self.image_height = image_height * mm
         self.gap = gap * mm
         self.margins = (margins[0] * mm, margins[1] * mm)
-        self.pdf = canvas.Canvas(self.output_path, pagesize=self.page_size)
+        self.pdf = canvas.Canvas(str(self.output_path), pagesize=self.page_size)
 
-    def _get_image_paths(self) -> List[str]:
+    def _get_image_paths(self) -> List[Path]:
         """
         Scans the image folder and returns a list of image paths.
 
@@ -54,11 +44,13 @@ class PdfExporter:
             List[str]: A sorted list of image paths.
         """
         image_extensions = {".png", ".jpg", ".jpeg", ".webp"}
-        image_paths = []
-        for file_path in self.image_folder.iterdir():
-            if file_path.suffix.lower() in image_extensions:
-                image_paths.append(str(file_path))
-        return sorted(image_paths)
+        return sorted(
+            [
+                p
+                for p in self.image_folder.iterdir()
+                if p.suffix.lower() in image_extensions
+            ]
+        )
 
     def _get_page_size(self, page_size_str: str) -> Tuple[float, float]:
         """
@@ -118,8 +110,7 @@ class PdfExporter:
             cols, rows, rotated = self._calculate_layout(page_width, page_height)
 
             if cols == 0 or rows == 0:
-                logging.error("The images are too large to fit on the page.")
-                return
+                raise ValueError("The images are too large to fit on the page.")
 
             img_w, img_h = (
                 (self.image_width, self.image_height)
@@ -134,7 +125,7 @@ class PdfExporter:
 
             images_on_page = 0
             for image_path in self.image_paths:
-                if images_on_page == cols * rows:
+                if images_on_page > 0 and images_on_page % (cols * rows) == 0:
                     self.pdf.showPage()
                     images_on_page = 0
 
@@ -146,7 +137,7 @@ class PdfExporter:
 
                 if not rotated:
                     self.pdf.drawImage(
-                        image_path,
+                        str(image_path),
                         x,
                         y,
                         width=img_w,
@@ -160,7 +151,7 @@ class PdfExporter:
                     self.pdf.translate(center_x, center_y)
                     self.pdf.rotate(90)
                     self.pdf.drawImage(
-                        image_path,
+                        str(image_path),
                         -img_h / 2,
                         -img_w / 2,
                         width=img_h,

@@ -2,6 +2,8 @@ import hashlib
 import os
 from pathlib import Path
 
+from click.testing import CliRunner
+from decksmith.main import cli
 from decksmith.deck_builder import DeckBuilder
 
 # Define paths
@@ -9,6 +11,7 @@ TEST_DATA_PATH = Path("test/data")
 TEST_1_OUTPUT_PATH = Path("test/output1")
 TEST_2_OUTPUT_PATH = Path("test/output2")
 TEST_3_OUTPUT_PATH = Path("test/output3")
+TEST_4_OUTPUT_PATH = Path("test/output4")
 
 
 def setup_module():
@@ -16,6 +19,7 @@ def setup_module():
     TEST_1_OUTPUT_PATH.mkdir(exist_ok=True)
     TEST_2_OUTPUT_PATH.mkdir(exist_ok=True)
     TEST_3_OUTPUT_PATH.mkdir(exist_ok=True)
+    TEST_4_OUTPUT_PATH.mkdir(exist_ok=True)
 
 
 def test_shapes_deck():
@@ -33,7 +37,9 @@ def test_shapes_deck():
     with open(output_card_path, "rb") as f:
         file_hash = hashlib.sha256(f.read()).hexdigest()
 
-    assert file_hash == expected_hash, "The output file hash does not match the expected value."
+    assert (
+        file_hash == expected_hash
+    ), "The output file hash does not match the expected value."
 
 
 def test_example_deck():
@@ -53,11 +59,15 @@ def test_example_deck():
     # Then
     with open(output_card_1_path, "rb") as f:
         file_hash_1 = hashlib.sha256(f.read()).hexdigest()
-    assert file_hash_1 == expected_hash_1, "The output file hash does not match the expected value."
+    assert (
+        file_hash_1 == expected_hash_1
+    ), "The output file hash does not match the expected value."
 
     with open(output_card_2_path, "rb") as f:
         file_hash_2 = hashlib.sha256(f.read()).hexdigest()
-    assert file_hash_2 == expected_hash_2, "The output file hash does not match the expected value."
+    assert (
+        file_hash_2 == expected_hash_2
+    ), "The output file hash does not match the expected value."
 
 
 def test_comprehensive():
@@ -74,4 +84,51 @@ def test_comprehensive():
     # Then
     with open(output_card_1_path, "rb") as f:
         file_hash_1 = hashlib.sha256(f.read()).hexdigest()
-    assert file_hash_1 == expected_hash_1, "The output file hash does not match the expected value."
+    assert (
+        file_hash_1 == expected_hash_1
+    ), "The output file hash does not match the expected value."
+
+
+def test_build_single_card_when_csv_not_found():
+    """Test that a single card is built when the CSV file is not found."""
+    # Given
+    deck_json_path = TEST_DATA_PATH / "single_card.json"
+    non_existent_csv_path = TEST_DATA_PATH / "non_existent.csv"
+
+    # When
+    deck_builder = DeckBuilder(deck_json_path, non_existent_csv_path)
+    deck_builder.build_deck(TEST_4_OUTPUT_PATH)
+
+    # Then
+    output_files = os.listdir(TEST_4_OUTPUT_PATH)
+    assert len(output_files) == 1, "Expected a single output file."
+    assert (
+        output_files[0] == "card_1.png"
+    ), "Expected the output file to be named 'card_1.png'."
+
+
+def test_build_errors_on_explicit_missing_csv():
+    """Test that build errors out if a non-existent CSV is specified."""
+    # Given
+    runner = CliRunner()
+    spec_path = TEST_DATA_PATH / "single_card.json"
+    non_existent_csv_path = "non_existent.csv"
+    output_path = TEST_4_OUTPUT_PATH
+
+    # When
+    result = runner.invoke(
+        cli,
+        [
+            "build",
+            "--spec",
+            str(spec_path),
+            "--data",
+            non_existent_csv_path,
+            "--output",
+            str(output_path),
+        ],
+    )
+
+    # Then
+    assert result.exit_code != 0
+    assert f"Data file not found: {non_existent_csv_path}" in result.output

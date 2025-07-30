@@ -2,12 +2,15 @@
 This module provides utility functions for text wrapping and positioning.
 """
 
+from typing import Tuple
+
 from PIL import ImageFont
 
 
-def get_wrapped_text(text: str, font: ImageFont.ImageFont, line_length: int):
+def get_wrapped_text(text: str, font: ImageFont.ImageFont, line_length: int) -> str:
     """
-    Wraps text to fit within a specified line length using the given font.
+    Wraps text to fit within a specified line length using the given font,
+    preserving existing newlines.
     Args:
         text (str): The text to wrap.
         font (ImageFont.ImageFont): The font to use for measuring text length.
@@ -16,68 +19,51 @@ def get_wrapped_text(text: str, font: ImageFont.ImageFont, line_length: int):
     Returns:
         str: The wrapped text with newlines inserted where necessary.
     """
-    lines = [""]
-    for word in text.split():
-        line = f"{lines[-1]} {word}".strip()
-        if font.getlength(line) <= line_length:
-            lines[-1] = line
-        else:
-            lines.append(word)
-    return "\n".join(lines)
+    wrapped_lines = []
+    for line in text.split("\n"):
+        lines = [""]
+        for word in line.split():
+            line_to_check = f"{lines[-1]} {word}".strip()
+            if font.getlength(line_to_check) <= line_length:
+                lines[-1] = line_to_check
+            else:
+                lines.append(word)
+        wrapped_lines.extend(lines)
+    return "\n".join(wrapped_lines)
 
 
-def apply_anchor(size: tuple, anchor: str):
+def apply_anchor(size: Tuple[int, ...], anchor: str) -> Tuple[int, int]:
     """
     Applies an anchor to a size tuple to determine the position of an element.
     Args:
-        size (tuple): A tuple representing the size (width, height).
-        anchor (str): The anchor position, e.g., "center", "top-left",
-                      "top-right", "bottom-left", "bottom-right".
+        size (Tuple[int, ...]): A tuple representing the size (width, height)
+            or a bounding box (x1, y1, x2, y2).
+        anchor (str): The anchor position, e.g., "center", "top-left".
     Returns:
-        tuple: A tuple representing the position (x, y) based on the anchor.
+        Tuple[int, int]: A tuple representing the position (x, y) based on the anchor.
     """
     if len(size) == 2:
-        x, y = size
-        if anchor == "top-left":
-            return (0, 0)
-        if anchor == "top-center":
-            return (x // 2, 0)
-        if anchor == "top-right":
-            return (x, 0)
-        if anchor == "middle-left":
-            return (0, y // 2)
-        if anchor == "center":
-            return (x // 2, y // 2)
-        if anchor == "middle-right":
-            return (x, y // 2)
-        if anchor == "bottom-left":
-            return (0, y)
-        if anchor == "bottom-center":
-            return (x // 2, y)
-        if anchor == "bottom-right":
-            return (x, y)
+        w, h = size
+        x, y = 0, 0
+    elif len(size) == 4:
+        x, y, x2, y2 = size
+        w, h = x2 - x, y2 - y
+    else:
+        raise ValueError("Size must be a tuple of 2 or 4 integers.")
+
+    anchor_points = {
+        "top-left": (x, y),
+        "top-center": (x + w // 2, y),
+        "top-right": (x + w, y),
+        "middle-left": (x, y + h // 2),
+        "center": (x + w // 2, y + h // 2),
+        "middle-right": (x + w, y + h // 2),
+        "bottom-left": (x, y + h),
+        "bottom-center": (x + w // 2, y + h),
+        "bottom-right": (x + w, y + h),
+    }
+
+    if anchor not in anchor_points:
         raise ValueError(f"Unknown anchor: {anchor}")
-    if len(size) == 4:
-        x1, y1, x2, y2 = size
-        width = x2 - x1
-        height = y2 - y1
-        if anchor == "top-left":
-            return (x1, y1)
-        if anchor == "top-center":
-            return (x1 + width // 2, y1)
-        if anchor == "top-right":
-            return (x2, y1)
-        if anchor == "middle-left":
-            return (x1, y1 + height // 2)
-        if anchor == "center":
-            return (x1 + width // 2, y1 + height // 2)
-        if anchor == "middle-right":
-            return (x2, y1 + height // 2)
-        if anchor == "bottom-left":
-            return (x1, y2)
-        if anchor == "bottom-center":
-            return (x1 + width // 2, y2)
-        if anchor == "bottom-right":
-            return (x2, y2)
-        raise ValueError(f"Unknown anchor: {anchor}")
-    return None
+
+    return anchor_points[anchor]

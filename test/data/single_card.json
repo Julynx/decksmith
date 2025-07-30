@@ -1,0 +1,69 @@
+{
+  "width": 250,
+  "height": 350,
+  "background_color": [200, 200, 200],
+  "elements": [
+    {
+      "id": "title",
+      "type": "text",
+      "text": "Single Card",
+      "font_path": "arial.ttf",
+      "font_size": 18,
+      "align": "center",
+      "position": [125, 15],
+      "color": [0, 0, 0],
+      "anchor": "top-center"
+    },
+    {
+      "id": "image",
+      "type": "image",
+      "path": "test/resources/example.webp",
+      "filters": {
+        "crop_top": 0,
+        "resize": [200, 200],
+        "flip": "vertical"
+      },
+      "position": [0, 15],
+      "relative_to": ["title", "bottom-center"],
+      "anchor": "top-center"
+    },
+    {
+      "id": "overlay-text",
+      "type": "text",
+      "text": "Best Mansion Ever",
+      "font_path": "arial.ttf",
+      "font_size": 14,
+      "position": [0, 50],
+      "relative_to": ["image", "top-center"],
+      "color": [255, 255, 255],
+      "width": 200,
+      "align": "center",
+      "anchor": "top-center"
+    },
+    {
+      "id": "description",
+      "type": "text",
+      "text": "This is a single card.",
+      "font_path": "arial.ttf",
+      "font_size": 12,
+      "position": [0, 15],
+      "relative_to": ["image", "bottom-center"],
+      "color": [0, 0, 0],
+      "width": 200,
+      "align": "center",
+      "anchor": "top-center"
+    },
+    {
+      "id": "footer",
+      "type": "text",
+      "text": "- A humble developer -",
+      "font_path": "arial.ttf",
+      "font_size": 10,
+      "align": "center",
+      "position": [0, 15],
+      "relative_to": ["description", "bottom-center"],
+      "color": [50, 50, 50],
+      "anchor": "top-center"
+    }
+  ]
+}
