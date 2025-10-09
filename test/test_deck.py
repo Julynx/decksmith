@@ -12,6 +12,7 @@ TEST_1_OUTPUT_PATH = Path("test/output1")
 TEST_2_OUTPUT_PATH = Path("test/output2")
 TEST_3_OUTPUT_PATH = Path("test/output3")
 TEST_4_OUTPUT_PATH = Path("test/output4")
+TEST_5_OUTPUT_PATH = Path("test/output5")
 
 
 def setup_module():
@@ -20,6 +21,7 @@ def setup_module():
     TEST_2_OUTPUT_PATH.mkdir(exist_ok=True)
     TEST_3_OUTPUT_PATH.mkdir(exist_ok=True)
     TEST_4_OUTPUT_PATH.mkdir(exist_ok=True)
+    TEST_5_OUTPUT_PATH.mkdir(exist_ok=True)
 
 
 def test_shapes_deck():
@@ -132,3 +134,23 @@ def test_build_errors_on_explicit_missing_csv():
     # Then
     assert result.exit_code != 0
     assert f"Data file not found: {non_existent_csv_path}" in result.output
+
+
+def test_transparency():
+    """Test that rectangles with alpha transparency properly composite over images."""
+    # Given
+    transparency_json_path = TEST_DATA_PATH / "transparency_test.json"
+    output_card_path = TEST_5_OUTPUT_PATH / "card_1.png"
+    expected_hash = "36ed25e7962742bfd742ae6b97aa783d226fd8b9f74c6f0b75c3fc2e6c6b2fb7"
+
+    # When
+    deck_builder = DeckBuilder(transparency_json_path)
+    deck_builder.build_deck(TEST_5_OUTPUT_PATH)
+
+    # Then
+    with open(output_card_path, "rb") as f:
+        file_hash = hashlib.sha256(f.read()).hexdigest()
+
+    assert (
+        file_hash == expected_hash
+    ), "The output file hash does not match the expected value."

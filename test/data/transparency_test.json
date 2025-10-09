@@ -1,0 +1,128 @@
+{
+  "id": "canvas",
+  "width": 2750,
+  "height": 4750,
+  "background_color": [
+    200,
+    200,
+    200
+  ],
+  "elements": [
+    {
+      "id": "image",
+      "type": "image",
+      "position": [
+        0,
+        10
+      ],
+      "relative_to": [
+        "canvas",
+        "center"
+      ],
+      "anchor": "center",
+      "path": "test/resources/example.webp",
+      "filters": {
+        "resize": [
+          null,
+          4750
+        ]
+      }
+    },
+    {
+      "id": "top-rectangle",
+      "type": "rectangle",
+      "position": [
+        0,
+        0
+      ],
+      "size": [2750, 2000],
+      "color": [100, 50, 150, 200],
+      "relative_to": [
+        "canvas",
+        "top-center"
+      ],
+      "anchor": "center"
+    },
+    {
+      "id": "bottom-rectangle",
+      "type": "rectangle",
+      "position": [
+        0,
+        0
+      ],
+      "size": [2750, 1500],
+      "color": [50, 100, 150, 200],
+      "relative_to": [
+        "canvas",
+        "bottom-center"
+      ],
+      "anchor": "center"
+    },
+    {
+      "id": "number",
+      "type": "text",
+      "position": [
+        0,
+        300
+      ],
+      "relative_to": [
+        "canvas",
+        "top-center"
+      ],
+      "anchor": "center",
+      "text": "42",
+      "color": [
+        255,
+        255,
+        255
+      ],
+      "font_path": "test/resources/noto_sans_jp.ttf",
+      "font_size": 200,
+      "align": "center"
+    },
+    {
+      "id": "name",
+      "type": "text",
+      "position": [
+        0,
+        700
+      ],
+      "relative_to": [
+        "canvas",
+        "top-center"
+      ],
+      "anchor": "center",
+      "text": "Test Card",
+      "color": [
+        255,
+        255,
+        255
+      ],
+      "font_path": "test/resources/noto_sans_jp.ttf",
+      "font_size": 200,
+      "align": "center"
+    },
+    {
+      "id": "title",
+      "type": "text",
+      "position": [
+        0,
+        -350
+      ],
+      "relative_to": [
+        "canvas",
+        "bottom-center"
+      ],
+      "anchor": "center",
+      "text": "Transparency Test",
+      "color": [
+        255,
+        255,
+        255
+      ],
+      "font_path": "test/resources/noto_sans_jp.ttf",
+      "font_size": 200,
+      "align": "center"
+    }
+  ]
+}

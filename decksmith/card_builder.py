@@ -321,14 +321,22 @@ class CardBuilder:
         # The center of the circle is the top-left position + radius
         center_pos = (absolute_pos[0] + radius, absolute_pos[1] + radius)
 
-        # Draw the circle
-        self.draw.circle(
+        # Create a temporary layer for proper alpha compositing
+        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
+        layer_draw = ImageDraw.Draw(layer, "RGBA")
+
+        # Draw the circle on the temporary layer
+        layer_draw.circle(
             center_pos,
             radius,
             fill=element.get("fill", None),
             outline=element.get("outline_color", None),
             width=element.get("outline_width", 1),
         )
+
+        # Composite the layer onto the card
+        self.card = Image.alpha_composite(self.card, layer)
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
 
         # Store position if id is provided
         if "id" in element:
@@ -377,13 +385,21 @@ class CardBuilder:
             position[1] + size[1],
         )
 
-        # Draw the ellipse
-        self.draw.ellipse(
+        # Create a temporary layer for proper alpha compositing
+        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
+        layer_draw = ImageDraw.Draw(layer, "RGBA")
+
+        # Draw the ellipse on the temporary layer
+        layer_draw.ellipse(
             bounding_box,
             fill=element.get("fill", None),
             outline=element.get("outline_color", None),
             width=element.get("outline_width", 1),
         )
+
+        # Composite the layer onto the card
+        self.card = Image.alpha_composite(self.card, layer)
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
 
         # Store position if id is provided
         if "id" in element:
@@ -432,13 +448,21 @@ class CardBuilder:
         # Translate points by the final offset
         final_points = [(p[0] + offset[0], p[1] + offset[1]) for p in points]
 
-        # Draw the polygon
-        self.draw.polygon(
+        # Create a temporary layer for proper alpha compositing
+        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
+        layer_draw = ImageDraw.Draw(layer, "RGBA")
+
+        # Draw the polygon on the temporary layer
+        layer_draw.polygon(
             final_points,
             fill=element.get("fill", None),
             outline=element.get("outline_color", None),
             width=element.get("outline_width", 1),
         )
+
+        # Composite the layer onto the card
+        self.card = Image.alpha_composite(self.card, layer)
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
 
         # Store position if id is provided
         if "id" in element:
@@ -482,8 +506,12 @@ class CardBuilder:
         # The center of the polygon is the top-left position + radius
         center_pos = (absolute_pos[0] + radius, absolute_pos[1] + radius)
 
-        # Draw the regular polygon
-        self.draw.regular_polygon(
+        # Create a temporary layer for proper alpha compositing
+        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
+        layer_draw = ImageDraw.Draw(layer, "RGBA")
+
+        # Draw the regular polygon on the temporary layer
+        layer_draw.regular_polygon(
             (center_pos[0], center_pos[1], radius),
             n_sides=element["sides"],
             rotation=element.get("rotation", 0),
@@ -491,6 +519,10 @@ class CardBuilder:
             outline=element.get("outline_color", None),
             width=element.get("outline_width", 1),
         )
+
+        # Composite the layer onto the card
+        self.card = Image.alpha_composite(self.card, layer)
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
 
         # Store position if id is provided
         if "id" in element:
@@ -545,8 +577,12 @@ class CardBuilder:
 
         # print(f"DEBUG: Transformed {element=}")
 
-        # Draw the rectangle
-        self.draw.rounded_rectangle(
+        # Create a temporary layer for proper alpha compositing
+        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
+        layer_draw = ImageDraw.Draw(layer, "RGBA")
+
+        # Draw the rectangle on the temporary layer
+        layer_draw.rounded_rectangle(
             bounding_box,
             radius=element.get("corner_radius", 0),
             fill=element.get("fill", None),
@@ -554,6 +590,10 @@ class CardBuilder:
             width=element.get("outline_width", 1),
             corners=element.get("corners", None),
         )
+
+        # Composite the layer onto the card
+        self.card = Image.alpha_composite(self.card, layer)
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
 
         # Store position if id is provided
         if "id" in element:
