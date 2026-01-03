@@ -21,7 +21,7 @@ DeckSmith is ideal for automating the creation of all kinds of decks, including 
 - ✨ Consistent layout and formatting across all cards. Define once, edit anytime, generate as many cards as you need.
 - 🍳 Pure python, with easy installation via pip.
 - ⚡ Highly performant card generation using parallel processing.
-- 📖 Intuitive syntax and extensive [documentation](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md) with examples to help you get started quickly.
+- 📖 Intuitive syntax and extensive [documentation](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md) with examples to help you get started.
 - 🧰 Tons of powerful features such as:
   - [Start from a sample project and edit it instead of starting from scratch](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#creating-a-project)
   - [Extensive support for images](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#images), [text](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#text), [and all kinds of different shapes](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#shapes)
@@ -32,17 +32,45 @@ DeckSmith is ideal for automating the creation of all kinds of decks, including 
 
 ## Getting started
 
-- First, install DeckSmith by running `pip install decksmith`.
+### Installation
 
-- Then, run `decksmith init` to start from sample `deck.json` and `deck.csv` files.
+- To begin, install DeckSmith by running:
 
-- The `deck.json` file defines the layout for the cards in the deck, while the `deck.csv` file holds the data for each card.
+  ```bash
+  pip install decksmith
+  ```
 
-  - You can find a complete list of all the available elements you can use in the [documentation](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md).
+### Creating a project
 
-  - Any column from the CSV can be referenced anywhere in the JSON as `%column_name%`.
+- Run the following command to start from sample `deck.json` and `deck.csv` files:
 
-- Finally, run `decksmith build` when you are ready to generate the deck images, and export them to PDF using the `decksmith export` command.
+  ```text
+  decksmith init
+  ```
+
+  - `deck.json` defines the layout for the cards in the deck.
+  - `deck.csv` holds the data for each card, like the content of the text fields and the image paths.
+
+### Defining the layout
+
+- Edit `deck.json` to include all the elements you want on your cards.
+  You can find a complete list of all the available elements and their properties in the [documentation](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md).
+
+- You can reference any column from `deck.csv` in the `deck.json` file as `%column_name%`.
+
+### Building the deck
+
+- When you are ready to generate the deck images, run:
+
+  ```text
+  decksmith build
+  ```
+
+- After building a deck, you can export it to PDF by running:
+
+  ```text
+  decksmith export
+  ```
 
 ## Documentation
 
