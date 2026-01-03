@@ -4,8 +4,14 @@
 
 <br>
 <p align="center">
+  <img width="600" src="https://raw.githubusercontent.com/Julynx/decksmith/refs/heads/main/docs/assets/decksmith.png">
+</p>
+
+<br>
+<p align="center">
   <img width="600" src="https://raw.githubusercontent.com/Julynx/decksmith/refs/heads/main/docs/assets/banner.png">
 </p>
+
 <br>
 
 DeckSmith is ideal for automating the creation of all kinds of decks, including TCG decks, tarot decks, business cards, and even slides.
