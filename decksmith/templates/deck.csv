@@ -1,5 +1,4 @@
-title;description
-Welcome to DeckSmith!;To get started, edit "deck.csv" to add new cards, or "deck.json" to change their structure.
-Building the deck;Run "decksmith build" when you are ready to save the cards as images.
-Exporting to PDF;You can create a printable PDF with "decksmith export --width 63.5 --height 88.9 output" after building.
-Check out the guide;Visit "github.com/julynx/decksmith" to learn all the things you can do using DeckSmith. Enjoy!
+title;first-paragraph;second-paragraph
+Welcome to DeckSmith!;This is a card. You can add as many cards as you need to your deck by adding a new line to the data file (CSV).;The layout file is a YAML (gui) or JSON (cli) file that holds the structure for all the cards in the deck.
+Connecting the dots;Any column in the data file (CSV) can be referenced from the layout file as "%colname%".;Cards can have all kinds of elements, such as images or shapes, that are layered in the order they appear in the layout file.
+Check out the docs;Shapes can have transparency, images can be transformed using filters, and elements can be placed relative to each other. You can also use custom fonts and much, much more!;Visit julynx.github.io/decksmith/docs.html to discover all you can do with DeckSmith. Enjoy!
