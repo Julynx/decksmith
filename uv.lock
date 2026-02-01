@@ -113,7 +113,7 @@ wheels = [
 
 [[package]]
 name = "decksmith"
-version = "0.1.15"
+version = "0.9.1"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
