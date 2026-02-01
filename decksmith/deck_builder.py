@@ -6,11 +6,11 @@ and a CSV file.
 
 import concurrent.futures
 from pathlib import Path
-from typing import Union, List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from ruamel.yaml import YAML
 from pandas import Series
+from ruamel.yaml import YAML
 
 from decksmith.card_builder import CardBuilder
 from decksmith.logger import logger

@@ -10,12 +10,15 @@ readme = "docs/README.md"
 requires-python = ">=3.11"
 dependencies = [
     "click",
+    "crossfiledialog>=1.1.0",
     "flask>=3.1.2",
     "jval==1.0.6",
     "pandas",
     "pillow>=11.3.0",
+    "pywin32>=311; sys_platform == 'win32'",
     "reportlab>=4.4.3",
     "ruamel-yaml>=0.19.1",
+    "waitress>=3.0.2",
 ]
 
 [project.optional-dependencies]
@@ -58,3 +61,8 @@ decksmith = "decksmith.main:cli"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pynsist>=2.8",
+]

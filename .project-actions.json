@@ -1,0 +1,14 @@
+{
+    "actions": [
+        {
+            "text": "$(play) Run",
+            "command": "uv run decksmith/gui/app.py",
+            "color": "#c97373"
+        },
+        {
+            "text": "$(package) Build Installer",
+            "command": "uv run --python 3.11 build.py",
+            "color": "#ffb879"
+        }
+    ]
+}

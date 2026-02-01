@@ -2,7 +2,7 @@
 This module provides functions for validating and transforming card specifications.
 """
 
-from typing import Dict, Any
+from typing import Any, Dict
 
 import pandas as pd
 from jval import validate

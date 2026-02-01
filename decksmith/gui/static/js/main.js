@@ -44,6 +44,8 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingIndicator: document.getElementById('loading-indicator'),
         statusBar: document.getElementById('status-bar'),
         statusText: document.getElementById('status-text'),
+        statusSpinner: document.getElementById('status-spinner'),
+        statusIcon: document.getElementById('status-icon'),
         statusLine: document.getElementById('status-line'),
         toastContainer: document.getElementById('toast-container'),
         
@@ -54,7 +56,10 @@ document.addEventListener('DOMContentLoaded', function() {
         closeProjectBtn: document.getElementById('close-project-btn'),
         pathModal: document.getElementById('path-modal'),
         modalTitle: document.getElementById('modal-title'),
+        projectPathLabel: document.getElementById('project-path-label'),
         projectPathInput: document.getElementById('project-path-input'),
+        projectNameGroup: document.getElementById('project-name-group'),
+        projectNameInput: document.getElementById('project-name-input'),
         modalCancelBtn: document.getElementById('modal-cancel-btn'),
         modalConfirmBtn: document.getElementById('modal-confirm-btn'),
         
@@ -63,6 +68,22 @@ document.addEventListener('DOMContentLoaded', function() {
         welcomeOpenBtn: document.getElementById('welcome-open-btn'),
         welcomeNewBtn: document.getElementById('welcome-new-btn'),
         browseBtn: document.getElementById('browse-btn'),
+
+        // Shutdown Screen
+        shutdownScreen: document.getElementById('shutdown-screen'),
+        shutdownReason: document.getElementById('shutdown-reason'),
+
+        // Export Modal
+        exportModal: document.getElementById('export-modal'),
+        exportFilename: document.getElementById('export-filename'),
+        exportPageSize: document.getElementById('export-page-size'),
+        exportWidth: document.getElementById('export-width'),
+        exportHeight: document.getElementById('export-height'),
+        exportGap: document.getElementById('export-gap'),
+        exportMarginX: document.getElementById('export-margin-x'),
+        exportMarginY: document.getElementById('export-margin-y'),
+        exportCancelBtn: document.getElementById('export-cancel-btn'),
+        exportConfirmBtn: document.getElementById('export-confirm-btn'),
     };
 
     // --- State ---
@@ -71,10 +92,16 @@ document.addEventListener('DOMContentLoaded', function() {
         isDirty: false,
         modalMode: 'open', // 'open' or 'new'
         isPreviewing: false,
-        pendingPreview: false
+        pendingPreview: false,
+        isProjectOpen: false
     };
 
     // --- UI Helpers ---
+
+    function showShutdownScreen(reason) {
+        elements.shutdownReason.textContent = reason || 'The DeckSmith service stopped.';
+        elements.shutdownScreen.classList.remove('hidden');
+    }
 
     function showNotification(message, type = 'info') {
         const toast = document.createElement('div');
@@ -104,7 +131,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setStatus(message, type = null) {
         elements.statusText.textContent = message;
-        if (type) updateStatusLine(type);
+        
+        // Reset status bar state
+        elements.statusBar.classList.remove('processing', 'success');
+        elements.statusSpinner.classList.add('hidden');
+        elements.statusIcon.classList.remove('hidden');
+
+        if (type === 'processing') {
+            elements.statusBar.classList.add('processing');
+            elements.statusSpinner.classList.remove('hidden');
+            elements.statusIcon.classList.add('hidden');
+            updateStatusLine('loading');
+        } else if (type === 'success') {
+            elements.statusBar.classList.add('success');
+            updateStatusLine('success');
+        } else {
+            if (type) updateStatusLine(type);
+        }
     }
 
     // --- API Interactions ---
@@ -114,11 +157,13 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.path) {
+                    state.isProjectOpen = true;
                     elements.currentProjectPath.textContent = data.path;
                     elements.currentProjectPath.title = data.path;
                     elements.welcomeScreen.classList.add('hidden');
                     loadInitialData();
                 } else {
+                    state.isProjectOpen = false;
                     elements.currentProjectPath.textContent = 'No project selected';
                     elements.welcomeScreen.classList.remove('hidden');
                 }
@@ -204,7 +249,8 @@ document.addEventListener('DOMContentLoaded', function() {
             elements.previewImage.onload = () => {
                 elements.loadingIndicator.classList.add('hidden');
                 elements.previewImage.classList.remove('hidden');
-                setStatus('Preview updated', 'success');
+                setStatus('Preview updated');
+                updateStatusLine('success');
             };
         })
         .catch(err => {
@@ -221,6 +267,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function autoSave() {
+        if (!state.isProjectOpen) return;
+
         if (!elements.statusText.textContent.includes('preview')) {
             setStatus('Saving...');
         }
@@ -249,7 +297,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function buildDeck() {
-        setStatus('Building deck...');
+        setStatus('Building deck...', 'processing');
         const payload = {
             yaml: yamlEditor.getValue(),
             csv: csvEditor.getValue()
@@ -263,26 +311,51 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.error) throw new Error(data.error);
-            setStatus(data.message);
-            showNotification(data.message, 'success');
+            setStatus(data.message, 'success');
         })
         .catch(err => {
-            setStatus('Build failed');
+            setStatus('Build failed', 'error');
             showNotification('Build failed: ' + err.message, 'error');
         });
     }
 
-    function exportPdf() {
-        setStatus('Exporting PDF...');
-        fetch('/api/export', { method: 'POST' })
+    function showExportModal() {
+        elements.exportModal.classList.remove('hidden');
+    }
+
+    function hideExportModal() {
+        elements.exportModal.classList.add('hidden');
+    }
+
+    function handleExportConfirm() {
+        const params = {
+            filename: elements.exportFilename.value,
+            page_size: elements.exportPageSize.value,
+            width: parseFloat(elements.exportWidth.value),
+            height: parseFloat(elements.exportHeight.value),
+            gap: parseFloat(elements.exportGap.value),
+            margin_x: parseFloat(elements.exportMarginX.value),
+            margin_y: parseFloat(elements.exportMarginY.value)
+        };
+
+        hideExportModal();
+        exportPdf(params);
+    }
+
+    function exportPdf(params) {
+        setStatus('Exporting PDF...', 'processing');
+        fetch('/api/export', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(params)
+        })
         .then(response => response.json())
         .then(data => {
             if (data.error) throw new Error(data.error);
-            setStatus(data.message);
-            showNotification(data.message, 'success');
+            setStatus(data.message, 'success');
         })
         .catch(err => {
-            setStatus('Export failed');
+            setStatus('Export failed', 'error');
             showNotification('Export failed: ' + err.message, 'error');
         });
     }
@@ -293,7 +366,19 @@ document.addEventListener('DOMContentLoaded', function() {
         state.modalMode = mode;
         elements.modalTitle.textContent = mode === 'open' ? 'Open Project' : 'New Project';
         elements.projectPathInput.value = '';
+        elements.projectNameInput.value = '';
         elements.pathModal.classList.remove('hidden');
+
+        if (mode === 'new') {
+            elements.projectPathLabel.textContent = 'Store project in:';
+            elements.projectNameGroup.classList.remove('hidden');
+            elements.projectPathInput.placeholder = 'e.g. C:/Projects';
+        } else {
+            elements.projectPathLabel.textContent = 'Folder Path:';
+            elements.projectNameGroup.classList.add('hidden');
+            elements.projectPathInput.placeholder = 'e.g. C:/Projects/MyDeck';
+        }
+
         elements.projectPathInput.focus();
     }
 
@@ -323,10 +408,11 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(data => {
             if (data.error) throw new Error(data.error);
             
+            state.isProjectOpen = true;
             elements.currentProjectPath.textContent = data.path;
             elements.currentProjectPath.title = data.path;
             
-            showNotification('Project opened', 'success');
+            // showNotification('Project opened', 'success');
             setStatus('Ready');
             
             loadInitialData();
@@ -350,10 +436,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function handleProjectAction() {
-        const path = elements.projectPathInput.value.trim();
+        let path = elements.projectPathInput.value.trim();
         if (!path) {
             showNotification('Please enter a path', 'error');
             return;
+        }
+
+        if (state.modalMode === 'new') {
+            const name = elements.projectNameInput.value.trim();
+            if (!name) {
+                showNotification('Please enter a project name', 'error');
+                return;
+            }
+            const separator = path.includes('\\') ? '\\' : '/';
+            path = path.endsWith(separator) ? path + name : path + separator + name;
         }
 
         const endpoint = state.modalMode === 'open' ? '/api/project/select' : '/api/project/create';
@@ -370,10 +466,11 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.error) throw new Error(data.error);
             
             hideModal();
+            state.isProjectOpen = true;
             elements.currentProjectPath.textContent = data.path;
             elements.currentProjectPath.title = data.path;
             
-            showNotification(state.modalMode === 'open' ? 'Project opened' : 'Project created', 'success');
+            // showNotification(state.modalMode === 'open' ? 'Project opened' : 'Project created', 'success');
             setStatus('Ready');
             
             // Reload data
@@ -390,18 +487,21 @@ document.addEventListener('DOMContentLoaded', function() {
         fetch('/api/project/close', { method: 'POST' })
             .then(response => response.json())
             .then(data => {
+                state.isProjectOpen = false;
                 elements.currentProjectPath.textContent = 'No project selected';
                 elements.currentProjectPath.title = '';
                 
                 // Clear editors
                 yamlEditor.setValue('', -1);
                 csvEditor.setValue('', -1);
+                state.isDirty = false; // Reset dirty flag after clearing editors
+                
                 elements.cardSelector.innerHTML = '<option value="-1">Select a card...</option>';
                 elements.previewImage.classList.add('hidden');
                 elements.placeholderText.classList.remove('hidden');
                 
                 elements.welcomeScreen.classList.remove('hidden');
-                showNotification('Project closed', 'info');
+                // showNotification('Project closed', 'info');
             })
             .catch(err => console.error('Error closing project:', err));
     }
@@ -410,7 +510,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
     elements.cardSelector.addEventListener('change', updatePreview);
     elements.buildBtn.addEventListener('click', buildDeck);
-    elements.exportBtn.addEventListener('click', exportPdf);
+    elements.exportBtn.addEventListener('click', showExportModal);
+
+    elements.exportCancelBtn.addEventListener('click', hideExportModal);
+    elements.exportConfirmBtn.addEventListener('click', handleExportConfirm);
+    elements.exportModal.querySelector('.modal-overlay').addEventListener('click', hideExportModal);
 
     elements.openProjectBtn.addEventListener('click', handleDirectOpen);
     elements.newProjectBtn.addEventListener('click', () => showModal('new'));
@@ -444,4 +548,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Start
     loadCurrentProject();
+
+    // Shutdown
+    window.addEventListener('beforeunload', () => {
+        navigator.sendBeacon('/api/shutdown');
+    });
+
+    // SSE for Server Events (Shutdown)
+    const evtSource = new EventSource("/api/events");
+    evtSource.onmessage = (e) => {
+        // Ignore keepalive
+        if (e.data === ': keepalive') return;
+        
+        try {
+            const data = JSON.parse(e.data);
+            if (data.type === 'shutdown') {
+                showShutdownScreen(data.reason);
+                evtSource.close();
+            }
+        } catch (err) {
+            // Ignore parse errors or keepalives that might slip through
+        }
+    };
 });

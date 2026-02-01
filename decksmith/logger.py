@@ -1,6 +1,6 @@
 import logging
 import sys
-from pathlib import Path
+
 
 def setup_logging(log_file: str = "decksmith.log", level: int = logging.INFO):
     """
@@ -17,8 +17,8 @@ def setup_logging(log_file: str = "decksmith.log", level: int = logging.INFO):
     f_handler.setLevel(level)
 
     # Create formatters and add it to handlers
-    c_format = logging.Formatter('%(message)s')
-    f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    c_format = logging.Formatter("%(message)s")
+    f_format = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
     c_handler.setFormatter(c_format)
     f_handler.setFormatter(f_format)
 
@@ -28,5 +28,6 @@ def setup_logging(log_file: str = "decksmith.log", level: int = logging.INFO):
         logger.addHandler(f_handler)
 
     return logger
+
 
 logger = setup_logging()

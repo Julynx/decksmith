@@ -5,14 +5,14 @@ which is used to create card images based on a JSON specification.
 
 import operator
 from pathlib import Path
-from typing import Dict, Any, Tuple, List, Optional, Union
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
-from decksmith.utils import get_wrapped_text, apply_anchor
-from decksmith.validate import validate_card, transform_card
 from decksmith.logger import logger
+from decksmith.utils import apply_anchor, get_wrapped_text
+from decksmith.validate import transform_card, validate_card
 
 
 class CardBuilder:
@@ -83,9 +83,11 @@ class CardBuilder:
                 potential_path = self.base_path / font_path
                 if potential_path.exists():
                     font_path = str(potential_path)
-            
+
             try:
-                element["font"] = ImageFont.truetype(font_path, font_size, encoding="unic")
+                element["font"] = ImageFont.truetype(
+                    font_path, font_size, encoding="unic"
+                )
             except OSError:
                 logger.error(f"Could not load font: {font_path}. Using default.")
                 element["font"] = ImageFont.load_default(font_size)
@@ -96,7 +98,9 @@ class CardBuilder:
             try:
                 element["font"].set_variation_by_name(font_variant)
             except AttributeError:
-                logger.warning(f"Font variant '{font_variant}' not supported for this font.")
+                logger.warning(
+                    f"Font variant '{font_variant}' not supported for this font."
+                )
 
         # Text wrapping
         if line_length := element.pop("width", False):
@@ -117,9 +121,9 @@ class CardBuilder:
     def _draw_text(self, element: Dict[str, Any]):
         """Draws text on the card."""
         assert element.pop("type") == "text", "Element type must be 'text'"
-        
+
         element = self._prepare_text_element(element)
-        
+
         original_pos = self._calculate_absolute_position(element)
         element["position"] = original_pos
 
@@ -251,12 +255,12 @@ class CardBuilder:
 
         path_str = element["path"]
         path = Path(path_str)
-        
+
         if not path.is_absolute() and self.base_path:
             potential_path = self.base_path / path
             if potential_path.exists():
                 path = potential_path
-            
+
         try:
             img = Image.open(path)
         except FileNotFoundError:
@@ -316,7 +320,7 @@ class CardBuilder:
     def _draw_shape_circle(self, element: Dict[str, Any]):
         assert element.pop("type") == "circle", "Element type must be 'circle'"
         radius = element["radius"]
-        
+
         def draw(layer_draw, pos, el):
             center_pos = (pos[0] + radius, pos[1] + radius)
             layer_draw.circle(
@@ -362,7 +366,7 @@ class CardBuilder:
             offset_x = pos[0] - min_x
             offset_y = pos[1] - min_y
             final_points = [(p[0] + offset_x, p[1] + offset_y) for p in points]
-            
+
             layer_draw.polygon(
                 final_points,
                 fill=el.get("fill", None),
@@ -373,9 +377,11 @@ class CardBuilder:
         self._draw_shape_generic(element, draw, lambda _: bbox_size)
 
     def _draw_shape_regular_polygon(self, element: Dict[str, Any]):
-        assert element.pop("type") == "regular-polygon", "Element type must be 'regular-polygon'"
+        assert element.pop("type") == "regular-polygon", (
+            "Element type must be 'regular-polygon'"
+        )
         radius = element["radius"]
-        
+
         def draw(layer_draw, pos, el):
             center_pos = (pos[0] + radius, pos[1] + radius)
             layer_draw.regular_polygon(

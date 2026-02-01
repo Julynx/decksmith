@@ -3,8 +3,9 @@ import os
 from pathlib import Path
 
 from click.testing import CliRunner
-from decksmith.main import cli
+
 from decksmith.deck_builder import DeckBuilder
+from decksmith.main import cli
 
 # Define paths
 TEST_DATA_PATH = Path("tests/data")
@@ -39,9 +40,9 @@ def test_shapes_deck():
     with open(output_card_path, "rb") as f:
         file_hash = hashlib.sha256(f.read()).hexdigest()
 
-    assert (
-        file_hash == expected_hash
-    ), "The output file hash does not match the expected value."
+    assert file_hash == expected_hash, (
+        "The output file hash does not match the expected value."
+    )
 
 
 def test_example_deck():
@@ -61,15 +62,15 @@ def test_example_deck():
     # Then
     with open(output_card_1_path, "rb") as f:
         file_hash_1 = hashlib.sha256(f.read()).hexdigest()
-    assert (
-        file_hash_1 == expected_hash_1
-    ), "The output file hash does not match the expected value."
+    assert file_hash_1 == expected_hash_1, (
+        "The output file hash does not match the expected value."
+    )
 
     with open(output_card_2_path, "rb") as f:
         file_hash_2 = hashlib.sha256(f.read()).hexdigest()
-    assert (
-        file_hash_2 == expected_hash_2
-    ), "The output file hash does not match the expected value."
+    assert file_hash_2 == expected_hash_2, (
+        "The output file hash does not match the expected value."
+    )
 
 
 def test_comprehensive():
@@ -86,9 +87,9 @@ def test_comprehensive():
     # Then
     with open(output_card_1_path, "rb") as f:
         file_hash_1 = hashlib.sha256(f.read()).hexdigest()
-    assert (
-        file_hash_1 == expected_hash_1
-    ), "The output file hash does not match the expected value."
+    assert file_hash_1 == expected_hash_1, (
+        "The output file hash does not match the expected value."
+    )
 
 
 def test_build_single_card_when_csv_not_found():
@@ -104,9 +105,9 @@ def test_build_single_card_when_csv_not_found():
     # Then
     output_files = os.listdir(TEST_4_OUTPUT_PATH)
     assert len(output_files) == 1, "Expected a single output file."
-    assert (
-        output_files[0] == "card_1.png"
-    ), "Expected the output file to be named 'card_1.png'."
+    assert output_files[0] == "card_1.png", (
+        "Expected the output file to be named 'card_1.png'."
+    )
 
 
 def test_build_errors_on_explicit_missing_csv():
@@ -151,6 +152,6 @@ def test_transparency():
     with open(output_card_path, "rb") as f:
         file_hash = hashlib.sha256(f.read()).hexdigest()
 
-    assert (
-        file_hash == expected_hash
-    ), "The output file hash does not match the expected value."
+    assert file_hash == expected_hash, (
+        "The output file hash does not match the expected value."
+    )

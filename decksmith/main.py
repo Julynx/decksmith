@@ -3,19 +3,28 @@ This module provides a command-line tool for building decks of cards.
 """
 
 import shutil
+import traceback
 from importlib import resources
 from pathlib import Path
-import traceback
 
 import click
+
 from decksmith.deck_builder import DeckBuilder
 from decksmith.export import PdfExporter
 from decksmith.logger import logger
 
 
-@click.group()
-def cli():
+@click.group(invoke_without_command=True)
+@click.option("--gui", is_flag=True, help="Launch the graphical user interface.")
+@click.pass_context
+def cli(ctx, gui):
     """A command-line tool for building decks of cards."""
+    if gui:
+        from decksmith.gui.app import main as gui_main
+
+        gui_main()
+    elif ctx.invoked_subcommand is None:
+        click.echo(ctx.get_help())
 
 
 @cli.command()

@@ -16,6 +16,7 @@
     --accent-color: #007fd4; /* VS Code Blue */
     --accent-hover: #026ec1;
     --danger-color: #f14c4c;
+    --danger-hover: #d43b3b;
     --success-color: #4caf50;
     --warning-color: #cca700;
 
@@ -176,6 +177,15 @@ body, html {
     background: var(--accent-hover);
 }
 
+.btn.danger {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn.danger:hover {
+    background: var(--danger-hover);
+}
+
 .btn.small {
     padding: 4px 10px;
     font-size: 0.9em;
@@ -300,7 +310,8 @@ select {
     font-family: inherit;
     font-size: 0.95em;
     cursor: pointer;
-    min-width: 200px;
+    width: 100%;
+    box-sizing: border-box;
     transition: border-color 0.2s;
 }
 
@@ -383,7 +394,19 @@ select:focus {
     font-weight: 500;
     display: flex;
     align-items: center;
+    gap: 8px;
     height: 24px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+#status-bar.processing {
+    background-color: var(--warning-color);
+    color: var(--bg-primary);
+}
+
+#status-bar.success {
+    background-color: var(--success-color);
 }
 
 .status-line {
@@ -605,4 +628,29 @@ input[type="text"]:focus {
 
 .hidden {
     display: none !important;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-md);
+}
+
+input[type="number"] {
+    width: 100%;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    background: var(--bg-input);
+    color: var(--text-primary);
+    outline: none;
+    font-family: inherit;
+    font-size: 0.95em;
+    transition: border-color 0.2s;
+}
+
+input[type="number"]:focus {
+    border-color: var(--border-focus);
 }
