@@ -14,7 +14,6 @@ from pathlib import Path
 from threading import Timer
 
 import pandas as pd
-from platformdirs import user_documents_dir
 from flask import (
     Flask,
     Response,
@@ -24,6 +23,7 @@ from flask import (
     send_file,
     stream_with_context,
 )
+from platformdirs import user_documents_dir
 from ruamel.yaml import YAML
 from waitress import serve
 
