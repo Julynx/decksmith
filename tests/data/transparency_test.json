@@ -20,7 +20,7 @@
         "center"
       ],
       "anchor": "center",
-      "path": "test/resources/example.webp",
+      "path": "tests/resources/example.webp",
       "filters": {
         "resize": [
           null,
@@ -76,7 +76,7 @@
         255,
         255
       ],
-      "font_path": "test/resources/noto_sans_jp.ttf",
+      "font_path": "tests/resources/noto_sans_jp.ttf",
       "font_size": 200,
       "align": "center"
     },
@@ -98,7 +98,7 @@
         255,
         255
       ],
-      "font_path": "test/resources/noto_sans_jp.ttf",
+      "font_path": "tests/resources/noto_sans_jp.ttf",
       "font_size": 200,
       "align": "center"
     },
@@ -120,7 +120,7 @@
         255,
         255
       ],
-      "font_path": "test/resources/noto_sans_jp.ttf",
+      "font_path": "tests/resources/noto_sans_jp.ttf",
       "font_size": 200,
       "align": "center"
     }

@@ -205,5 +205,5 @@ __marimo__/
 .streamlit/secrets.toml
 
 output/
-test/output*
+tests/output*
 *.ipynb

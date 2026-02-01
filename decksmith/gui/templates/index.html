@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeckSmith</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/split.js/1.6.0/split.min.js"></script>
+</head>
+<body>
+    <div id="header">
+        <div class="app-branding">
+            <i class="fa-solid fa-layer-group"></i>
+            <div class="app-title">DeckSmith</div>
+        </div>
+        <div class="project-controls">
+            <div class="project-path-container">
+                <i class="fa-regular fa-folder"></i>
+                <span id="current-project-path" title="Current Project Path">No project open</span>
+            </div>
+            <div class="button-group">
+                <button id="open-project-btn" class="btn small" title="Open Project"><i class="fa-solid fa-folder-open"></i> Open</button>
+                <button id="new-project-btn" class="btn small" title="New Project"><i class="fa-solid fa-plus"></i> New</button>
+                <button id="close-project-btn" class="btn small" title="Close Project"><i class="fa-solid fa-xmark"></i> Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div id="left-pane" class="split split-horizontal">
+            <div id="editors-container">
+                <div id="yaml-pane" class="split split-vertical">
+                    <div class="pane-header">
+                        <span><i class="fa-solid fa-code"></i> Layout (YAML)</span>
+                    </div>
+                    <div id="yaml-editor"></div>
+                </div>
+                <div id="csv-pane" class="split split-vertical">
+                    <div class="pane-header">
+                        <span><i class="fa-solid fa-table"></i> Data (CSV)</span>
+                    </div>
+                    <div id="csv-editor"></div>
+                </div>
+            </div>
+        </div>
+        <div id="right-pane" class="split split-horizontal">
+            <div class="preview-wrapper">
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="card-selector"><i class="fa-solid fa-list"></i> Card:</label>
+                        <div class="select-wrapper">
+                            <select id="card-selector">
+                                <option value="-1">Select a card...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="control-group actions">
+                        <button id="build-btn" class="btn primary"><i class="fa-solid fa-hammer"></i> Build Deck</button>
+                        <button id="export-btn" class="btn"><i class="fa-solid fa-file-pdf"></i> Export PDF</button>
+                    </div>
+                </div>
+                <div id="status-line" class="status-line"></div>
+                <div class="preview-area">
+                    <div id="loading-indicator" class="hidden">
+                        <i class="fa-solid fa-circle-notch fa-spin fa-2x"></i>
+                    </div>
+                    <img id="preview-image" src="" alt="Card Preview" class="hidden">
+                    <div id="placeholder-text">
+                        <span>Select a card to preview</span>
+                    </div>
+                </div>
+                <div id="status-bar">
+                    <i class="fa-solid fa-circle-info" style="margin-right: 6px; font-size: 0.9em;"></i>
+                    <span id="status-text">Ready</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toast-container"></div>
+
+    <!-- Welcome Screen -->
+    <div id="welcome-screen" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content welcome-content">
+            <h1>Welcome to DeckSmith</h1>
+            <p>Create and manage your card decks with ease.<br>Select a project to get started.</p>
+            <div class="welcome-actions">
+                <button id="welcome-open-btn" class="btn primary large"><i class="fa-solid fa-folder-open"></i> Open Project</button>
+                <button id="welcome-new-btn" class="btn secondary large"><i class="fa-solid fa-plus"></i> New Project</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="path-modal" class="modal hidden">
+        <div class="modal-overlay"></div>
+        <div class="modal-content">
+            <h3 id="modal-title">Select Project</h3>
+            <div class="form-group">
+                <label for="project-path-input">Folder Path:</label>
+                <div class="input-group">
+                    <input type="text" id="project-path-input" placeholder="e.g. C:/Projects/MyDeck">
+                    <button id="browse-btn" class="btn secondary">Browse...</button>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button id="modal-cancel-btn" class="btn secondary">Cancel</button>
+                <button id="modal-confirm-btn" class="btn primary">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

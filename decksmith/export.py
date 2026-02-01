@@ -2,13 +2,14 @@
 This module provides the functionality to export images from a folder to a PDF file.
 """
 
-import logging
 from pathlib import Path
 from typing import List, Tuple
 
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import mm
 from reportlab.pdfgen import canvas
+
+from decksmith.logger import logger
 
 
 class PdfExporter:
@@ -162,7 +163,7 @@ class PdfExporter:
                 images_on_page += 1
 
             self.pdf.save()
-            logging.info("Successfully exported PDF to %s", self.output_path)
+            logger.info(f"Successfully exported PDF to {self.output_path}")
         except Exception as e:
-            logging.error("An error occurred during PDF export: %s", e)
+            logger.error(f"An error occurred during PDF export: {e}")
             raise

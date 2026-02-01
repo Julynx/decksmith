@@ -5,13 +5,14 @@ which is used to create card images based on a JSON specification.
 
 import operator
 from pathlib import Path
-from typing import Dict, Any, Tuple, List
+from typing import Dict, Any, Tuple, List, Optional, Union
 
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
-from .utils import get_wrapped_text, apply_anchor
-from .validate import validate_card, transform_card
+from decksmith.utils import get_wrapped_text, apply_anchor
+from decksmith.validate import validate_card, transform_card
+from decksmith.logger import logger
 
 
 class CardBuilder:
@@ -25,13 +26,15 @@ class CardBuilder:
             A dictionary mapping element IDs to their bounding boxes.
     """
 
-    def __init__(self, spec: Dict[str, Any]):
+    def __init__(self, spec: Dict[str, Any], base_path: Optional[Path] = None):
         """
         Initializes the CardBuilder with a JSON specification.
         Args:
             spec (Dict[str, Any]): The JSON specification for the card.
+            base_path (Optional[Path]): The base path for resolving relative file paths.
         """
         self.spec = spec
+        self.base_path = base_path
         width = self.spec.get("width", 250)
         height = self.spec.get("height", 350)
         bg_color = tuple(self.spec.get("background_color", (255, 255, 255, 0)))
@@ -67,54 +70,60 @@ class CardBuilder:
         offset = tuple(element.get("position", [0, 0]))
         return tuple(map(operator.add, anchor_point, offset))
 
-    def _draw_text(self, element: Dict[str, Any]):
-        """
-        Draws text on the card based on the provided element dictionary.
-        Args:
-            element (Dict[str, Any]): A dictionary containing text properties.
-        """
-        assert element.pop("type") == "text", "Element type must be 'text'"
-
-        # print(f"DEBUG: {element["text"]=}")
-
+    def _prepare_text_element(self, element: Dict[str, Any]) -> Dict[str, Any]:
+        """Prepares text element properties."""
         if pd.isna(element["text"]):
             element["text"] = " "
 
-        # Convert font_path to a font object
+        # Font setup
         font_size = element.pop("font_size", 10)
         if font_path := element.pop("font_path", False):
-            element["font"] = ImageFont.truetype(
-                font_path,
-                font_size,
-                encoding="unic",
-            )
+            # Resolve font path relative to base_path if provided
+            if self.base_path and not Path(font_path).is_absolute():
+                potential_path = self.base_path / font_path
+                if potential_path.exists():
+                    font_path = str(potential_path)
+            
+            try:
+                element["font"] = ImageFont.truetype(font_path, font_size, encoding="unic")
+            except OSError:
+                logger.error(f"Could not load font: {font_path}. Using default.")
+                element["font"] = ImageFont.load_default(font_size)
         else:
             element["font"] = ImageFont.load_default(font_size)
 
-        # Apply font_variant
         if font_variant := element.pop("font_variant", None):
-            element["font"].set_variation_by_name(font_variant)
+            try:
+                element["font"].set_variation_by_name(font_variant)
+            except AttributeError:
+                logger.warning(f"Font variant '{font_variant}' not supported for this font.")
 
-        # Split text according to the specified width
+        # Text wrapping
         if line_length := element.pop("width", False):
             element["text"] = get_wrapped_text(
                 element["text"], element["font"], line_length
             )
 
-        # Convert position and color to tuples
+        # Colors and position
         if position := element.pop("position", [0, 0]):
             element["position"] = tuple(position)
         if color := element.pop("color", [0, 0, 0]):
             element["color"] = tuple(color)
         if stroke_color := element.pop("stroke_color", None):
-            element["stroke_color"] = (
-                tuple(stroke_color) if stroke_color is not None else stroke_color
-            )
+            element["stroke_color"] = tuple(stroke_color)
 
-        # Apply anchor manually (because PIL does not support anchor for multiline text)
+        return element
+
+    def _draw_text(self, element: Dict[str, Any]):
+        """Draws text on the card."""
+        assert element.pop("type") == "text", "Element type must be 'text'"
+        
+        element = self._prepare_text_element(element)
+        
         original_pos = self._calculate_absolute_position(element)
         element["position"] = original_pos
 
+        # Calculate anchor offset if needed
         if "anchor" in element:
             bbox = self.draw.textbbox(
                 xy=(0, 0),
@@ -122,16 +131,11 @@ class CardBuilder:
                 font=element["font"],
                 spacing=element.get("line_spacing", 4),
                 align=element.get("align", "left"),
-                direction=element.get("direction", None),
-                features=element.get("features", None),
-                language=element.get("language", None),
-                stroke_width=element.get("stroke_width", 0),
-                embedded_color=element.get("embedded_color", False),
             )
             anchor_point = apply_anchor(bbox, element.pop("anchor"))
             element["position"] = tuple(map(operator.sub, original_pos, anchor_point))
 
-        # Unpack the element dictionary and draw the text
+        # Draw text
         self.draw.text(
             xy=element.get("position"),
             text=element.get("text"),
@@ -139,15 +143,11 @@ class CardBuilder:
             font=element["font"],
             spacing=element.get("line_spacing", 4),
             align=element.get("align", "left"),
-            direction=element.get("direction", None),
-            features=element.get("features", None),
-            language=element.get("language", None),
             stroke_width=element.get("stroke_width", 0),
             stroke_fill=element.get("stroke_color", None),
-            embedded_color=element.get("embedded_color", False),
         )
 
-        # Store position if id is provided
+        # Store position
         if "id" in element:
             bbox = self.draw.textbbox(
                 xy=element.get("position"),
@@ -155,11 +155,6 @@ class CardBuilder:
                 font=element["font"],
                 spacing=element.get("line_spacing", 4),
                 align=element.get("align", "left"),
-                direction=element.get("direction", None),
-                features=element.get("features", None),
-                language=element.get("language", None),
-                stroke_width=element.get("stroke_width", 0),
-                embedded_color=element.get("embedded_color", False),
             )
             self.element_positions[element["id"]] = bbox
 
@@ -176,7 +171,7 @@ class CardBuilder:
         return img
 
     def _filter_crop(self, img: Image.Image, crop_values: List[int]) -> Image.Image:
-        return img.crop(crop_values)
+        return img.crop(tuple(crop_values))
 
     def _filter_crop_top(self, img: Image.Image, value: int) -> Image.Image:
         if value < 0:
@@ -245,44 +240,41 @@ class CardBuilder:
 
     def _filter_flip(self, img: Image.Image, direction: str) -> Image.Image:
         if direction == "horizontal":
-            # pylint: disable=E1101
             return img.transpose(Image.FLIP_LEFT_RIGHT)
         if direction == "vertical":
-            # pylint: disable=E1101
             return img.transpose(Image.FLIP_TOP_BOTTOM)
         return img
 
     def _draw_image(self, element: Dict[str, Any]):
-        """
-        Draws an image on the card based on the provided element dictionary.
-        Args:
-            element (Dict[str, Any]): A dictionary containing image properties.
-        """
-        # Ensure the element type is 'image'
+        """Draws an image on the card."""
         assert element.pop("type") == "image", "Element type must be 'image'"
 
-        # Load the image from the specified path
-        path = element["path"]
-        img = Image.open(path)
+        path_str = element["path"]
+        path = Path(path_str)
+        
+        if not path.is_absolute() and self.base_path:
+            potential_path = self.base_path / path
+            if potential_path.exists():
+                path = potential_path
+            
+        try:
+            img = Image.open(path)
+        except FileNotFoundError:
+            logger.error(f"Image not found: {path}")
+            return
 
         img = self._apply_image_filters(img, element.get("filters", {}))
 
-        # Convert position to a tuple
-        position = tuple(element.get("position", [0, 0]))
-
-        # Apply anchor if specified (because PIL does not support anchor for images)
         position = self._calculate_absolute_position(element)
         if "anchor" in element:
             anchor_point = apply_anchor((img.width, img.height), element.pop("anchor"))
             position = tuple(map(operator.sub, position, anchor_point))
 
-        # Paste the image onto the card at the specified position
         if img.mode == "RGBA":
             self.card.paste(img, position, mask=img)
         else:
             self.card.paste(img, position)
 
-        # Store position if id is provided
         if "id" in element:
             self.element_positions[element["id"]] = (
                 position[0],
@@ -291,56 +283,29 @@ class CardBuilder:
                 position[1] + img.height,
             )
 
-    def _draw_shape_circle(self, element: Dict[str, Any]):
-        """
-        Draws a circle on the card based on the provided element dictionary.
-        Args:
-            element (Dict[str, Any]): A dictionary containing circle properties.
-        """
-        assert element.pop("type") == "circle", "Element type must be 'circle'"
-
-        radius = element["radius"]
-        size = (radius * 2, radius * 2)
-
-        # Calculate absolute position for the element's anchor
+    def _draw_shape_generic(self, element: Dict[str, Any], draw_func, size_func):
+        """Generic method to draw shapes."""
+        size = size_func(element)
         absolute_pos = self._calculate_absolute_position(element)
 
-        # Convert color and outline to a tuple if specified
         if "color" in element:
             element["fill"] = tuple(element["color"])
         if "outline_color" in element:
             element["outline_color"] = tuple(element["outline_color"])
 
-        # Apply anchor if specified
         if "anchor" in element:
-            # anchor_offset is the offset of the anchor from the top-left corner
             anchor_offset = apply_anchor(size, element.pop("anchor"))
-            # top_left is the target position minus the anchor offset
             absolute_pos = tuple(map(operator.sub, absolute_pos, anchor_offset))
 
-        # The center of the circle is the top-left position + radius
-        center_pos = (absolute_pos[0] + radius, absolute_pos[1] + radius)
-
-        # Create a temporary layer for proper alpha compositing
         layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
         layer_draw = ImageDraw.Draw(layer, "RGBA")
 
-        # Draw the circle on the temporary layer
-        layer_draw.circle(
-            center_pos,
-            radius,
-            fill=element.get("fill", None),
-            outline=element.get("outline_color", None),
-            width=element.get("outline_width", 1),
-        )
+        draw_func(layer_draw, absolute_pos, element)
 
-        # Composite the layer onto the card
         self.card = Image.alpha_composite(self.card, layer)
         self.draw = ImageDraw.Draw(self.card, "RGBA")
 
-        # Store position if id is provided
         if "id" in element:
-            # The stored bbox is based on the top-left position
             self.element_positions[element["id"]] = (
                 absolute_pos[0],
                 absolute_pos[1],
@@ -348,262 +313,106 @@ class CardBuilder:
                 absolute_pos[1] + size[1],
             )
 
-    def _draw_shape_ellipse(self, element: Dict[str, Any]):
-        """
-        Draws an ellipse on the card based on the provided element dictionary.
-        Args:
-            element (Dict[str, Any]): A dictionary containing ellipse properties.
-        """
-        assert element.pop("type") == "ellipse", "Element type must be 'ellipse'"
+    def _draw_shape_circle(self, element: Dict[str, Any]):
+        assert element.pop("type") == "circle", "Element type must be 'circle'"
+        radius = element["radius"]
+        
+        def draw(layer_draw, pos, el):
+            center_pos = (pos[0] + radius, pos[1] + radius)
+            layer_draw.circle(
+                center_pos,
+                radius,
+                fill=el.get("fill", None),
+                outline=el.get("outline_color", None),
+                width=el.get("outline_width", 1),
+            )
 
-        # Get size
+        self._draw_shape_generic(element, draw, lambda _: (radius * 2, radius * 2))
+
+    def _draw_shape_ellipse(self, element: Dict[str, Any]):
+        assert element.pop("type") == "ellipse", "Element type must be 'ellipse'"
         size = element["size"]
 
-        # Calculate absolute position
-        position = self._calculate_absolute_position(element)
+        def draw(layer_draw, pos, el):
+            bbox = (pos[0], pos[1], pos[0] + size[0], pos[1] + size[1])
+            layer_draw.ellipse(
+                bbox,
+                fill=el.get("fill", None),
+                outline=el.get("outline_color", None),
+                width=el.get("outline_width", 1),
+            )
 
-        # Convert color and outline to a tuple if specified
-        if "color" in element:
-            element["fill"] = tuple(element["color"])
-        if "outline_color" in element:
-            element["outline_color"] = tuple(element["outline_color"])
-
-        # Apply anchor if specified
-        if "anchor" in element:
-            # For anchoring, we need an offset from the top-left corner.
-            # We calculate this offset based on the element's size.
-            anchor_offset = apply_anchor(size, element.pop("anchor"))
-            # We subtract the offset from the calculated absolute position
-            # to get the top-left corner of the bounding box.
-            position = tuple(map(operator.sub, position, anchor_offset))
-
-        # Compute bounding box from the final position and size
-        bounding_box = (
-            position[0],
-            position[1],
-            position[0] + size[0],
-            position[1] + size[1],
-        )
-
-        # Create a temporary layer for proper alpha compositing
-        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
-        layer_draw = ImageDraw.Draw(layer, "RGBA")
-
-        # Draw the ellipse on the temporary layer
-        layer_draw.ellipse(
-            bounding_box,
-            fill=element.get("fill", None),
-            outline=element.get("outline_color", None),
-            width=element.get("outline_width", 1),
-        )
-
-        # Composite the layer onto the card
-        self.card = Image.alpha_composite(self.card, layer)
-        self.draw = ImageDraw.Draw(self.card, "RGBA")
-
-        # Store position if id is provided
-        if "id" in element:
-            self.element_positions[element["id"]] = bounding_box
+        self._draw_shape_generic(element, draw, lambda _: size)
 
     def _draw_shape_polygon(self, element: Dict[str, Any]):
-        """
-        Draws a polygon on the card based on the provided element dictionary.
-        Args:
-            element (Dict[str, Any]): A dictionary containing polygon properties.
-        """
         assert element.pop("type") == "polygon", "Element type must be 'polygon'"
-
-        # Get points and convert to tuples
-        points = element.get("points", [])
+        points = [tuple(p) for p in element.get("points", [])]
         if not points:
             return
-        points = [tuple(p) for p in points]
 
-        # Compute bounding box relative to (0,0)
         min_x = min(p[0] for p in points)
         max_x = max(p[0] for p in points)
         min_y = min(p[1] for p in points)
         max_y = max(p[1] for p in points)
-        bounding_box = (min_x, min_y, max_x, max_y)
+        bbox_size = (max_x - min_x, max_y - min_y)
 
-        # Calculate absolute position for the element's anchor
-        absolute_pos = self._calculate_absolute_position(element)
-
-        # Convert color and outline to a tuple if specified
-        if "color" in element:
-            element["fill"] = tuple(element["color"])
-        if "outline_color" in element:
-            element["outline_color"] = tuple(element["outline_color"])
-
-        # This will be the top-left offset for the points
-        offset = absolute_pos
-
-        # Apply anchor if specified
-        if "anchor" in element:
-            # anchor_point is the coordinate of the anchor within the relative bbox
-            anchor_point = apply_anchor(bounding_box, element.pop("anchor"))
-            # The final offset is the target position minus the anchor point's relative coord
-            offset = tuple(map(operator.sub, absolute_pos, anchor_point))
-
-        # Translate points by the final offset
-        final_points = [(p[0] + offset[0], p[1] + offset[1]) for p in points]
-
-        # Create a temporary layer for proper alpha compositing
-        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
-        layer_draw = ImageDraw.Draw(layer, "RGBA")
-
-        # Draw the polygon on the temporary layer
-        layer_draw.polygon(
-            final_points,
-            fill=element.get("fill", None),
-            outline=element.get("outline_color", None),
-            width=element.get("outline_width", 1),
-        )
-
-        # Composite the layer onto the card
-        self.card = Image.alpha_composite(self.card, layer)
-        self.draw = ImageDraw.Draw(self.card, "RGBA")
-
-        # Store position if id is provided
-        if "id" in element:
-            # The stored bbox is the relative bbox translated by the offset
-            self.element_positions[element["id"]] = (
-                min_x + offset[0],
-                min_y + offset[1],
-                max_x + offset[0],
-                max_y + offset[1],
+        def draw(layer_draw, pos, el):
+            # pos is the top-left of the bounding box
+            # We need to shift points so that (min_x, min_y) aligns with pos
+            offset_x = pos[0] - min_x
+            offset_y = pos[1] - min_y
+            final_points = [(p[0] + offset_x, p[1] + offset_y) for p in points]
+            
+            layer_draw.polygon(
+                final_points,
+                fill=el.get("fill", None),
+                outline=el.get("outline_color", None),
+                width=el.get("outline_width", 1),
             )
+
+        self._draw_shape_generic(element, draw, lambda _: bbox_size)
 
     def _draw_shape_regular_polygon(self, element: Dict[str, Any]):
-        """
-        Draws a regular polygon on the card based on the provided element dictionary.
-        Args:
-            element (Dict[str, Any]): A dictionary containing regular polygon properties.
-        """
-        assert (
-            element.pop("type") == "regular-polygon"
-        ), "Element type must be 'regular-polygon'"
-
+        assert element.pop("type") == "regular-polygon", "Element type must be 'regular-polygon'"
         radius = element["radius"]
-        size = (radius * 2, radius * 2)
-
-        # Calculate absolute position for the element's anchor
-        absolute_pos = self._calculate_absolute_position(element)
-
-        # Convert color and outline to a tuple if specified
-        if "color" in element:
-            element["fill"] = tuple(element["color"])
-        if "outline_color" in element:
-            element["outline_color"] = tuple(element["outline_color"])
-
-        # Apply anchor if specified
-        if "anchor" in element:
-            # anchor_offset is the offset of the anchor from the top-left corner
-            anchor_offset = apply_anchor(size, element.pop("anchor"))
-            # top_left is the target position minus the anchor offset
-            absolute_pos = tuple(map(operator.sub, absolute_pos, anchor_offset))
-
-        # The center of the polygon is the top-left position + radius
-        center_pos = (absolute_pos[0] + radius, absolute_pos[1] + radius)
-
-        # Create a temporary layer for proper alpha compositing
-        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
-        layer_draw = ImageDraw.Draw(layer, "RGBA")
-
-        # Draw the regular polygon on the temporary layer
-        layer_draw.regular_polygon(
-            (center_pos[0], center_pos[1], radius),
-            n_sides=element["sides"],
-            rotation=element.get("rotation", 0),
-            fill=element.get("fill", None),
-            outline=element.get("outline_color", None),
-            width=element.get("outline_width", 1),
-        )
-
-        # Composite the layer onto the card
-        self.card = Image.alpha_composite(self.card, layer)
-        self.draw = ImageDraw.Draw(self.card, "RGBA")
-
-        # Store position if id is provided
-        if "id" in element:
-            # The stored bbox is based on the top-left position
-            self.element_positions[element["id"]] = (
-                absolute_pos[0],
-                absolute_pos[1],
-                absolute_pos[0] + size[0],
-                absolute_pos[1] + size[1],
+        
+        def draw(layer_draw, pos, el):
+            center_pos = (pos[0] + radius, pos[1] + radius)
+            layer_draw.regular_polygon(
+                (center_pos[0], center_pos[1], radius),
+                n_sides=el["sides"],
+                rotation=el.get("rotation", 0),
+                fill=el.get("fill", None),
+                outline=el.get("outline_color", None),
+                width=el.get("outline_width", 1),
             )
 
+        self._draw_shape_generic(element, draw, lambda _: (radius * 2, radius * 2))
+
     def _draw_shape_rectangle(self, element: Dict[str, Any]):
-        """
-        Draws a rectangle on the card based on the provided element dictionary.
-        Args:
-            element (Dict[str, Any]): A dictionary containing rectangle properties.
-        """
         assert element.pop("type") == "rectangle", "Element type must be 'rectangle'"
-
-        # print(f"DEBUG: {element=}")
-
-        # Get size
         size = element["size"]
-
-        # Calculate absolute position
-        position = self._calculate_absolute_position(element)
-
-        # Convert color, outline and corners to a tuple if specified
-        if "color" in element:
-            element["fill"] = tuple(element["color"])
-        if "outline_color" in element:
-            element["outline_color"] = tuple(element["outline_color"])
         if "corners" in element:
             element["corners"] = tuple(element["corners"])
 
-        # Apply anchor if specified
-        if "anchor" in element:
-            # For anchoring, we need an offset from the top-left corner.
-            # We calculate this offset based on the element's size.
-            anchor_offset = apply_anchor(size, element.pop("anchor"))
-            # We subtract the offset from the calculated absolute position
-            # to get the top-left corner of the bounding box.
-            position = tuple(map(operator.sub, position, anchor_offset))
+        def draw(layer_draw, pos, el):
+            bbox = (pos[0], pos[1], pos[0] + size[0], pos[1] + size[1])
+            layer_draw.rounded_rectangle(
+                bbox,
+                radius=el.get("corner_radius", 0),
+                fill=el.get("fill", None),
+                outline=el.get("outline_color", None),
+                width=el.get("outline_width", 1),
+                corners=el.get("corners", None),
+            )
 
-        # Compute bounding box from the final position and size
-        bounding_box = (
-            position[0],
-            position[1],
-            position[0] + size[0],
-            position[1] + size[1],
-        )
+        self._draw_shape_generic(element, draw, lambda _: size)
 
-        # print(f"DEBUG: Transformed {element=}")
-
-        # Create a temporary layer for proper alpha compositing
-        layer = Image.new("RGBA", self.card.size, (0, 0, 0, 0))
-        layer_draw = ImageDraw.Draw(layer, "RGBA")
-
-        # Draw the rectangle on the temporary layer
-        layer_draw.rounded_rectangle(
-            bounding_box,
-            radius=element.get("corner_radius", 0),
-            fill=element.get("fill", None),
-            outline=element.get("outline_color", None),
-            width=element.get("outline_width", 1),
-            corners=element.get("corners", None),
-        )
-
-        # Composite the layer onto the card
-        self.card = Image.alpha_composite(self.card, layer)
-        self.draw = ImageDraw.Draw(self.card, "RGBA")
-
-        # Store position if id is provided
-        if "id" in element:
-            self.element_positions[element["id"]] = bounding_box
-
-    def build(self, output_path: Path):
+    def render(self) -> Image.Image:
         """
-        Builds the card image by drawing all elements specified in the JSON.
-        Args:
-            output_path (Path): The path where the card image will be saved.
+        Renders the card image by drawing all elements specified in the JSON.
+        Returns:
+            Image.Image: The rendered card image.
         """
         self.spec = transform_card(self.spec)
         validate_card(self.spec)
@@ -621,7 +430,20 @@ class CardBuilder:
         for element in self.spec.get("elements", []):
             element_type = element.get("type")
             if draw_method := draw_methods.get(element_type):
-                draw_method(element)
+                try:
+                    draw_method(element)
+                except Exception as e:
+                    logger.error(f"Error drawing element {element_type}: {e}")
+                    # Continue drawing other elements
 
-        self.card.save(output_path)
-        print(f"(✔) Card saved to {output_path}")
+        return self.card
+
+    def build(self, output_path: Path):
+        """
+        Builds the card image and saves it to the specified path.
+        Args:
+            output_path (Path): The path where the card image will be saved.
+        """
+        card = self.render()
+        card.save(output_path)
+        logger.info(f"(✔) Card saved to {output_path}")

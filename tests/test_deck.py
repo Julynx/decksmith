@@ -7,12 +7,12 @@ from decksmith.main import cli
 from decksmith.deck_builder import DeckBuilder
 
 # Define paths
-TEST_DATA_PATH = Path("test/data")
-TEST_1_OUTPUT_PATH = Path("test/output1")
-TEST_2_OUTPUT_PATH = Path("test/output2")
-TEST_3_OUTPUT_PATH = Path("test/output3")
-TEST_4_OUTPUT_PATH = Path("test/output4")
-TEST_5_OUTPUT_PATH = Path("test/output5")
+TEST_DATA_PATH = Path("tests/data")
+TEST_1_OUTPUT_PATH = Path("tests/output1")
+TEST_2_OUTPUT_PATH = Path("tests/output2")
+TEST_3_OUTPUT_PATH = Path("tests/output3")
+TEST_4_OUTPUT_PATH = Path("tests/output4")
+TEST_5_OUTPUT_PATH = Path("tests/output5")
 
 
 def setup_module():
@@ -77,7 +77,7 @@ def test_comprehensive():
     # Given
     deck_json_path = TEST_DATA_PATH / "comprehensive.json"
     output_card_1_path = TEST_3_OUTPUT_PATH / "card_1.png"
-    expected_hash_1 = "760f88e6206971b28668ced5ae7f52cfbcfea5e601fa252af58d6d479300b08b"
+    expected_hash_1 = "17fb86a0ac28ee954b52b74498e8e307bfbb80cfc25fd73783cc6998185a996c"
 
     # When
     deck_builder = DeckBuilder(deck_json_path)

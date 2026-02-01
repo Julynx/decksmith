@@ -17,7 +17,7 @@
     {
       "id": "image",
       "type": "image",
-      "path": "test/resources/example.webp",
+      "path": "tests/resources/example.webp",
       "filters": {
         "crop_top": 0,
         "resize": [200, 200],

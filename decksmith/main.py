@@ -10,6 +10,7 @@ import traceback
 import click
 from decksmith.deck_builder import DeckBuilder
 from decksmith.export import PdfExporter
+from decksmith.logger import logger
 
 
 @click.group()
@@ -19,13 +20,13 @@ def cli():
 
 @cli.command()
 def init():
-    """Initializes a new project by creating deck.json and deck.csv."""
-    if Path("deck.json").exists() or Path("deck.csv").exists():
+    """Initializes a new project by creating deck.yaml and deck.csv."""
+    if Path("deck.yaml").exists() or Path("deck.csv").exists():
         click.echo("(!) Project already initialized.")
         return
 
-    with resources.path("decksmith.templates", "deck.json") as template_path:
-        shutil.copy(template_path, "deck.json")
+    with resources.path("decksmith.templates", "deck.yaml") as template_path:
+        shutil.copy(template_path, "deck.yaml")
     with resources.path("decksmith.templates", "deck.csv") as template_path:
         shutil.copy(template_path, "deck.csv")
 
@@ -35,7 +36,7 @@ def init():
 @cli.command(context_settings={"show_default": True})
 @click.option("--output", default="output", help="The output directory for the deck.")
 @click.option(
-    "--spec", default="deck.json", help="The path to the deck specification file."
+    "--spec", default="deck.yaml", help="The path to the deck specification file."
 )
 @click.option("--data", default="deck.csv", help="The path to the data file.")
 @click.pass_context
@@ -44,7 +45,7 @@ def build(ctx, output, spec, data):
     output_path = Path(output)
     output_path.mkdir(exist_ok=True)
 
-    click.echo(f"(i) Building deck in {output_path}...")
+    logger.info(f"(i) Building deck in {output_path}...")
 
     try:
         spec_path = Path(spec)
@@ -55,7 +56,7 @@ def build(ctx, output, spec, data):
         if not csv_path.exists():
             source = ctx.get_parameter_source("data")
             if source.name == "DEFAULT":
-                click.echo(
+                logger.info(
                     f"(i) Building a single card deck because '{csv_path}' was not found"
                 )
                 csv_path = None
@@ -69,14 +70,12 @@ def build(ctx, output, spec, data):
         ctx.exit(1)
     # pylint: disable=W0718
     except Exception as exc:
-        with open("log.txt", "a", encoding="utf-8") as log:
-            log.write(traceback.format_exc())
-        # print(f"{traceback.format_exc()}", end="\n")
-        print(f"(x) Error building deck '{data}' from spec '{spec}':")
-        print(" " * 4 + f"{exc}")
+        logger.error(f"(x) Error building deck '{data}' from spec '{spec}':")
+        logger.error(" " * 4 + f"{exc}")
+        logger.debug(traceback.format_exc())
         ctx.exit(1)
 
-    click.echo("(✔) Deck built successfully.")
+    logger.info("(✔) Deck built successfully.")
 
 
 @cli.command(context_settings={"show_default": True})
@@ -123,15 +122,14 @@ def export(image_folder, output, page_size, width, height, gap, margins):
             margins=margins,
         )
         exporter.export()
-        click.echo(f"(✔) Successfully exported PDF to {output}")
+        logger.info(f"(✔) Successfully exported PDF to {output}")
     except FileNotFoundError as exc:
-        click.echo(f"(x) {exc}")
+        logger.error(f"(x) {exc}")
     # pylint: disable=W0718
     except Exception as exc:
-        with open("log.txt", "a", encoding="utf-8") as log:
-            log.write(traceback.format_exc())
-        print(f"(x) Error exporting images to '{output}':")
-        print(" " * 4 + f"{exc}")
+        logger.error(f"(x) Error exporting images to '{output}':")
+        logger.error(" " * 4 + f"{exc}")
+        logger.debug(traceback.format_exc())
 
 
 if __name__ == "__main__":

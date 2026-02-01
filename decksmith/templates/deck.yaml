@@ -1,0 +1,24 @@
+width: 250
+height: 350
+background_color: [200, 200, 200]
+elements:
+  - id: title
+    type: text
+    position: [125, 25]
+    anchor: top-center
+    text: "%title%"
+    color: [0, 0, 0]
+    font_path: arial.ttf
+    font_size: 20
+    align: center
+  - id: description
+    type: text
+    position: [0, 25]
+    relative_to: [title, bottom-center]
+    anchor: top-center
+    text: "%description%"
+    color: [0, 0, 0]
+    font_path: arial.ttf
+    font_size: 16
+    width: 200
+    align: center

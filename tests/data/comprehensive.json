@@ -8,7 +8,7 @@
             "type": "image",
             "position": [1000, 1000],
             "anchor": "center",
-            "path": "test/resources/example.webp",
+            "path": "tests/resources/example.webp",
             "filters": {
                 "crop_top": 50,
                 "crop_bottom": 50,
@@ -131,7 +131,7 @@
             "anchor": "middle-left",
             "text": "Merry Christmas!",
             "color": [0, 0, 0],
-            "font_path": "test/resources/noto_sans_jp.ttf",
+            "font_path": "tests/resources/noto_sans_jp.ttf",
             "font_size": 96,
             "font_variant": "Bold",
             "line_spacing": 4,
