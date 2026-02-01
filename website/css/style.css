@@ -22,7 +22,9 @@
     --border-color: #3e3e42;
 
     --windows-color: #007fd4;
+    --windows-hover: #026ec1;
     --pypi-color: #cca700;
+    --pypi-hover: #b99700;
 
     /* Spacing */
     --spacing-xs: 4px;
@@ -242,7 +244,7 @@ ul {
 }
 
 .btn-windows:hover {
-    background: var(--accent-hover);
+    background: var(--windows-hover);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0, 127, 212, 0.4);
 }
@@ -253,7 +255,7 @@ ul {
 }
 
 .btn-pypi:hover {
-    background: var(--pypi-color);
+    background: var(--pypi-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(170, 161, 32, 0.4);
 }
@@ -700,4 +702,12 @@ footer {
 .copy-code-btn:hover {
     background: var(--bg-hover);
     color: var(--text-inverse);
+}
+
+.inline-links {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1em;
+    padding-top: 0;
 }
