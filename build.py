@@ -12,32 +12,32 @@ def get_dependencies():
             ["uv", "export", "--no-dev", "--format", "requirements-txt"],
             capture_output=True,
             text=True,
-            check=True
+            check=True,
         )
         output = result.stdout
-        
+
         dependencies = []
         for line in output.splitlines():
             line = line.strip()
             if not line or line.startswith("#") or line.startswith("-e"):
                 continue
-            
+
             # Handle lines with hashes or comments
             if " ;" in line:
                 line = line.split(" ;")[0]
             if " #" in line:
                 line = line.split(" #")[0]
-            
+
             # Remove backslashes used for line continuation
             line = line.replace("\\", "").strip()
-            
+
             # Skip hash lines
             if line.startswith("--hash"):
                 continue
 
             if line:
                 dependencies.append(line)
-                
+
         return dependencies
 
     except subprocess.CalledProcessError as e:
@@ -71,7 +71,7 @@ def get_dependencies():
 def main():
     # 1. Generate installer.cfg
     python_version = "3.11.0"
-    
+
     dependencies = get_dependencies()
     pypi_wheels_str = "\n    ".join(dependencies)
 
