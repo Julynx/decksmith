@@ -1,6 +1,6 @@
 """
 This module contains the CardBuilder class,
-which is used to create card images based on a JSON specification.
+which is used to create card images based on a YAML specification.
 """
 
 import operator
@@ -19,9 +19,9 @@ from decksmith.validate import transform_card, validate_card
 
 class CardBuilder:
     """
-    A class to build a card image based on a JSON specification.
+    A class to build a card image based on a YAML specification.
     Attributes:
-        spec (Dict[str, Any]): The JSON specification for the card.
+        spec (Dict[str, Any]): The YAML specification for the card.
         card (Image.Image): The PIL Image object representing the card.
         draw (ImageDraw.ImageDraw): The PIL ImageDraw object for drawing on the card.
         element_positions (Dict[str, Tuple[int, int, int, int]]):
@@ -30,9 +30,9 @@ class CardBuilder:
 
     def __init__(self, spec: Dict[str, Any], base_path: Optional[Path] = None):
         """
-        Initializes the CardBuilder with a JSON specification.
+        Initializes the CardBuilder with a YAML specification.
         Args:
-            spec (Dict[str, Any]): The JSON specification for the card.
+            spec (Dict[str, Any]): The YAML specification for the card.
             base_path (Optional[Path]): The base path for resolving relative file paths.
         """
         self.spec = spec
@@ -84,7 +84,7 @@ class CardBuilder:
 
     def render(self) -> Image.Image:
         """
-        Renders the card image by drawing all elements specified in the JSON.
+        Renders the card image by drawing all elements specified in the YAML.
         Returns:
             Image.Image: The rendered card image.
         """

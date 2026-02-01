@@ -1,6 +1,6 @@
 """
 This module contains the DeckBuilder class,
-which is used to create a deck of cards based on a JSON specification
+which is used to create a deck of cards based on a YAML specification
 and a CSV file.
 """
 
@@ -19,18 +19,18 @@ from decksmith.macro import MacroResolver
 
 class DeckBuilder:
     """
-    A class to build a deck of cards based on a JSON specification and a CSV file.
+    A class to build a deck of cards based on a YAML specification and a CSV file.
     Attributes:
-        spec_path (Path): Path to the JSON specification file.
+        spec_path (Path): Path to the YAML specification file.
         csv_path (Union[Path, None]): Path to the CSV file containing card data.
         cards (list): List of CardBuilder instances for each card in the deck.
     """
 
     def __init__(self, spec_path: Path, csv_path: Optional[Path] = None):
         """
-        Initializes the DeckBuilder with a JSON specification file and a CSV file.
+        Initializes the DeckBuilder with a YAML specification file and a CSV file.
         Args:
-            spec_path (Path): Path to the JSON specification file.
+            spec_path (Path): Path to the YAML specification file.
             csv_path (Union[Path, None]): Path to the CSV file containing card data.
         """
         self.spec_path = spec_path

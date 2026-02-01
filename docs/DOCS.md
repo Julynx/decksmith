@@ -2,10 +2,10 @@
 
 ## Contents
 
-- [Getting started](#getting-started)
+- [Getting Started](#getting-started)
   - [Installation](#installation)
   - [Creating a project](#creating-a-project)
-- [`deck.json` syntax](#deckjson-syntax)
+- [`deck.yaml` syntax](#deckyaml-syntax)
   - [Common attributes](#common-attributes)
   - [Positioning](#positioning)
   - [Text](#text)
@@ -16,38 +16,65 @@
     - [Polygon](#polygon)
     - [Regular polygon](#regular-polygon)
     - [Rectangle](#rectangle)
-- [Basic example with `deck.csv`](#basic-example-with-deckcsv)
+- [Basic example](#basic-example)
+  - [Example with `deck.csv`](#example-with-deckcsv)
   - [Building the deck](#building-the-deck)
   - [Exporting to PDF](#exporting-to-pdf)
 
-## Getting started
+## Getting Started
+
+Welcome to the DeckSmith documentation. This guide will help you get started with creating your own card decks using simple configuration files.
 
 ### Installation
 
-To begin, install DeckSmith by opening a Terminal and entering `pip install decksmith`.
+#### Windows
+
+Download and run the installer.
+
+[Download for Windows](https://github.com/Julynx/decksmith/releases/latest)
+
+Once installed, you can launch DeckSmith from the Start Menu.
+
+#### PyPI (Linux/Universal)
+
+Install DeckSmith via pip:
+
+```bash
+pip install decksmith
+```
+
+To launch the GUI, run:
+
+```bash
+decksmith --gui
+```
 
 ### Creating a project
+
+To create a new project in the GUI, click the **New Project** button on the welcome screen or the **New** button in the top header. Select a destination folder and enter a name for your project.
+
+<details>
+<summary>Show CLI Instructions</summary>
 
 Create a new folder and run `decksmith init` inside.
 
 This will create two different files:
 
-- `deck.json` defines the structure for the cards in the deck. The different elements that compose a card, such as text blocks, images, and shapes, are declared here, along with their sizes, positions, and other attributes. Edit this file with your favorite text editor to add and remove elements or modify their properties.
-- `deck.csv` is a data file that holds the contents for the cards of the deck, with each row representing one card. The columns of this file represent dynamic fields that can be referenced in the JSON by name as `%column_name%`. Adding a new card to the deck is as easy as creating a new row in this file.
+- `deck.yaml` defines the structure for the cards in the deck. The different elements that compose a card, such as text blocks, images, and shapes, are declared here, along with their sizes, positions, and other attributes. Edit this file with your favorite text editor to add and remove elements or modify their properties.
+- `deck.csv` is a data file that holds the contents for the cards of the deck, with each row representing one card. The columns of this file represent dynamic fields that can be referenced in the YAML by name as `%column_name%`. Adding a new card to the deck is as easy as creating a new row in this file.
 
-## `deck.json` syntax
+</details>
+
+## `deck.yaml` syntax
 
 The basic structure of a card is defined as:
 
-```python
-{
-  "width": 250,
-  "height": 350,
-  "background_color": [255, 255, 255, 0],
-  "elements": [
-    # <- Card elements go here, like images, text, shapes, etc.
-  ]
-}
+```yaml
+width: 250
+height: 350
+background_color: [255, 255, 255, 0]
+elements:
+  # <- Card elements go here, like images, text, shapes, etc.
 ```
 
 The `elements` array can contain objects of different types, such as `text`, `image`, `circle`, `rectangle`, etc.
@@ -56,23 +83,22 @@ The `elements` array can contain objects of different types, such as `text`, `im
 
 All elements, regardless of their type, share the following attributes:
 
-```python
-{
-    "id": "example-element",
-    "type": "text | image | ..",
-    "position": [0, 0],
-    "relative_to": ["<id>", "<anchor>"],
-    "anchor": "top-left | center | .."
+```yaml
+id: example-element
+type: text | image | ..
+position: [0, 0]
+relative_to: ["<id>", "<anchor>"]
+anchor: top-left | center | ..
 
-    # They can also have other attributes specific to their type
-    # ...
-}
+# They can also have other attributes specific to their type
+# ...
 ```
 
 ### Positioning
 
 The `anchor` attribute defines the point or corner of the element that will be used to position it within the card.
-For example, declaring an element with `"position": [50, 50]` and `"anchor": "center"` means the center of the element will be in the coordinates `[50, 50]`. Using an anchor of `bottom-left` will position the bottom-left corner of the element in that position instead.
+
+For example, declaring an element with `position: [50, 50]` and `anchor: center` means the center of the element will be in the coordinates `[50, 50]`. Using an anchor of `bottom-left` will position the bottom-left corner of the element in that position instead.
 
 The possible anchors are:
 
@@ -90,25 +116,23 @@ The `relative_to` attribute allows positioning elements relative to other elemen
 
 An element of type `text` can have the following attributes:
 
-```python
-{
-    # Attributes common to all elements:
-    "id": "example-text",
-    "type": "text",
-    "position": [0, 0],
+```yaml
+# Attributes common to all elements:
+id: example-text
+type: text
+position: [0, 0]
 
-    # "text" specific attributes:
-    "text": "Hello, world!",
-    "color": [0, 0, 0],
-    "font_path": "arial.ttf",
-    "font_size": 10,
-    "font_variant": "Regular | Bold | ..",
-    "line_spacing": 4,
-    "width": 300,
-    "align": "left | center | justify | ..",
-    "stroke_width": 1,
-    "stroke_color": [255, 255, 255]
-}
+# "text" specific attributes:
+text: "Hello, world!"
+color: [0, 0, 0]
+font_path: arial.ttf
+font_size: 10
+font_variant: Regular | Bold | ..
+line_spacing: 4
+width: 300
+align: left | center | justify | ..
+stroke_width: 1
+stroke_color: [255, 255, 255]
 ```
 
 The `line_spacing` attribute defines the vertical space in pixels between lines of text.
@@ -119,28 +143,25 @@ The `width` attribute limits the width in pixels for each line before the text w
 
 An element of type `image` can have the following attributes:
 
-```python
-{
-    # Attributes common to all elements:
-    "id": "example-image",
-    "type": "image",
-    "position": [0, 10],
-    "relative_to": ["example-text", "bottom-left"],
-    "anchor": "top-left",
+```yaml
+# Attributes common to all elements:
+id: example-image
+type: image
+position: [0, 10]
+relative_to: ["example-text", "bottom-left"]
+anchor: top-left
 
-    # "image" specific attributes:
-    "path": "image.png",
-    "filters": {
-        "crop_top": 50,
-        "crop_bottom": 100,
-        "crop_left": -50,
-        "crop_right": 10,
-        "crop_box": [0, 10, 20, 10],
-        "rotate": 90,
-        "flip": "horizontal | vertical",
-        "resize": [400, 400]
-    }
-}
+# "image" specific attributes:
+path: image.png
+filters:
+  crop_top: 50
+  crop_bottom: 100
+  crop_left: -50
+  crop_right: 10
+  crop_box: [0, 10, 20, 10]
+  rotate: 90
+  flip: horizontal | vertical
+  resize: [400, 400]
 ```
 
 Positive values in a `crop_xxxx` filter will cut rows/columns of pixels from that side of the image moving inwards, while negative values will add rows/columns of transparent pixels to that side of the image moving outwards.
@@ -149,107 +170,93 @@ Positive values in a `crop_xxxx` filter will cut rows/columns of pixels from tha
 
 The following attributes are common to all shapes:
 
-```python
-{
-    # Attributes common to all elements:
-    "id": "example-shape",
-    "type": "circle | ellipse | ..",
-    "position": [0, 0],
-    "relative_to": ["<id>", "<anchor>"],
-    "anchor": "top-left | center | ..",
+```yaml
+# Attributes common to all elements:
+id: example-shape
+type: circle | ellipse | ..
+position: [0, 0]
+relative_to: ["<id>", "<anchor>"]
+anchor: top-left | center | ..
 
-    # Attributes common to all shapes:
-    "color": [255, 255, 255],
-    "outline_color": [0, 0, 0],
-    "outline_width": 2
+# Attributes common to all shapes:
+color: [255, 255, 255]
+outline_color: [0, 0, 0]
+outline_width: 2
 
-    # Each type of shape has its own specific attributes
-    # ...
-}
+# Each type of shape has its own specific attributes
+# ...
 ```
 
 #### Circle
 
 The `circle` shape is defined by a center `position` and a `radius`.
 
-```python
-{
-    # ... (common attributes) ...
+```yaml
+# ... (common attributes) ...
 
-    # Attributes specific to circles:
-    "position": [1000, 650],
-    "radius": 200
-}
+# Attributes specific to circles:
+position: [1000, 650]
+radius: 200
 ```
 
 #### Ellipse
 
-The `ellipse` shape is defined by a bounding `size` box.
-The ellipse will be drawn inside the box, its curve being tangent to its sides.
+The `ellipse` shape is defined by a bounding `size` box. The ellipse will be drawn inside the box, its curve being tangent to its sides.
 
-```python
-{
-    # ... (common attributes) ...
+```yaml
+# ... (common attributes) ...
 
-    # Attributes specific to ellipses:
-    "size": [1000, 500]
-}
+# Attributes specific to ellipses:
+size: [1000, 500]
 ```
 
 #### Polygon
 
 The `polygon` shape is defined by a list of `points` that will be used as vertices.
 
-```python
-{
-    # ... (common attributes) ...
+```yaml
+# ... (common attributes) ...
 
-    # Attributes specific to polygons:
-    "points": [[0, -100], [30, -30], [100, -30], [40, 20],
-               [60, 100], [0, 50], [-60, 100], [-40, 20],
-               [-100, -30], [-30, -30]]
-}
+# Attributes specific to polygons:
+points: [[0, -100], [30, -30], [100, -30], [40, 20],
+         [60, 100], [0, 50], [-60, 100], [-40, 20],
+         [-100, -30], [-30, -30]]
 ```
 
 #### Regular polygon
 
-The `regular-polygon` shape is constructed from a bounding circle (center `position`, `radius`),
-a certain number of `sides`, and a `rotation` angle.
+The `regular-polygon` shape is constructed from a bounding circle (center `position`, `radius`), a certain number of `sides`, and a `rotation` angle.
 
-```python
-{
-    # ... (common attributes) ...
+```yaml
+# ... (common attributes) ...
 
-    # Attributes specific to regular polygons:
-    "position": [-100, 100],
-    "radius": 50,
-    "sides": 6,
-    "rotation": 45
-}
+# Attributes specific to regular polygons:
+position: [-100, 100]
+radius: 50
+sides: 6
+rotation: 45
 ```
 
 #### Rectangle
 
 The `rectangle` shape is described by a `size`, and can have its `corners` rounded by a given `corner_radius`.
 
-```python
-{
-    # ... (common attributes) ...
+```yaml
+# ... (common attributes) ...
 
-    # Attributes specific to rectangles:
-    "size": [200, 300],
-    "corners": [False, False, True, True],
-    "corner_radius": 40
-}
+# Attributes specific to rectangles:
+size: [200, 300]
+corners: [false, false, true, true]
+corner_radius: 40
 ```
 
 The `corners` attribute defines which corners should be rounded (`true`) or straight (`false`).
 
-## Basic example with `deck.csv`
+## Basic example
+
+### Example with `deck.csv`
 
 The `deck.csv` file is a semicolon-separated table with a title row and a data row for each card in the deck.
-
-> deck.csv
 
 ```csv
 name;greeting;r;g;b
@@ -257,52 +264,55 @@ John;Nice to see you again;0;255;0
 Alice;Have a great day;255;0;0
 ```
 
-You can reference columns from `deck.csv` in `deck.json` by their name enclosed in `%` signs.
+You can reference columns from `deck.csv` in `deck.yaml` by their name enclosed in `%` signs.
 
-> deck.json
-
-```json
-{
-    "width": 250,
-    "height": 350,
-    "background_color": [100, 100, 100],
-    "elements": [
-        {
-            "id": "name",
-            "type": "text",
-            "text": "Hello, %name%",
-            "font_size": 24,
-            "color": ["%r%", "%g%", "%b%"],
-            "align": "center",
-            "position": [125, 25],
-            "anchor": "top-center"
-        },
-        {
-            "id": "greeting",
-            "type": "text",
-            "text": "%greeting%",
-            "font_size": 16,
-            "color": ["%r%", "%g%", "%b%"],
-            "align": "center",
-            "width": 200,
-            "position": [0, 25],
-            "relative_to": ["name", "bottom-center"],
-            "anchor": "top-center"
-        }
-    ]
-}
+```yaml
+width: 250
+height: 350
+background_color: [100, 100, 100]
+elements:
+  - id: name
+    type: text
+    text: "Hello, %name%"
+    font_size: 24
+    color: ["%r%", "%g%", "%b%"]
+    align: center
+    position: [125, 25]
+    anchor: top-center
+  - id: greeting
+    type: text
+    text: "%greeting%"
+    font_size: 16
+    color: ["%r%", "%g%", "%b%"]
+    align: center
+    width: 200
+    position: [0, 25]
+    relative_to: ["name", "bottom-center"]
+    anchor: top-center
 ```
 
 ### Building the deck
 
-Running `decksmith build` will create an `output` folder containing two card images, each with its own greeting in a different color.
+To build the deck in the GUI, simply click the **Build Deck** button in the right panel. This will generate the card images in the `output` folder.
 
 <p float="left">
   <img src="assets/card_1.png" width="200" />
   <img src="assets/card_2.png" width="200" />
 </p>
 
+<details>
+<summary>Show CLI Instructions</summary>
+
+Running `decksmith build` will create an `output` folder containing two card images, each with its own greeting in a different color.
+
+</details>
+
 ### Exporting to PDF
+
+To export to PDF in the GUI, click the **Export PDF** button. A dialog will appear where you can configure the page size, card dimensions, and margins before exporting.
+
+<details>
+<summary>Show CLI Instructions</summary>
 
 Finally, you can export the deck to PDF by running the command:
 
@@ -311,3 +321,5 @@ decksmith export --width 63.5 --height 88.9 --gap 0.2 output
 ```
 
 The `--width` and `--height` flags define the real-world width and height in mm for each card, and the `--gap` flag adds a small line or gap between the cards, to facilitate the job of cutting them, which is especially useful for cards with no border and a similar background color.
+
+</details>

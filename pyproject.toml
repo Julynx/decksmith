@@ -1,7 +1,7 @@
 [project]
 name = "decksmith"
 version = "0.1.15"
-description = "A command-line application to dynamically generate decks of cards from a JSON specification and a CSV data file, inspired by nandeck."
+description = "A command-line application to dynamically generate decks of cards from a YAML specification and a CSV data file, inspired by nandeck."
 authors = [
     {name = "Julio Cabria", email = "juliocabria@tutanota.com"},
 ]
