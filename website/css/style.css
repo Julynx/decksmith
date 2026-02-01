@@ -455,7 +455,7 @@ footer {
     }
 
     .hero-title {
-        font-size: 2em;
+        font-size: 1.75em;
         padding: 0 var(--spacing-md);
     }
 
@@ -473,12 +473,16 @@ footer {
         width: 100%;
     }
 
+    .section-title {
+        font-size: 1.75em;
+    }
+
     .features-grid {
         grid-template-columns: 1fr;
     }
 
     .cta-section h2 {
-        font-size: 1.8em;
+        font-size: 1.5em;
         padding: 0 var(--spacing-md);
     }
 
@@ -496,6 +500,11 @@ footer {
         width: 100%;
         justify-content: center;
         box-sizing: border-box;
+    }
+
+    .btn-lg {
+        padding: 10px 20px;
+        font-size: 1em;
     }
 
     .footer-content {
@@ -524,15 +533,19 @@ footer {
     }
 
     .docs-content {
-        padding: var(--spacing-md);
+        padding: 0 !important;
     }
 
     .docs-card {
         padding: var(--spacing-md);
+        border-radius: 0 !important;
+        border-left: none;
+        border-right: none;
+        margin-bottom: 0;
     }
 
     .docs-content h1 {
-        font-size: 2em;
+        font-size: 1.75em;
     }
 
     .docs-content h2 {
