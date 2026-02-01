@@ -1,8 +1,8 @@
 :root {
     /* Colors - Modern Dark Theme (VS Code inspired) */
-    --bg-primary: #1e1e1e;
-    --bg-secondary: #252526;
-    --bg-tertiary: #333333;
+    --bg-primary: #111111;
+    --bg-secondary: #1e1e1e;
+    --bg-tertiary: #2d2d2d;
     --bg-header: #1e1e1e;
     --bg-input: #3c3c3c;
     --bg-hover: #2a2d2e;
@@ -543,4 +543,161 @@ footer {
 
 .note p {
     margin: 0;
+}
+
+/* CLI Badge */
+.cli-badge {
+    display: inline-block;
+    background-color: var(--bg-tertiary);
+    color: var(--text-secondary);
+    font-size: 0.7em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-left: 8px;
+    border: 1px solid var(--border-color);
+    font-weight: 600;
+}
+
+/* CLI Section */
+.cli-section {
+    background-color: rgba(0, 127, 212, 0.08);
+    border: 1px solid rgba(0, 127, 212, 0.2);
+    border-radius: var(--radius-md);
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+    position: relative;
+}
+
+.cli-section::before {
+    content: none;
+}
+
+.cli-toggle {
+    background: none;
+    border: none;
+    color: var(--accent-color);
+    cursor: pointer;
+    font-weight: 600;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95em;
+    width: 100%;
+    text-align: left;
+}
+
+.cli-toggle:hover {
+    color: var(--accent-hover);
+}
+
+.cli-toggle i {
+    transition: transform 0.2s;
+}
+
+.cli-section.expanded .cli-toggle i {
+    transform: rotate(180deg);
+}
+
+.cli-content {
+    display: none;
+    margin-top: var(--spacing-md);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+}
+
+.cli-section.expanded .cli-content {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Docs Card */
+.docs-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding-top: var(--spacing-xl);
+    padding-left: var(--spacing-xl);
+    padding-right: var(--spacing-xl);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.docs-card h1:first-child,
+.docs-card h2:first-child {
+    margin-top: 0;
+}
+
+/* Subsection Divider */
+.docs-card section:not(:last-child) {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-md);
+}
+
+.docs-card h2 {
+    margin-top: 0;
+}
+
+/* Sub-subsection (h4) */
+.sub-section {
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--accent-color);
+    border-radius: var(--radius-sm);
+    padding: var(--spacing-md);
+    padding-bottom: var(--spacing-sm);
+    margin-top: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.sub-section h3,
+.sub-section h4 {
+    margin-top: 0;
+    margin-bottom: var(--spacing-sm);
+    color: var(--text-inverse);
+    font-size: 1.1em;
+}
+
+/* Code Copy Button */
+.code-wrapper {
+    position: relative;
+}
+
+.copy-code-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    padding: 4px 8px;
+    font-size: 0.8em;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.code-wrapper:hover .copy-code-btn {
+    opacity: 1;
+}
+
+.copy-code-btn:hover {
+    background: var(--bg-hover);
+    color: var(--text-inverse);
 }

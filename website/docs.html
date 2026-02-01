@@ -1,135 +1,245 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Documentation - DeckSmith Card Generator</title>
-    <meta name="description" content="Comprehensive documentation for DeckSmith. Learn how to create card layouts using YAML, import data from CSV, and generate decks.">
-    <meta name="keywords" content="DeckSmith documentation, card layout YAML, deck generation tutorial, python card maker docs">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://julynx.github.io/decksmith/docs.html">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="article">
-    <meta property="og:url" content="https://julynx.github.io/decksmith/docs.html">
-    <meta property="og:title" content="DeckSmith Documentation">
-    <meta property="og:description" content="Learn how to use DeckSmith to create professional decks. YAML syntax, CSV integration, and more.">
-    <meta property="og:image" content="https://julynx.github.io/decksmith/assets/banner.png">
+    <meta
+      name="description"
+      content="Comprehensive documentation for DeckSmith. Learn how to create card layouts using YAML, import data from CSV, and generate decks."
+    />
+    <meta
+      name="keywords"
+      content="DeckSmith documentation, card layout YAML, deck generation tutorial, python card maker docs"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://julynx.github.io/decksmith/docs.html" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article" />
+    <meta
+      property="og:url"
+      content="https://julynx.github.io/decksmith/docs.html"
+    />
+    <meta property="og:title" content="DeckSmith Documentation" />
+    <meta
+      property="og:description"
+      content="Learn how to use DeckSmith to create professional decks. YAML syntax, CSV integration, and more."
+    />
+    <meta
+      property="og:image"
+      content="https://julynx.github.io/decksmith/assets/banner.png"
+    />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
     <!-- Prism.js for Syntax Highlighting -->
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
-    
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/x-icon" href="assets/decksmith.ico">
-</head>
-<body>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="icon" type="image/x-icon" href="assets/decksmith.ico" />
+  </head>
+
+  <body>
     <nav class="navbar">
-        <div class="container">
-            <a href="index.html" class="logo">
-                <img src="assets/decksmith.ico" alt="DeckSmith Logo">
-                <span>DeckSmith</span>
-            </a>
-            <div class="nav-links">
-                <a href="index.html">Home</a>
-                <a href="docs.html" class="active">Docs</a>
-                <a href="https://github.com/Julynx/decksmith" target="_blank"><i class="fab fa-github"></i> GitHub</a>
-            </div>
+      <div class="container">
+        <a href="index.html" class="logo">
+          <img src="assets/decksmith.ico" alt="DeckSmith Logo" />
+          <span>DeckSmith</span>
+        </a>
+        <div class="nav-links">
+          <a href="index.html">Home</a>
+          <a href="docs.html" class="active">Docs</a>
+          <a href="https://github.com/Julynx/decksmith" target="_blank"
+            ><i class="fab fa-github"></i> GitHub</a
+          >
         </div>
+      </div>
     </nav>
 
     <div class="docs-layout">
-        <aside class="sidebar">
-            <h3>Getting Started</h3>
-            <ul>
-                <li><a href="#getting-started" class="active">Introduction</a></li>
-                <li><a href="#installation">Installation</a></li>
-                <li><a href="#creating-a-project">Creating a project</a></li>
-            </ul>
-            <h3>deck.yaml syntax</h3>
-            <ul>
-                <li><a href="#deck-yaml-syntax">Structure</a></li>
-                <li><a href="#common-attributes">Common attributes</a></li>
-                <li><a href="#positioning">Positioning</a></li>
-                <li><a href="#text">Text</a></li>
-                <li><a href="#images">Images</a></li>
-                <li><a href="#shapes">Shapes</a></li>
-            </ul>
-            <h3>Basic example</h3>
-            <ul>
-                <li><a href="#basic-example">Example with deck.csv</a></li>
-                <li><a href="#building-the-deck">Building the deck</a></li>
-                <li><a href="#exporting-to-pdf">Exporting to PDF</a></li>
-            </ul>
-        </aside>
+      <aside class="sidebar">
+        <h3>Getting Started</h3>
+        <ul>
+          <li><a href="#getting-started" class="active">Introduction</a></li>
+          <li><a href="#installation">Installation</a></li>
+          <li><a href="#creating-a-project">Creating a project</a></li>
+        </ul>
+        <h3>deck.yaml syntax</h3>
+        <ul>
+          <li><a href="#deck-yaml-syntax">Structure</a></li>
+          <li><a href="#common-attributes">Common attributes</a></li>
+          <li><a href="#positioning">Positioning</a></li>
+          <li><a href="#text">Text</a></li>
+          <li><a href="#images">Images</a></li>
+          <li><a href="#shapes">Shapes</a></li>
+        </ul>
+        <h3>Basic example</h3>
+        <ul>
+          <li><a href="#basic-example">Example with deck.csv</a></li>
+          <li><a href="#building-the-deck">Building the deck</a></li>
+          <li><a href="#exporting-to-pdf">Exporting to PDF</a></li>
+        </ul>
+      </aside>
 
-        <main class="docs-content">
-            <section id="getting-started">
-                <h1>Getting Started</h1>
-                <p>Welcome to the DeckSmith documentation. This guide will help you get started with creating your own card decks using simple configuration files.</p>
-            </section>
+      <main class="docs-content">
+        <div class="docs-card">
+          <section id="getting-started">
+            <h1>Getting Started</h1>
+            <p>
+              Welcome to the DeckSmith documentation. This guide will help you
+              get started with creating your own card decks using simple
+              configuration files.
+            </p>
+          </section>
 
-            <section id="installation">
-                <h2>Installation</h2>
-                <p>To begin, install DeckSmith by opening a Terminal and entering:</p>
-                <pre><code class="language-bash">pip install decksmith</code></pre>
-            </section>
+          <section id="installation">
+            <h2>Installation</h2>
 
-            <section id="creating-a-project">
-                <h2>Creating a project</h2>
-                <p>Create a new folder and run <code>decksmith init</code> inside.</p>
+            <div class="sub-section">
+              <h3>Windows</h3>
+              <p>Download and run the installer.</p>
+              <p>
+                <a href="#" class="btn btn-primary btn-windows">
+                  <i class="fab fa-windows"></i> Download for Windows
+                </a>
+              </p>
+              <p>
+                Once installed, you can launch DeckSmith from the Start Menu.
+              </p>
+            </div>
+
+            <div class="sub-section">
+              <h3>PyPI (Linux/Universal)</h3>
+              <p>Install DeckSmith via pip:</p>
+              <pre><code class="language-bash">pip install decksmith</code></pre>
+              <p>To launch the GUI, run:</p>
+              <pre><code class="language-bash">decksmith --gui</code></pre>
+            </div>
+          </section>
+
+          <section id="creating-a-project">
+            <h2>Creating a project</h2>
+            <p>
+              To create a new project in the GUI, click the
+              <strong>New Project</strong> button on the welcome screen or the
+              <strong>New</strong> button in the top header. Select a
+              destination folder and enter a name for your project.
+            </p>
+            <div class="cli-section">
+              <button class="cli-toggle">
+                Show CLI Instructions <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="cli-content">
+                <p>
+                  Create a new folder and run
+                  <code>decksmith init</code> inside.
+                </p>
                 <p>This will create two different files:</p>
                 <ul>
-                    <li><code>deck.yaml</code> defines the structure for the cards in the deck. The different elements that compose a card, such as text blocks, images, and shapes, are declared here, along with their sizes, positions, and other attributes. Edit this file with your favorite text editor to add and remove elements or modify their properties.</li>
-                    <li><code>deck.csv</code> is a data file that holds the contents for the cards of the deck, with each row representing one card. The columns of this file represent dynamic fields that can be referenced in the YAML by name as <code>%column_name%</code>. Adding a new card to the deck is as easy as creating a new row in this file.</li>
+                  <li>
+                    <code>deck.yaml</code> defines the structure for the cards
+                    in the deck. The different elements that compose a card,
+                    such as text blocks, images, and shapes, are declared here,
+                    along with their sizes, positions, and other attributes.
+                    Edit this file with your favorite text editor to add and
+                    remove elements or modify their properties.
+                  </li>
+                  <li>
+                    <code>deck.csv</code> is a data file that holds the contents
+                    for the cards of the deck, with each row representing one
+                    card. The columns of this file represent dynamic fields that
+                    can be referenced in the YAML by name as
+                    <code>%column_name%</code>. Adding a new card to the deck is
+                    as easy as creating a new row in this file.
+                  </li>
                 </ul>
-            </section>
+              </div>
+            </div>
+          </section>
+        </div>
 
-            <section id="deck-yaml-syntax">
-                <h2><code>deck.yaml</code> syntax</h2>
-                <p>The basic structure of a card is defined as:</p>
-                <pre><code class="language-yaml">width: 250
+        <div class="docs-card">
+          <section id="deck-yaml-syntax">
+            <h2><code>deck.yaml</code> syntax</h2>
+            <p>The basic structure of a card is defined as:</p>
+            <pre><code class="language-yaml">width: 250
 height: 350
 background_color: [255, 255, 255, 0]
 elements:
-  # <- Card elements go here, like images, text, shapes, etc.</code></pre>
-                <p>The <code>elements</code> array can contain objects of different types, such as <code>text</code>, <code>image</code>, <code>circle</code>, <code>rectangle</code>, etc.</p>
-            </section>
+  # &lt;- Card elements go here, like images, text, shapes, etc.</code></pre>
+            <p>
+              The <code>elements</code> array can contain objects of different
+              types, such as <code>text</code>, <code>image</code>,
+              <code>circle</code>, <code>rectangle</code>, etc.
+            </p>
+          </section>
 
-            <section id="common-attributes">
-                <h3>Common attributes</h3>
-                <p>All elements, regardless of their type, share the following attributes:</p>
-                <pre><code class="language-yaml">id: example-element
+          <section id="common-attributes">
+            <h3>Common attributes</h3>
+            <p>
+              All elements, regardless of their type, share the following
+              attributes:
+            </p>
+            <pre><code class="language-yaml">id: example-element
 type: text | image | ..
 position: [0, 0]
-relative_to: ["<id>", "<anchor>"]
+relative_to: ["&lt;id&gt;", "&lt;anchor&gt;"]
 anchor: top-left | center | ..
 
 # They can also have other attributes specific to their type
 # ...</code></pre>
-            </section>
+          </section>
 
-            <section id="positioning">
-                <h3>Positioning</h3>
-                <p>The <code>anchor</code> attribute defines the point or corner of the element that will be used to position it within the card.</p>
-                <p>For example, declaring an element with <code>position: [50, 50]</code> and <code>anchor: center</code> means the center of the element will be in the coordinates <code>[50, 50]</code>. Using an anchor of <code>bottom-left</code> will position the bottom-left corner of the element in that position instead.</p>
-                <p>The possible anchors are:</p>
-                <pre><code class="language-text"> top-left      | top-center    | top-right
+          <section id="positioning">
+            <h3>Positioning</h3>
+            <p>
+              The <code>anchor</code> attribute defines the point or corner of
+              the element that will be used to position it within the card.
+            </p>
+            <p>
+              For example, declaring an element with
+              <code>position: [50, 50]</code> and
+              <code>anchor: center</code> means the center of the element will
+              be in the coordinates <code>[50, 50]</code>. Using an anchor of
+              <code>bottom-left</code> will position the bottom-left corner of
+              the element in that position instead.
+            </p>
+            <p>The possible anchors are:</p>
+            <pre><code class="language-text"> top-left      | top-center    | top-right
 ---------------+---------------+---------------
  middle-left   | center        | middle-right
 ---------------+---------------+---------------
  bottom-left   | bottom-center | bottom-right</code></pre>
-                <p>The <code>relative_to</code> attribute allows positioning elements relative to other elements by referencing their <code>id</code>, and an <code>anchor</code> point for the referenced element. The element will be positioned according to its own <code>anchor</code> and the <code>relative_to</code> anchor for the other element.</p>
-            </section>
+            <p>
+              The <code>relative_to</code> attribute allows positioning elements
+              relative to other elements by referencing their <code>id</code>,
+              and an <code>anchor</code> point for the referenced element. The
+              element will be positioned according to its own
+              <code>anchor</code> and the <code>relative_to</code> anchor for
+              the other element.
+            </p>
+          </section>
 
-            <section id="text">
-                <h3>Text</h3>
-                <p>An element of type <code>text</code> can have the following attributes:</p>
-                <pre><code class="language-yaml"># Attributes common to all elements:
+          <section id="text">
+            <h3>Text</h3>
+            <p>
+              An element of type <code>text</code> can have the following
+              attributes:
+            </p>
+            <pre><code class="language-yaml"># Attributes common to all elements:
 id: example-text
 type: text
 position: [0, 0]
@@ -145,14 +255,23 @@ width: 300
 align: left | center | justify | ..
 stroke_width: 1
 stroke_color: [255, 255, 255]</code></pre>
-                <p>The <code>line_spacing</code> attribute defines the vertical space in pixels between lines of text.</p>
-                <p>The <code>width</code> attribute limits the width in pixels for each line before the text wraps to the next line.</p>
-            </section>
+            <p>
+              The <code>line_spacing</code> attribute defines the vertical space
+              in pixels between lines of text.
+            </p>
+            <p>
+              The <code>width</code> attribute limits the width in pixels for
+              each line before the text wraps to the next line.
+            </p>
+          </section>
 
-            <section id="images">
-                <h3>Images</h3>
-                <p>An element of type <code>image</code> can have the following attributes:</p>
-                <pre><code class="language-yaml"># Attributes common to all elements:
+          <section id="images">
+            <h3>Images</h3>
+            <p>
+              An element of type <code>image</code> can have the following
+              attributes:
+            </p>
+            <pre><code class="language-yaml"># Attributes common to all elements:
 id: example-image
 type: image
 position: [0, 10]
@@ -170,17 +289,22 @@ filters:
   rotate: 90
   flip: horizontal | vertical
   resize: [400, 400]</code></pre>
-                <p>Positive values in a <code>crop_xxxx</code> filter will cut rows/columns of pixels from that side of the image moving inwards, while negative values will add rows/columns of transparent pixels to that side of the image moving outwards.</p>
-            </section>
+            <p>
+              Positive values in a <code>crop_xxxx</code> filter will cut
+              rows/columns of pixels from that side of the image moving inwards,
+              while negative values will add rows/columns of transparent pixels
+              to that side of the image moving outwards.
+            </p>
+          </section>
 
-            <section id="shapes">
-                <h3>Shapes</h3>
-                <p>The following attributes are common to all shapes:</p>
-                <pre><code class="language-yaml"># Attributes common to all elements:
+          <section id="shapes">
+            <h3>Shapes</h3>
+            <p>The following attributes are common to all shapes:</p>
+            <pre><code class="language-yaml"># Attributes common to all elements:
 id: example-shape
 type: circle | ellipse | ..
 position: [0, 0]
-relative_to: ["<id>", "<anchor>"]
+relative_to: ["&lt;id&gt;", "&lt;anchor&gt;"]
 anchor: top-left | center | ..
 
 # Attributes common to all shapes:
@@ -191,61 +315,107 @@ outline_width: 2
 # Each type of shape has its own specific attributes
 # ...</code></pre>
 
-                <h4>Circle</h4>
-                <p>The <code>circle</code> shape is defined by a center <code>position</code> and a <code>radius</code>.</p>
-                <pre><code class="language-yaml"># ... (common attributes) ...
-
+            <div class="sub-section">
+              <h4>Circle</h4>
+              <p>
+                The <code>circle</code> shape is defined by a center
+                <code>position</code> and a <code>radius</code>.
+              </p>
+              <pre><code class="language-yaml"># ... (common attributes) ...
+    
 # Attributes specific to circles:
 position: [1000, 650]
 radius: 200</code></pre>
+            </div>
 
-                <h4>Ellipse</h4>
-                <p>The <code>ellipse</code> shape is defined by a bounding <code>size</code> box. The ellipse will be drawn inside the box, its curve being tangent to its sides.</p>
-                <pre><code class="language-yaml"># ... (common attributes) ...
-
+            <div class="sub-section">
+              <h4>Ellipse</h4>
+              <p>
+                The <code>ellipse</code> shape is defined by a bounding
+                <code>size</code> box. The ellipse will be drawn inside the box,
+                its curve being tangent to its sides.
+              </p>
+              <pre><code class="language-yaml"># ... (common attributes) ...
+    
 # Attributes specific to ellipses:
 size: [1000, 500]</code></pre>
+            </div>
 
-                <h4>Polygon</h4>
-                <p>The <code>polygon</code> shape is defined by a list of <code>points</code> that will be used as vertices.</p>
-                <pre><code class="language-yaml"># ... (common attributes) ...
-
+            <div class="sub-section">
+              <h4>Polygon</h4>
+              <p>
+                The <code>polygon</code> shape is defined by a list of
+                <code>points</code> that will be used as vertices.
+              </p>
+              <pre><code class="language-yaml"># ... (common attributes) ...
+    
 # Attributes specific to polygons:
 points: [[0, -100], [30, -30], [100, -30], [40, 20],
          [60, 100], [0, 50], [-60, 100], [-40, 20],
          [-100, -30], [-30, -30]]</code></pre>
+            </div>
 
-                <h4>Regular polygon</h4>
-                <p>The <code>regular-polygon</code> shape is constructed from a bounding circle (center <code>position</code>, <code>radius</code>), a certain number of <code>sides</code>, and a <code>rotation</code> angle.</p>
-                <pre><code class="language-yaml"># ... (common attributes) ...
-
+            <div class="sub-section">
+              <h4>Regular polygon</h4>
+              <p>
+                The <code>regular-polygon</code> shape is constructed from a
+                bounding circle (center <code>position</code>,
+                <code>radius</code>), a certain number of <code>sides</code>,
+                and a <code>rotation</code> angle.
+              </p>
+              <pre><code class="language-yaml"># ... (common attributes) ...
+    
 # Attributes specific to regular polygons:
 position: [-100, 100]
 radius: 50
 sides: 6
 rotation: 45</code></pre>
+            </div>
 
-                <h4>Rectangle</h4>
-                <p>The <code>rectangle</code> shape is described by a <code>size</code>, and can have its <code>corners</code> rounded by a given <code>corner_radius</code>.</p>
-                <pre><code class="language-yaml"># ... (common attributes) ...
-
+            <div class="sub-section">
+              <h4>Rectangle</h4>
+              <p>
+                The <code>rectangle</code> shape is described by a
+                <code>size</code>, and can have its <code>corners</code> rounded
+                by a given <code>corner_radius</code>.
+              </p>
+              <pre><code class="language-yaml"># ... (common attributes) ...
+    
 # Attributes specific to rectangles:
 size: [200, 300]
 corners: [false, false, true, true]
 corner_radius: 40</code></pre>
-                <p>The <code>corners</code> attribute defines which corners should be rounded (<code>true</code>) or straight (<code>false</code>).</p>
-            </section>
+              <p>
+                The <code>corners</code> attribute defines which corners should
+                be rounded (<code>true</code>) or straight (<code>false</code>).
+              </p>
+            </div>
+          </section>
+        </div>
 
-            <section id="basic-example">
-                <h2>Basic example with <code>deck.csv</code></h2>
-                <p>The <code>deck.csv</code> file is a semicolon-separated table with a title row and a data row for each card in the deck.</p>
-                <p><strong>deck.csv</strong></p>
-                <pre><code class="language-csv">name;greeting;r;g;b
+        <div class="docs-card">
+          <section id="basic-example">
+            <h2>Basic example with <code>deck.csv</code></h2>
+
+            <div class="sub-section">
+              <h3>deck.csv</h3>
+              <p>
+                The <code>deck.csv</code> file is a semicolon-separated table
+                with a title row and a data row for each card in the deck.
+              </p>
+              <pre><code class="language-csv">name;greeting;r;g;b
 John;Nice to see you again;0;255;0
 Alice;Have a great day;255;0;0</code></pre>
-                <p>You can reference columns from <code>deck.csv</code> in <code>deck.yaml</code> by their name enclosed in <code>%</code> signs.</p>
-                <p><strong>deck.yaml</strong></p>
-                <pre><code class="language-yaml">width: 250
+            </div>
+
+            <div class="sub-section">
+              <h3>deck.yaml</h3>
+              <p>
+                You can reference columns from <code>deck.csv</code> in
+                <code>deck.yaml</code> by their name enclosed in
+                <code>%</code> signs.
+              </p>
+              <pre><code class="language-yaml">width: 250
 height: 350
 background_color: [100, 100, 100]
 elements:
@@ -267,53 +437,156 @@ elements:
     position: [0, 25]
     relative_to: ["name", "bottom-center"]
     anchor: top-center</code></pre>
-            </section>
+            </div>
+          </section>
 
-            <section id="building-the-deck">
-                <h3>Building the deck</h3>
-                <p>Running <code>decksmith build</code> will create an <code>output</code> folder containing two card images, each with its own greeting in a different color.</p>
-                <p style="display: flex; gap: 20px;">
-                    <img src="assets/card_1.png" width="200" alt="Card 1 Example" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
-                    <img src="assets/card_2.png" width="200" alt="Card 2 Example" style="border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.2);">
+          <section id="building-the-deck">
+            <h3>Building the deck</h3>
+            <p>
+              To build the deck in the GUI, simply click the
+              <strong>Build Deck</strong> button in the right panel. This will
+              generate the card images in the <code>output</code> folder.
+            </p>
+
+            <p style="display: flex; gap: 20px">
+              <img
+                src="assets/card_1.png"
+                width="200"
+                alt="Card 1 Example"
+                style="
+                  border-radius: 8px;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                "
+              />
+              <img
+                src="assets/card_2.png"
+                width="200"
+                alt="Card 2 Example"
+                style="
+                  border-radius: 8px;
+                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+                "
+              />
+            </p>
+            <div class="cli-section">
+              <button class="cli-toggle">
+                Show CLI Instructions <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="cli-content">
+                <p>
+                  Running <code>decksmith build</code> will create an
+                  <code>output</code> folder containing two card images, each
+                  with its own greeting in a different color.
                 </p>
-            </section>
+              </div>
+            </div>
+          </section>
 
-            <section id="exporting-to-pdf">
-                <h3>Exporting to PDF</h3>
-                <p>Finally, you can export the deck to PDF by running the command:</p>
+          <section id="exporting-to-pdf">
+            <h3>Exporting to PDF</h3>
+            <p>
+              To export to PDF in the GUI, click the
+              <strong>Export PDF</strong> button. A dialog will appear where you
+              can configure the page size, card dimensions, and margins before
+              exporting.
+            </p>
+            <div class="cli-section">
+              <button class="cli-toggle">
+                Show CLI Instructions <i class="fas fa-chevron-down"></i>
+              </button>
+              <div class="cli-content">
+                <p>
+                  Finally, you can export the deck to PDF by running the
+                  command:
+                </p>
                 <pre><code class="language-bash">decksmith export --width 63.5 --height 88.9 --gap 0.2 output</code></pre>
-                <p>The <code>--width</code> and <code>--height</code> flags define the real-world width and height in mm for each card, and the <code>--gap</code> flag adds a small line or gap between the cards, to facilitate the job of cutting them, which is especially useful for cards with no border and a similar background color.</p>
-            </section>
-        </main>
+                <p>
+                  The <code>--width</code> and <code>--height</code> flags
+                  define the real-world width and height in mm for each card,
+                  and the <code>--gap</code> flag adds a small line or gap
+                  between the cards, to facilitate the job of cutting them,
+                  which is especially useful for cards with no border and a
+                  similar background color.
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csv.min.js"></script>
-    
+
     <script>
-        // Simple active state highlighting for sidebar
-        const sections = document.querySelectorAll('section');
-        const navLi = document.querySelectorAll('.sidebar ul li a');
+      // Simple active state highlighting for sidebar
+      const sections = document.querySelectorAll("section");
+      const navLi = document.querySelectorAll(".sidebar ul li a");
 
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (pageYOffset >= (sectionTop - 150)) {
-                    current = section.getAttribute('id');
-                }
-            });
+      window.addEventListener("scroll", () => {
+        let current = "";
+        sections.forEach((section) => {
+          const sectionTop = section.offsetTop;
+          const sectionHeight = section.clientHeight;
+          if (pageYOffset >= sectionTop - 150) {
+            current = section.getAttribute("id");
+          }
+        });
 
-            navLi.forEach(a => {
-                a.classList.remove('active');
-                if (a.getAttribute('href').includes(current)) {
-                    a.classList.add('active');
-                }
+        navLi.forEach((a) => {
+          a.classList.remove("active");
+          if (a.getAttribute("href").includes(current)) {
+            a.classList.add("active");
+          }
+        });
+      });
+
+      // CLI Section Toggle
+      document.querySelectorAll(".cli-toggle").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const section = btn.closest(".cli-section");
+          section.classList.toggle("expanded");
+          const text = section.classList.contains("expanded")
+            ? "Hide CLI Instructions"
+            : "Show CLI Instructions";
+          // Update text node but keep the icon
+          btn.childNodes[0].textContent = text + " ";
+        });
+      });
+
+      // Code Copy Button
+      document.querySelectorAll("pre").forEach((pre) => {
+        // Create wrapper
+        const wrapper = document.createElement("div");
+        wrapper.className = "code-wrapper";
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        // Create button
+        const btn = document.createElement("button");
+        btn.className = "copy-code-btn";
+        btn.textContent = "Copy";
+        wrapper.appendChild(btn);
+
+        // Add event listener
+        btn.addEventListener("click", () => {
+          const code = pre.querySelector("code").innerText;
+          navigator.clipboard
+            .writeText(code)
+            .then(() => {
+              btn.textContent = "Copied!";
+              setTimeout(() => {
+                btn.textContent = "Copy";
+              }, 2000);
+            })
+            .catch((err) => {
+              console.error("Failed to copy:", err);
+              btn.textContent = "Error";
             });
         });
+      });
     </script>
-</body>
+  </body>
 </html>
