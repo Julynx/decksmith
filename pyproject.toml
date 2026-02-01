@@ -24,31 +24,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest",
-    "poetry",
 ]
-
-[tool.poetry]
-name = "decksmith"
-version = "0.1.12"
-description = "A command-line application to dynamically generate decks of cards from a JSON specification and a CSV data file, inspired by nandeck."
-authors = ["Julio Cabria <juliocabria@tutanota.com>"]
-license = "GPL-2.0-only"
-readme = "docs/README.md"
-homepage = "https://github.com/Julynx/decksmith"
-packages = [
-    { include = "decksmith" },
-]
-
-[tool.poetry.dependencies]
-python = ">=3.11"
-click = "*"
-jval = "1.0.6"
-pandas = "*"
-pillow = ">=11.3.0"
-reportlab = ">=4.4.3"
-
-[tool.poetry.scripts]
-decksmith = "decksmith.main:cli"
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -64,5 +40,11 @@ build-backend = "poetry.core.masonry.api"
 
 [dependency-groups]
 dev = [
+    "pylint>=4.0.4",
     "pynsist>=2.8",
+    "pytest>=8.4.1",
 ]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+norecursedirs = ["build_nsis", "dist", "build", ".venv"]

@@ -14,6 +14,7 @@ from ruamel.yaml import YAML
 
 from decksmith.card_builder import CardBuilder
 from decksmith.logger import logger
+from decksmith.macro import MacroResolver
 
 
 class DeckBuilder:
@@ -42,44 +43,9 @@ class DeckBuilder:
         """Loads and caches the spec file."""
         if self._spec_cache is None:
             yaml = YAML()
-            with open(self.spec_path, "r", encoding="utf-8") as f:
-                self._spec_cache = yaml.load(f)
+            with open(self.spec_path, "r", encoding="utf-8") as spec_file:
+                self._spec_cache = yaml.load(spec_file)
         return self._spec_cache
-
-    @staticmethod
-    def resolve_macros(spec: Dict[str, Any], row: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Replaces %colname% macros in the card specification with values from the row.
-        Works recursively for nested structures.
-        Args:
-            spec (dict): The card specification.
-            row (dict): A dictionary representing a row from the CSV file.
-        Returns:
-            dict: The updated card specification with macros replaced.
-        """
-
-        def replace_in_value(value: Any) -> Any:
-            if isinstance(value, str):
-                stripped_value = value.strip()
-                # First, check for an exact macro match to preserve type
-                for key in row:
-                    if stripped_value == f"%{key}%":
-                        return row[key]  # Return the raw value, preserving type
-
-                # If no exact match, perform standard string replacement for all macros
-                for key, val in row.items():
-                    value = value.replace(f"%{key}%", str(val))
-                return value
-
-            if isinstance(value, list):
-                return [replace_in_value(v) for v in value]
-
-            if isinstance(value, dict):
-                return {k: replace_in_value(v) for k, v in value.items()}
-
-            return value
-
-        return replace_in_value(spec)
 
     def build_deck(self, output_path: Path):
         """
@@ -94,9 +60,9 @@ class DeckBuilder:
             return
 
         try:
-            df = pd.read_csv(self.csv_path, encoding="utf-8", sep=";", header=0)
+            dataframe = pd.read_csv(self.csv_path, encoding="utf-8", sep=";", header=0)
         except Exception as e:
-            logger.error(f"Error reading CSV file: {e}")
+            logger.error("Error reading CSV file: %s", e)
             return
 
         def build_card(row_tuple: tuple[int, Series]):
@@ -109,11 +75,11 @@ class DeckBuilder:
             try:
                 # We need a deep copy of the spec for each card to avoid side effects
                 # But resolve_macros creates a new structure, so it should be fine
-                spec = self.resolve_macros(self.spec, row.to_dict())
+                spec = MacroResolver.resolve(self.spec, row.to_dict())
                 card_builder = CardBuilder(spec, base_path=base_path)
                 card_builder.build(output_path / f"card_{idx + 1}.png")
             except Exception as e:
-                logger.error(f"Error building card {idx + 1}: {e}")
+                logger.error("Error building card %s: %s", idx + 1, e)
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
-            list(executor.map(build_card, df.iterrows()))
+            list(executor.map(build_card, dataframe.iterrows()))

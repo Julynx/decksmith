@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeckSmith - Dynamic Card Generator for TCGs, Tarot & More</title>
+    <meta name="description" content="DeckSmith is a powerful, open-source tool for dynamically generating decks of cards from JSON/YAML layouts and CSV data. Perfect for TCGs, tarot, and prototyping.">
+    <meta name="keywords" content="card generator, deck builder, TCG maker, tarot deck creator, python card tool, nandeck alternative, game prototyping">
+    <meta name="author" content="Julynx">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://julynx.github.io/decksmith/">
+    <meta property="og:title" content="DeckSmith - Dynamic Card Generator">
+    <meta property="og:description" content="Create professional decks for TCGs, tarot, business cards, and more with ease. Define your layout once, generate endlessly.">
+    <meta property="og:image" content="https://julynx.github.io/decksmith/assets/banner.png">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://julynx.github.io/decksmith/">
+    <meta property="twitter:title" content="DeckSmith - Dynamic Card Generator">
+    <meta property="twitter:description" content="Create professional decks for TCGs, tarot, business cards, and more with ease. Define your layout once, generate endlessly.">
+    <meta property="twitter:image" content="https://julynx.github.io/decksmith/assets/banner.png">
+
+    <link rel="canonical" href="https://julynx.github.io/decksmith/">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "DeckSmith",
+      "operatingSystem": "Windows, Linux, macOS",
+      "applicationCategory": "DesignApplication",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "description": "A command-line application and GUI to dynamically generate decks of cards from a JSON/YAML specification and a CSV data file.",
+      "author": {
+          "@type": "Person",
+          "name": "Julynx"
+      },
+      "downloadUrl": "https://pypi.org/project/decksmith/",
+      "featureList": "Consistent layout, Pure Python, High performance, Intuitive syntax, Image transformations, PDF export"
+    }
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/decksmith.ico">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="assets/decksmith_transparent.png" alt="DeckSmith Logo">
+                <span>DeckSmith</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html" class="active">Home</a>
+                <a href="docs.html">Documentation</a>
+                <a href="https://github.com/Julynx/decksmith" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="container">
+            <h1 class="hero-title">Craft Your Perfect Deck</h1>
+            <p class="hero-subtitle">The ultimate tool for dynamic card generation. Define once, generate endlessly.</p>
+            
+            <div class="hero-actions">
+                <a href="#" class="btn btn-primary btn-lg">
+                    <i class="fab fa-windows"></i> Download for Windows
+                </a>
+                <div class="secondary-actions">
+                    <a href="https://github.com/Julynx/decksmith" target="_blank" class="btn btn-secondary">
+                        <i class="fab fa-github"></i> Source Code
+                    </a>
+                    <div class="pip-install">
+                        <code>pip install decksmith</code>
+                        <button class="copy-btn" onclick="navigator.clipboard.writeText('pip install decksmith')"><i class="fas fa-copy"></i></button>
+                    </div>
+                </div>
+                <p class="small-text">Then run: <code>decksmith --gui</code></p>
+            </div>
+
+            <div class="hero-image">
+                <img src="assets/banner.png" alt="DeckSmith Application Screenshot">
+            </div>
+        </div>
+    </header>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why DeckSmith?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="icon-wrapper"><i class="fas fa-layer-group"></i></div>
+                    <h3>Consistent Layout</h3>
+                    <p>Define your card structure once and apply it to your entire dataset. Edit anytime, regenerate instantly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrapper"><i class="fab fa-python"></i></div>
+                    <h3>Pure Python</h3>
+                    <p>Built with Python for reliability and ease of use. Install via pip and extend with your own scripts.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrapper"><i class="fas fa-bolt"></i></div>
+                    <h3>High Performance</h3>
+                    <p>Generate hundreds of cards in seconds using parallel processing. No more waiting for your deck to build.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrapper"><i class="fas fa-code"></i></div>
+                    <h3>Intuitive Syntax</h3>
+                    <p>Simple, readable configuration. Whether you prefer JSON or YAML, DeckSmith adapts to your workflow.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrapper"><i class="fas fa-wand-magic-sparkles"></i></div>
+                    <h3>Powerful Editing</h3>
+                    <p>Advanced image transformations, rich text formatting, and vector shapes at your fingertips.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="icon-wrapper"><i class="fas fa-file-export"></i></div>
+                    <h3>Versatile Export</h3>
+                    <p>Export as individual images or print-ready PDFs. Perfect for prototyping or final production.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to start building?</h2>
+            <p>Join the community and start creating your decks today.</p>
+            <div class="cta-buttons">
+                <a href="#" class="btn btn-primary btn-lg">Download Now</a>
+                <a href="docs.html" class="btn btn-secondary btn-lg">Read the Docs</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="assets/decksmith_transparent.png" alt="DeckSmith Logo">
+                    <span>DeckSmith</span>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/Julynx/decksmith" target="_blank">GitHub</a>
+                    <a href="https://pypi.org/project/decksmith/" target="_blank">PyPI</a>
+                    <a href="docs.html">Documentation</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 DeckSmith. Open source software.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

@@ -11,6 +11,7 @@ import click
 
 from decksmith.deck_builder import DeckBuilder
 from decksmith.export import PdfExporter
+from decksmith.gui.app import main as gui_main
 from decksmith.logger import logger
 
 
@@ -20,8 +21,6 @@ from decksmith.logger import logger
 def cli(ctx, gui):
     """A command-line tool for building decks of cards."""
     if gui:
-        from decksmith.gui.app import main as gui_main
-
         gui_main()
     elif ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
@@ -54,7 +53,7 @@ def build(ctx, output, spec, data):
     output_path = Path(output)
     output_path.mkdir(exist_ok=True)
 
-    logger.info(f"(i) Building deck in {output_path}...")
+    logger.info("(i) Building deck in %s...", output_path)
 
     try:
         spec_path = Path(spec)
@@ -66,7 +65,8 @@ def build(ctx, output, spec, data):
             source = ctx.get_parameter_source("data")
             if source.name == "DEFAULT":
                 logger.info(
-                    f"(i) Building a single card deck because '{csv_path}' was not found"
+                    "(i) Building a single card deck because '%s' was not found",
+                    csv_path,
                 )
                 csv_path = None
             else:
@@ -79,8 +79,8 @@ def build(ctx, output, spec, data):
         ctx.exit(1)
     # pylint: disable=W0718
     except Exception as exc:
-        logger.error(f"(x) Error building deck '{data}' from spec '{spec}':")
-        logger.error(" " * 4 + f"{exc}")
+        logger.error("(x) Error building deck '%s' from spec '%s':", data, spec)
+        logger.error("    %s", exc)
         logger.debug(traceback.format_exc())
         ctx.exit(1)
 
@@ -131,15 +131,16 @@ def export(image_folder, output, page_size, width, height, gap, margins):
             margins=margins,
         )
         exporter.export()
-        logger.info(f"(✔) Successfully exported PDF to {output}")
+        logger.info("(✔) Successfully exported PDF to %s", output)
     except FileNotFoundError as exc:
-        logger.error(f"(x) {exc}")
+        logger.error("(x) %s", exc)
     # pylint: disable=W0718
     except Exception as exc:
-        logger.error(f"(x) Error exporting images to '{output}':")
-        logger.error(" " * 4 + f"{exc}")
+        logger.error("(x) Error exporting images to '%s':", output)
+        logger.error("    %s", exc)
         logger.debug(traceback.format_exc())
 
 
 if __name__ == "__main__":
+    # pylint: disable=no-value-for-parameter
     cli()

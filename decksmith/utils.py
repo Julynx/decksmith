@@ -43,24 +43,30 @@ def apply_anchor(size: Tuple[int, ...], anchor: str) -> Tuple[int, int]:
         Tuple[int, int]: A tuple representing the position (x, y) based on the anchor.
     """
     if len(size) == 2:
-        w, h = size
-        x, y = 0, 0
+        width, height = size
+        position_horizontal, position_vertical = 0, 0
     elif len(size) == 4:
-        x, y, x2, y2 = size
-        w, h = x2 - x, y2 - y
+        position_horizontal, position_vertical, position_right, position_bottom = size
+        width, height = (
+            position_right - position_horizontal,
+            position_bottom - position_vertical,
+        )
     else:
         raise ValueError("Size must be a tuple of 2 or 4 integers.")
 
     anchor_points = {
-        "top-left": (x, y),
-        "top-center": (x + w // 2, y),
-        "top-right": (x + w, y),
-        "middle-left": (x, y + h // 2),
-        "center": (x + w // 2, y + h // 2),
-        "middle-right": (x + w, y + h // 2),
-        "bottom-left": (x, y + h),
-        "bottom-center": (x + w // 2, y + h),
-        "bottom-right": (x + w, y + h),
+        "top-left": (position_horizontal, position_vertical),
+        "top-center": (position_horizontal + width // 2, position_vertical),
+        "top-right": (position_horizontal + width, position_vertical),
+        "middle-left": (position_horizontal, position_vertical + height // 2),
+        "center": (
+            position_horizontal + width // 2,
+            position_vertical + height // 2,
+        ),
+        "middle-right": (position_horizontal + width, position_vertical + height // 2),
+        "bottom-left": (position_horizontal, position_vertical + height),
+        "bottom-center": (position_horizontal + width // 2, position_vertical + height),
+        "bottom-right": (position_horizontal + width, position_vertical + height),
     }
 
     if anchor not in anchor_points:

@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentation - DeckSmith Card Generator</title>
+    <meta name="description" content="Comprehensive documentation for DeckSmith. Learn how to create card layouts using YAML, import data from CSV, and generate decks.">
+    <meta name="keywords" content="DeckSmith documentation, card layout YAML, deck generation tutorial, python card maker docs">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://julynx.github.io/decksmith/docs.html">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://julynx.github.io/decksmith/docs.html">
+    <meta property="og:title" content="DeckSmith Documentation">
+    <meta property="og:description" content="Learn how to use DeckSmith to create professional decks. YAML syntax, CSV integration, and more.">
+    <meta property="og:image" content="https://julynx.github.io/decksmith/assets/banner.png">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="assets/decksmith.ico">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="logo">
+                <img src="assets/decksmith_transparent.png" alt="DeckSmith Logo">
+                <span>DeckSmith</span>
+            </a>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="docs.html" class="active">Documentation</a>
+                <a href="https://github.com/Julynx/decksmith" target="_blank"><i class="fab fa-github"></i> GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="docs-layout">
+        <aside class="sidebar">
+            <h3>Getting Started</h3>
+            <ul>
+                <li><a href="#introduction" class="active">Introduction</a></li>
+                <li><a href="#installation">Installation</a></li>
+                <li><a href="#quick-start">Quick Start</a></li>
+            </ul>
+            <h3>Configuration</h3>
+            <ul>
+                <li><a href="#yaml-structure">YAML Structure</a></li>
+                <li><a href="#text-elements">Text Elements</a></li>
+                <li><a href="#images">Images</a></li>
+                <li><a href="#shapes">Shapes</a></li>
+            </ul>
+            <h3>Advanced</h3>
+            <ul>
+                <li><a href="#variables">Variables & CSV</a></li>
+                <li><a href="#exporting">Exporting</a></li>
+            </ul>
+        </aside>
+
+        <main class="docs-content">
+            <section id="introduction">
+                <h1>Introduction</h1>
+                <p>DeckSmith is a powerful tool for automating the creation of decks, cards, and slides. Whether you're designing a Trading Card Game (TCG), a tarot deck, or business cards, DeckSmith allows you to define a layout once and generate hundreds of unique cards instantly.</p>
+                <div class="note">
+                    <p><strong>Note:</strong> While the command-line interface supports JSON, the DeckSmith GUI is optimized for <strong>YAML 1.2</strong>, offering a more readable and concise syntax for your card definitions.</p>
+                </div>
+            </section>
+
+            <section id="installation">
+                <h2>Installation</h2>
+                <p>DeckSmith is built with Python. To get started, install it via pip:</p>
+                <pre><code>pip install decksmith</code></pre>
+                <p>Once installed, launch the graphical interface with:</p>
+                <pre><code>decksmith --gui</code></pre>
+            </section>
+
+            <section id="quick-start">
+                <h2>Quick Start</h2>
+                <p>The fastest way to learn is by doing. When you launch the GUI, you can start a new project which will create two essential files:</p>
+                <ul>
+                    <li><code>deck.yaml</code>: Defines the visual layout of your cards.</li>
+                    <li><code>deck.csv</code>: Contains the data (text, image paths) for each card.</li>
+                </ul>
+            </section>
+
+            <section id="yaml-structure">
+                <h2>YAML Structure</h2>
+                <p>Your <code>deck.yaml</code> file defines the dimensions of your cards and the elements placed on them. Here is a basic example:</p>
+                <pre><code>card:
+  width: 63.5
+  height: 88.9
+  units: mm
+  margin: 0
+
+elements:
+  - type: text
+    name: title
+    content: "My Card Title"
+    x: 10
+    y: 10
+    width: 43.5
+    height: 10
+    font_size: 12</code></pre>
+            </section>
+
+            <section id="text-elements">
+                <h2>Text Elements</h2>
+                <p>Text elements allow you to place dynamic text on your cards. You can bind the content to your CSV data using the <code>%column_name%</code> syntax.</p>
+                <pre><code>- type: text
+  name: card_name
+  content: "%Name%"  # Pulls from the 'Name' column in deck.csv
+  x: 5
+  y: 5
+  width: 53.5
+  height: 8
+  font: "Arial"
+  font_size: 14
+  align: center
+  color: "#000000"</code></pre>
+            </section>
+
+            <section id="images">
+                <h2>Images</h2>
+                <p>Images can be static (like a card frame) or dynamic (like character art). DeckSmith supports powerful transformations.</p>
+                <pre><code>- type: image
+  name: artwork
+  path: "%ArtPath%"
+  x: 5
+  y: 15
+  width: 53.5
+  height: 40
+  keep_ratio: true
+  crop: true  # Crops the image to fit the dimensions</code></pre>
+            </section>
+
+            <section id="shapes">
+                <h2>Shapes</h2>
+                <p>You can draw rectangles, ellipses, and lines to add structural elements to your design.</p>
+                <pre><code>- type: shape
+  shape_type: rect
+  x: 0
+  y: 0
+  width: 63.5
+  height: 88.9
+  fill: "#ffffff"
+  stroke: "#000000"
+  stroke_width: 2</code></pre>
+            </section>
+
+            <section id="variables">
+                <h2>Variables & CSV</h2>
+                <p>The power of DeckSmith lies in its ability to merge data. Your <code>deck.csv</code> file should look like this:</p>
+                <pre><code>Name,ArtPath,Description
+Goblin,assets/goblin.png,A small but annoying creature.
+Dragon,assets/dragon.png,A massive fire-breathing beast.</code></pre>
+                <p>In your YAML, you reference these columns using percent signs, e.g., <code>%Description%</code>.</p>
+            </section>
+
+            <section id="exporting">
+                <h2>Exporting</h2>
+                <p>Once your design is ready, use the <strong>Build</strong> button in the GUI to generate images. You can also export directly to a PDF for easy printing.</p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Simple active state highlighting for sidebar
+        const sections = document.querySelectorAll('section');
+        const navLi = document.querySelectorAll('.sidebar ul li a');
+
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 150)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLi.forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href').includes(current)) {
+                    a.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

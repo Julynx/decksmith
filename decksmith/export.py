@@ -47,9 +47,9 @@ class PdfExporter:
         image_extensions = {".png", ".jpg", ".jpeg", ".webp"}
         return sorted(
             [
-                p
-                for p in self.image_folder.iterdir()
-                if p.suffix.lower() in image_extensions
+                image_path
+                for image_path in self.image_folder.iterdir()
+                if image_path.suffix.lower() in image_extensions
             ]
         )
 
@@ -83,17 +83,18 @@ class PdfExporter:
         best_layout = (0, 0, False)
 
         for rotated in [False, True]:
-            img_w, img_h = (
+            image_width, image_height = (
                 (self.image_width, self.image_height)
                 if not rotated
                 else (self.image_height, self.image_width)
             )
 
             cols = int(
-                (page_width - 2 * self.margins[0] + self.gap) / (img_w + self.gap)
+                (page_width - 2 * self.margins[0] + self.gap) / (image_width + self.gap)
             )
             rows = int(
-                (page_height - 2 * self.margins[1] + self.gap) / (img_h + self.gap)
+                (page_height - 2 * self.margins[1] + self.gap)
+                / (image_height + self.gap)
             )
 
             if cols * rows > best_fit:
@@ -113,16 +114,16 @@ class PdfExporter:
             if cols == 0 or rows == 0:
                 raise ValueError("The images are too large to fit on the page.")
 
-            img_w, img_h = (
+            image_width, image_height = (
                 (self.image_width, self.image_height)
                 if not rotated
                 else (self.image_height, self.image_width)
             )
 
-            total_width = cols * img_w + (cols - 1) * self.gap
-            total_height = rows * img_h + (rows - 1) * self.gap
-            start_x = (page_width - total_width) / 2
-            start_y = (page_height - total_height) / 2
+            total_width = cols * image_width + (cols - 1) * self.gap
+            total_height = rows * image_height + (rows - 1) * self.gap
+            start_horizontal = (page_width - total_width) / 2
+            start_vertical = (page_height - total_height) / 2
 
             images_on_page = 0
             for image_path in self.image_paths:
@@ -133,37 +134,37 @@ class PdfExporter:
                 row = images_on_page // cols
                 col = images_on_page % cols
 
-                x = start_x + col * (img_w + self.gap)
-                y = start_y + row * (img_h + self.gap)
+                position_horizontal = start_horizontal + col * (image_width + self.gap)
+                position_vertical = start_vertical + row * (image_height + self.gap)
 
                 if not rotated:
                     self.pdf.drawImage(
                         str(image_path),
-                        x,
-                        y,
-                        width=img_w,
-                        height=img_h,
+                        position_horizontal,
+                        position_vertical,
+                        width=image_width,
+                        height=image_height,
                         preserveAspectRatio=True,
                     )
                 else:
                     self.pdf.saveState()
-                    center_x = x + img_w / 2
-                    center_y = y + img_h / 2
-                    self.pdf.translate(center_x, center_y)
+                    center_horizontal = position_horizontal + image_width / 2
+                    center_vertical = position_vertical + image_height / 2
+                    self.pdf.translate(center_horizontal, center_vertical)
                     self.pdf.rotate(90)
                     self.pdf.drawImage(
                         str(image_path),
-                        -img_h / 2,
-                        -img_w / 2,
-                        width=img_h,
-                        height=img_w,
+                        -image_height / 2,
+                        -image_width / 2,
+                        width=image_height,
+                        height=image_width,
                         preserveAspectRatio=True,
                     )
                     self.pdf.restoreState()
                 images_on_page += 1
 
             self.pdf.save()
-            logger.info(f"Successfully exported PDF to {self.output_path}")
+            logger.info("Successfully exported PDF to %s", self.output_path)
         except Exception as e:
-            logger.error(f"An error occurred during PDF export: {e}")
+            logger.error("An error occurred during PDF export: %s", e)
             raise
