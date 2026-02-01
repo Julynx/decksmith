@@ -372,14 +372,24 @@ document.addEventListener('DOMContentLoaded', function() {
         if (mode === 'new') {
             elements.projectPathLabel.textContent = 'Store project in:';
             elements.projectNameGroup.classList.remove('hidden');
-            elements.projectPathInput.placeholder = 'e.g. C:/Projects';
+            elements.projectPathInput.placeholder = 'Loading default path...';
+
+            fetch('/api/system/default-path')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.path) {
+                        elements.projectPathInput.value = data.path;
+                    }
+                })
+                .catch(err => console.error('Error fetching default path:', err));
+
+            elements.projectNameInput.focus();
         } else {
             elements.projectPathLabel.textContent = 'Folder Path:';
             elements.projectNameGroup.classList.add('hidden');
             elements.projectPathInput.placeholder = 'e.g. C:/Projects/MyDeck';
+            elements.projectPathInput.focus();
         }
-
-        elements.projectPathInput.focus();
     }
 
     function hideModal() {

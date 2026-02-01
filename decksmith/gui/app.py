@@ -14,6 +14,7 @@ from pathlib import Path
 from threading import Timer
 
 import pandas as pd
+from platformdirs import user_documents_dir
 from flask import (
     Flask,
     Response,
@@ -85,6 +86,18 @@ def get_current_project():
     """Returns the current project path."""
     working_dir = project_manager.get_working_dir()
     return jsonify({"path": str(working_dir) if working_dir else None})
+
+
+@app.route("/api/system/default-path", methods=["GET"])
+def get_default_path():
+    """Returns the default project path."""
+    default_path = Path(user_documents_dir()) / "DeckSmith"
+    try:
+        default_path.mkdir(parents=True, exist_ok=True)
+        return jsonify({"path": str(default_path)})
+    except Exception as e:
+        logger.error("Error creating default path: %s", e)
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/system/browse", methods=["POST"])
