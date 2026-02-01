@@ -59,6 +59,9 @@
           <img src="assets/decksmith.ico" alt="DeckSmith Logo" />
           <span>DeckSmith</span>
         </a>
+        <button class="mobile-menu-btn" aria-label="Toggle navigation">
+          <i class="fas fa-bars"></i>
+        </button>
         <div class="nav-links">
           <a href="index.html">Home</a>
           <a href="docs.html" class="active">Docs</a>
@@ -70,6 +73,9 @@
     </nav>
 
     <div class="docs-layout">
+      <button class="docs-mobile-toggle" style="display: none">
+        <i class="fas fa-list"></i> Table of Contents
+      </button>
       <aside class="sidebar">
         <h3>Getting Started</h3>
         <ul>
@@ -449,26 +455,10 @@ elements:
               generate the card images in the <code>output</code> folder.
             </p>
 
-            <p style="display: flex; gap: 20px">
-              <img
-                src="assets/card_1.png"
-                width="200"
-                alt="Card 1 Example"
-                style="
-                  border-radius: 8px;
-                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                "
-              />
-              <img
-                src="assets/card_2.png"
-                width="200"
-                alt="Card 2 Example"
-                style="
-                  border-radius: 8px;
-                  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                "
-              />
-            </p>
+            <div class="card-preview">
+              <img src="assets/card_1.png" alt="Card 1 Example" />
+              <img src="assets/card_2.png" alt="Card 2 Example" />
+            </div>
             <div class="cli-section">
               <button class="cli-toggle">
                 Show CLI Instructions <i class="fas fa-chevron-down"></i>
@@ -588,6 +578,58 @@ elements:
             });
         });
       });
+
+      // Mobile Menu Toggle
+      const mobileBtn = document.querySelector(".mobile-menu-btn");
+      const navLinks = document.querySelector(".nav-links");
+
+      if (mobileBtn) {
+        mobileBtn.addEventListener("click", () => {
+          navLinks.classList.toggle("active");
+          const icon = mobileBtn.querySelector("i");
+          if (navLinks.classList.contains("active")) {
+            icon.classList.remove("fa-bars");
+            icon.classList.add("fa-times");
+          } else {
+            icon.classList.remove("fa-times");
+            icon.classList.add("fa-bars");
+          }
+        });
+      }
+
+      // Docs Sidebar Toggle
+      const docsToggle = document.querySelector(".docs-mobile-toggle");
+      const sidebar = document.querySelector(".sidebar");
+
+      if (docsToggle) {
+        // Check if we are on mobile to show the button
+        const checkMobile = () => {
+          if (window.innerWidth <= 768) {
+            docsToggle.style.display = "flex";
+          } else {
+            docsToggle.style.display = "none";
+            sidebar.classList.remove("active");
+            sidebar.style.display = ""; // Reset to CSS default
+          }
+        };
+
+        window.addEventListener("resize", checkMobile);
+        checkMobile(); // Initial check
+
+        docsToggle.addEventListener("click", () => {
+          sidebar.classList.toggle("active");
+        });
+
+        // Close sidebar when clicking a link on mobile
+        const sidebarLinks = document.querySelectorAll(".sidebar a");
+        sidebarLinks.forEach((link) => {
+          link.addEventListener("click", () => {
+            if (window.innerWidth <= 768) {
+              sidebar.classList.remove("active");
+            }
+          });
+        });
+      }
     </script>
   </body>
 </html>
