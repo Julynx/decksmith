@@ -4,12 +4,7 @@
 
 <br>
 <p align="center">
-  <img width="600" src="https://raw.githubusercontent.com/Julynx/decksmith/refs/heads/main/docs/assets/decksmith.png">
-</p>
-
-<br>
-<p align="center">
-  <img width="600" src="https://raw.githubusercontent.com/Julynx/decksmith/refs/heads/main/docs/assets/banner.png">
+  <img src="https://raw.githubusercontent.com/Julynx/decksmith/refs/heads/main/docs/assets/screenshot.png" width='100%'>
 </p>
 
 <br>
