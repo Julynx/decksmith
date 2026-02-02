@@ -461,6 +461,7 @@ footer {
 
     .hero-subtitle {
         padding: 0 var(--spacing-md);
+        font-size: 1em;
     }
 
     .hero-actions {
@@ -504,7 +505,7 @@ footer {
 
     .btn-lg {
         padding: 10px 20px;
-        font-size: 1em;
+        font-size: 0.9em;
     }
 
     .footer-content {
@@ -550,6 +551,10 @@ footer {
 
     .docs-content h2 {
         font-size: 1.5em;
+    }
+
+    .docs-content pre {
+        font-size: 0.85em;
     }
 
     .docs-mobile-toggle {
