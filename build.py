@@ -77,7 +77,7 @@ def main():
 
     cfg_content = f"""[Application]
 name=DeckSmith
-version=0.9.1
+version=0.9.2
 entry_point=decksmith.gui.app:main
 icon=docs/assets/decksmith.ico
 console=false
@@ -93,7 +93,7 @@ packages = decksmith
 
 [Build]
 directory=build_nsis
-installer_name=DeckSmith_Setup_0.9.1.exe
+installer_name=DeckSmith_Setup.exe
 """
 
     with open("installer.cfg", "w") as installer_file:

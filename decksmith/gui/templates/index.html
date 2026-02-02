@@ -15,7 +15,7 @@
 <body>
     <div id="header">
         <div class="app-branding">
-            <i class="fa-solid fa-layer-group"></i>
+            <img src="{{ url_for('static', filename='img/decksmith.ico') }}" alt="DeckSmith Logo" class="app-logo">
             <div class="app-title">DeckSmith</div>
         </div>
         <div class="project-controls">
@@ -37,6 +37,7 @@
                 <div id="yaml-pane" class="split split-vertical">
                     <div class="pane-header">
                         <span><i class="fa-solid fa-code"></i> Layout (YAML)</span>
+                        <button class="btn small header-btn" title="Syntax Guide" onclick="window.open('https://julynx.github.io/decksmith/docs.html#deck-yaml-syntax', '_blank')"><i class="fa-solid fa-book"></i> Syntax Guide</button>
                     </div>
                     <div id="yaml-editor"></div>
                 </div>
@@ -88,6 +89,7 @@
     <div id="welcome-screen" class="modal hidden">
         <div class="modal-overlay"></div>
         <div class="modal-content welcome-content">
+            <img src="{{ url_for('static', filename='img/decksmith.ico') }}" alt="DeckSmith Logo" class="welcome-logo">
             <h1>Welcome to DeckSmith</h1>
             <p>Create and manage your card decks with ease.<br>Select a project to get started.</p>
             <div class="welcome-actions">

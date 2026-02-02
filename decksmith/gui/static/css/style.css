@@ -3,24 +3,27 @@
     --bg-primary: #1e1e1e;
     --bg-secondary: #252526;
     --bg-tertiary: #333333;
-    --bg-header: #1e1e1e; /* Seamless header */
+    --bg-header: #1e1e1e;
+    /* Seamless header */
     --bg-input: #3c3c3c;
     --bg-hover: #2a2d2e;
     --bg-active: #37373d;
-    
+
     --text-primary: #cccccc;
     --text-secondary: #969696;
     --text-muted: #6e6e6e;
     --text-inverse: #ffffff;
 
-    --accent-color: #007fd4; /* VS Code Blue */
+    --accent-color: #007fd4;
+    /* VS Code Blue */
     --accent-hover: #026ec1;
     --danger-color: #f14c4c;
     --danger-hover: #d43b3b;
     --success-color: #4caf50;
     --warning-color: #cca700;
 
-    --border-color: #3e3e42; /* Subtle borders */
+    --border-color: #3e3e42;
+    /* Subtle borders */
     --border-focus: #007fd4;
 
     /* Spacing */
@@ -35,14 +38,15 @@
     --radius-sm: 3px;
     --radius-md: 5px;
     --radius-lg: 8px;
-    
+
     /* Shadows */
     --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
     --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
     --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-body, html {
+body,
+html {
     margin: 0;
     padding: 0;
     height: 100%;
@@ -50,7 +54,8 @@ body, html {
     background-color: var(--bg-primary);
     color: var(--text-primary);
     overflow: hidden;
-    font-size: 13px; /* Slightly smaller, more dense interface */
+    font-size: 13px;
+    /* Slightly smaller, more dense interface */
     line-height: 1.5;
 }
 
@@ -67,7 +72,8 @@ body, html {
 ::-webkit-scrollbar-thumb {
     background: #424242;
     border-radius: 10px;
-    border: 2px solid var(--bg-primary); /* Creates padding effect */
+    border: 2px solid var(--bg-primary);
+    /* Creates padding effect */
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -100,8 +106,9 @@ body, html {
     font-weight: 600;
 }
 
-.app-branding i {
-    color: var(--accent-color);
+.app-logo {
+    height: 24px;
+    width: auto;
 }
 
 .project-controls {
@@ -198,7 +205,8 @@ body, html {
     width: 100vw;
 }
 
-#left-pane, #right-pane {
+#left-pane,
+#right-pane {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -212,7 +220,8 @@ body, html {
 #right-pane {
     width: 50%;
     background: var(--bg-primary);
-    padding: 0; /* Removed padding for cleaner split */
+    padding: 0;
+    /* Removed padding for cleaner split */
 }
 
 #editors-container {
@@ -222,7 +231,8 @@ body, html {
     flex-direction: column;
 }
 
-#yaml-pane, #csv-pane {
+#yaml-pane,
+#csv-pane {
     display: flex;
     flex-direction: column;
     height: 50%;
@@ -242,7 +252,8 @@ body, html {
     justify-content: space-between;
 }
 
-#yaml-editor, #csv-editor {
+#yaml-editor,
+#csv-editor {
     flex-grow: 1;
     width: 100%;
     height: 100%;
@@ -286,7 +297,8 @@ body, html {
 }
 
 .select-wrapper::after {
-    content: '\f078'; /* FontAwesome chevron-down */
+    content: '\f078';
+    /* FontAwesome chevron-down */
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     position: absolute;
@@ -330,10 +342,10 @@ select:focus {
     align-items: center;
     background-color: #1a1a1a;
     /* Checkered background for transparency */
-    background-image: 
-        linear-gradient(45deg, #222 25%, transparent 25%), 
-        linear-gradient(-45deg, #222 25%, transparent 25%), 
-        linear-gradient(45deg, transparent 75%, #222 75%), 
+    background-image:
+        linear-gradient(45deg, #222 25%, transparent 25%),
+        linear-gradient(-45deg, #222 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #222 75%),
         linear-gradient(-45deg, transparent 75%, #222 75%);
     background-size: 20px 20px;
     background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
@@ -378,7 +390,8 @@ select:focus {
 }
 
 #placeholder-text::before {
-    content: '\f03e'; /* FontAwesome image icon */
+    content: '\f03e';
+    /* FontAwesome image icon */
     font-family: 'Font Awesome 6 Free';
     font-weight: 900;
     font-size: 4em;
@@ -416,9 +429,17 @@ select:focus {
     transition: background-color 0.3s ease;
 }
 
-.status-line.success { background-color: var(--success-color); }
-.status-line.error { background-color: var(--danger-color); }
-.status-line.loading { background-color: var(--warning-color); }
+.status-line.success {
+    background-color: var(--success-color);
+}
+
+.status-line.error {
+    background-color: var(--danger-color);
+}
+
+.status-line.loading {
+    background-color: var(--warning-color);
+}
 
 /* Toasts */
 #toast-container {
@@ -453,9 +474,17 @@ select:focus {
     transform: translateY(0);
 }
 
-.toast.success { border-left-color: var(--success-color); }
-.toast.error { border-left-color: var(--danger-color); }
-.toast.info { border-left-color: var(--accent-color); }
+.toast.success {
+    border-left-color: var(--success-color);
+}
+
+.toast.error {
+    border-left-color: var(--danger-color);
+}
+
+.toast.info {
+    border-left-color: var(--accent-color);
+}
 
 /* Split.js gutters */
 .gutter {
@@ -472,12 +501,14 @@ select:focus {
 
 .gutter.gutter-horizontal {
     cursor: col-resize;
-    width: 4px; /* Thinner gutter */
+    width: 4px;
+    /* Thinner gutter */
 }
 
 .gutter.gutter-vertical {
     cursor: row-resize;
-    height: 4px; /* Thinner gutter */
+    height: 4px;
+    /* Thinner gutter */
 }
 
 /* Modals */
@@ -529,7 +560,8 @@ select:focus {
     transform: scale(1);
 }
 
-.modal-content h3, .modal-content h1 {
+.modal-content h3,
+.modal-content h1 {
     margin-top: 0;
     margin-bottom: var(--spacing-md);
     color: var(--text-inverse);
@@ -598,12 +630,16 @@ input[type="text"]:focus {
     border: 1px solid var(--border-color);
 }
 
+.welcome-logo {
+    width: 80px;
+    height: auto;
+    margin-bottom: 16px;
+}
+
 .welcome-content h1 {
     font-size: 2.2em;
     margin-bottom: 16px;
-    background: linear-gradient(135deg, var(--accent-color), #a366ff);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-inverse);
     letter-spacing: -0.5px;
 }
 
@@ -653,4 +689,19 @@ input[type="number"] {
 
 input[type="number"]:focus {
     border-color: var(--border-focus);
+}
+
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    line-height: 1;
+    gap: 6px;
+}
+
+.header-btn i {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+    vertical-align: middle;
+    margin-top: -1px;
 }
