@@ -77,7 +77,7 @@ def main():
 
     cfg_content = f"""[Application]
 name=DeckSmith
-version=0.9.2
+version=0.9.3
 entry_point=decksmith.gui.app:main
 icon=docs/assets/decksmith.ico
 console=false
