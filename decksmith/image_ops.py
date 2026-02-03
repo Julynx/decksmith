@@ -122,10 +122,8 @@ class ImageOps:
 
     @staticmethod
     def _filter_opacity(img: Image.Image, opacity: int) -> Image.Image:
-        if opacity < 0:
-            opacity = 0
-        if opacity > 100:
-            opacity = 100
+        opacity = max(opacity, 0)
+        opacity = min(opacity, 100)
 
         img = img.convert("RGBA")
         alpha = img.split()[3]

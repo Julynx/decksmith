@@ -3,14 +3,12 @@ This module contains the TextRenderer class for drawing text on cards.
 """
 
 import operator
-import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 import pandas as pd
 from PIL import Image, ImageDraw, ImageFont
 
-from decksmith.logger import logger
 from decksmith.utils import apply_anchor, get_wrapped_text
 
 
@@ -95,7 +93,7 @@ class TextRenderer:
 
         # Font setup
         font_size = element.pop("font_size", 10)
-        if font_path := element.pop("font_path", False):
+        if font_path := element.pop("font_path", None):
             # Resolve font path relative to base_path if provided
             if self.base_path and not Path(font_path).is_absolute():
                 potential_path = self.base_path / font_path
@@ -106,23 +104,37 @@ class TextRenderer:
                 element["font"] = ImageFont.truetype(
                     font_path, font_size, encoding="unic"
                 )
-            except OSError:
-                logger.error(
-                    "Could not load font: %s. Using default.\n%s",
-                    font_path,
-                    traceback.format_exc(),
-                )
-                element["font"] = ImageFont.load_default(font_size)
+            except OSError as exc:
+                raise OSError(f"Could not load font: {font_path}") from exc
         else:
             element["font"] = ImageFont.load_default(font_size)
 
         if font_variant := element.pop("font_variant", None):
             try:
+                names = element["font"].get_variation_names()
+            except (AttributeError, OSError):
+                names = []
+
+            # Normalize names to strings (some fonts return bytes)
+            names = [
+                name.decode("utf-8") if isinstance(name, bytes) else name
+                for name in names
+            ]
+
+            if names:
+                if font_variant not in names:
+                    raise ValueError(
+                        f"Font variant '{font_variant}' not found. "
+                        f"Available variants: {', '.join(names)}"
+                    )
                 element["font"].set_variation_by_name(font_variant)
-            except AttributeError:
-                logger.warning(
-                    "Font variant '%s' not supported for this font.", font_variant
-                )
+            else:
+                try:
+                    element["font"].set_variation_by_name(font_variant)
+                except (AttributeError, OSError) as exc:
+                    raise ValueError(
+                        f"Font variant '{font_variant}' not supported for this font."
+                    ) from exc
 
         # Text wrapping
         if line_length := element.pop("width", False):

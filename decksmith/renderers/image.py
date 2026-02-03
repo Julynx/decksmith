@@ -3,14 +3,12 @@ This module contains the ImageRenderer class for drawing images on cards.
 """
 
 import operator
-import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional
 
 from PIL import Image
 
 from decksmith.image_ops import ImageOps
-from decksmith.logger import logger
 from decksmith.utils import apply_anchor
 
 
@@ -47,11 +45,10 @@ class ImageRenderer:
             if potential_path.exists():
                 path = potential_path
 
-        try:
-            img = Image.open(path)
-        except FileNotFoundError:
-            logger.error("Image not found: %s", path, traceback.format_exc())
-            return
+        if not path.exists():
+            raise FileNotFoundError(f"Image not found: {path}")
+
+        img = Image.open(path)
 
         img = ImageOps.apply_filters(img, element.get("filters", {}))
 
