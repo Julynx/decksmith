@@ -51,6 +51,9 @@ class DeckBuilder:
     def build_deck(self, output_path: Path):
         """
         Builds the deck of cards by reading the CSV file and creating CardBuilder instances.
+
+        Args:
+            output_path (Path): The directory path to save the built cards.
         """
         base_path = self.spec_path.parent if self.spec_path else None
 
@@ -86,7 +89,7 @@ class DeckBuilder:
                     exc,
                     traceback.format_exc(),
                 )
-                raise exc
+                raise
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             list(executor.map(build_card, dataframe.iterrows()))

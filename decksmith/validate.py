@@ -91,9 +91,14 @@ def validate_element(element: Dict[str, Any], element_type: str):
     """
     Validates an element of a card against a spec, raising an exception
     if it does not meet the spec.
+
     Args:
         element (dict): The card element.
         element_type (str): The type of the element
+
+    Raises:
+        ValueError: If the element type is unknown.
+        jval.exceptions.ValidationException: If the element does not match the spec.
     """
     if element_type not in SPECS_FOR_TYPE:
         raise ValueError(f"Unknown element type: {element_type}")
@@ -105,13 +110,15 @@ def validate_card(card: Dict[str, Any]):
     """
     Validates a card against a spec, raising an exception
     if it does not meet the spec.
+
     Args:
         card (Dict[str, Any]): The card.
+
+    Raises:
+        jval.exceptions.ValidationException: If the card does not match the spec.
     """
-    # print(f"DEBUG:\n{card=}")
     validate(card, CARD_SPEC)
     for element in card["elements"]:
-        # print(f"DEBUG: {element['type']}")
         validate_element(element, element["type"])
 
 

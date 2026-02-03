@@ -113,7 +113,8 @@ def build(ctx, output, spec, data):
     default=[2, 2],
     help="The horizontal and vertical page margins in millimeters.",
 )
-def export(image_folder, output, page_size, width, height, gap, margins):
+@click.pass_context
+def export(ctx, image_folder, output, page_size, width, height, gap, margins):
     """Exports images from a folder to a PDF file."""
     try:
         image_folder_path = Path(image_folder)
@@ -132,11 +133,13 @@ def export(image_folder, output, page_size, width, height, gap, margins):
         exporter.export()
         logger.info("(✔) Successfully exported PDF to %s", output)
     except FileNotFoundError as exc:
-        logger.error("(x) %s", exc)
+        click.echo(f"(x) {exc}")
+        ctx.exit(1)
     # pylint: disable=W0718
     except Exception as exc:
         logger.error("(x) Error exporting images to '%s':", output)
         logger.error("    %s\n%s", exc, traceback.format_exc())
+        ctx.exit(1)
 
 
 if __name__ == "__main__":

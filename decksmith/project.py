@@ -30,16 +30,12 @@ class ProjectManager:
     def create_project(self, path: Path):
         """
         Creates a new project at the specified path.
+
         Args:
-            path (Path): The path to create the project in.
+            path (Path): The path where the project directory will be created.
         """
         path.mkdir(parents=True, exist_ok=True)
 
-        # Copy templates
-        # Assuming templates are in decksmith/templates relative to this file
-        # But actually they are in decksmith/templates relative to the package root
-        # Let's use importlib.resources or relative path from __file__
-        # Since we are in decksmith/project.py, templates are in ../templates
         template_dir = Path(__file__).parent / "templates"
 
         if not (path / "deck.yaml").exists():
@@ -50,52 +46,52 @@ class ProjectManager:
 
         self.working_dir = path
 
+    def _load_file_or_template(self, filename: str) -> str:
+        """
+        Helper to load a file from the working directory, or fall back to a template.
+
+        Args:
+            filename (str): The name of the file (e.g., "deck.yaml").
+
+        Returns:
+            str: The content of the file or template.
+        """
+        if self.working_dir is None:
+            return ""
+
+        file_path = self.working_dir / filename
+        template_path = Path(__file__).parent / "templates" / filename
+
+        if file_path.exists() and file_path.stat().st_size > 0:
+            with open(file_path, "r", encoding="utf-8") as file_object:
+                return file_object.read()
+        elif template_path.exists():
+            with open(template_path, "r", encoding="utf-8") as file_object:
+                return file_object.read()
+        return ""
+
     def load_files(self) -> Dict[str, str]:
         """
         Loads the deck.yaml and deck.csv files from the current project.
+
         Returns:
-            Dict[str, str]: A dictionary containing the content of the files.
+            Dict[str, str]: A dictionary with keys "yaml" and "csv" containing file contents.
         """
-        if self.working_dir is None:
-            return {"yaml": "", "csv": ""}
-
-        yaml_path = self.working_dir / "deck.yaml"
-        csv_path = self.working_dir / "deck.csv"
-
-        template_dir = Path(__file__).parent / "templates"
-        yaml_template = template_dir / "deck.yaml"
-        csv_template = template_dir / "deck.csv"
-
-        data = {}
-
-        # Load YAML
-        if yaml_path.exists() and yaml_path.stat().st_size > 0:
-            with open(yaml_path, "r", encoding="utf-8") as yaml_file:
-                data["yaml"] = yaml_file.read()
-        elif yaml_template.exists():
-            with open(yaml_template, "r", encoding="utf-8") as yaml_template_file:
-                data["yaml"] = yaml_template_file.read()
-        else:
-            data["yaml"] = ""
-
-        # Load CSV
-        if csv_path.exists() and csv_path.stat().st_size > 0:
-            with open(csv_path, "r", encoding="utf-8") as csv_file:
-                data["csv"] = csv_file.read()
-        elif csv_template.exists():
-            with open(csv_template, "r", encoding="utf-8") as csv_template_file:
-                data["csv"] = csv_template_file.read()
-        else:
-            data["csv"] = ""
-
-        return data
+        return {
+            "yaml": self._load_file_or_template("deck.yaml"),
+            "csv": self._load_file_or_template("deck.csv"),
+        }
 
     def save_files(self, yaml_content: Optional[str], csv_content: Optional[str]):
         """
         Saves the deck.yaml and deck.csv files to the current project.
+
         Args:
             yaml_content (Optional[str]): The content of the deck.yaml file.
             csv_content (Optional[str]): The content of the deck.csv file.
+
+        Raises:
+            ValueError: If no project is currently selected (working_dir is None).
         """
         if self.working_dir is None:
             raise ValueError("No project selected")

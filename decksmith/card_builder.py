@@ -53,14 +53,17 @@ class CardBuilder:
 
     def _calculate_absolute_position(self, element: Dict[str, Any]) -> Tuple[int, int]:
         """
-        Calculates the absolute position of an element,
-        resolving relative positioning.
+        Calculates the absolute position of an element, resolving relative positioning.
+
         Args:
             element (dict): The element dictionary.
+
         Returns:
             tuple: The absolute (x, y) position of the element.
+
+        Raises:
+            ValueError: If the referenced element for relative positioning is not found.
         """
-        # If the element has no 'relative_to', return its position directly
         if "relative_to" not in element:
             return tuple(element.get("position", [0, 0]))
 
@@ -86,59 +89,80 @@ class CardBuilder:
     def render(self) -> Image.Image:
         """
         Renders the card image by drawing all elements specified in the YAML.
+
         Returns:
             Image.Image: The rendered card image.
+
+        Raises:
+            Exception: If an error occurs during rendering.
         """
         self.spec = transform_card(self.spec)
         validate_card(self.spec)
 
+        renderers = {
+            "text": self._render_text,
+            "image": self._render_image,
+            "circle": self._render_shape,
+            "ellipse": self._render_shape,
+            "polygon": self._render_shape,
+            "regular-polygon": self._render_shape,
+            "rectangle": self._render_shape,
+        }
+
         for element in self.spec.get("elements", []):
             element_type = element.get("type")
-            try:
-                if element_type == "text":
-                    self.card = self.text_renderer.render(
-                        self.card,
-                        element,
-                        self._calculate_absolute_position,
-                        self._store_element_position,
+            handler = renderers.get(element_type)
+
+            if handler:
+                try:
+                    handler(element)
+                except Exception as exc:
+                    logger.error(
+                        "Error drawing element %s: %s\n%s",
+                        element_type,
+                        exc,
+                        traceback.format_exc(),
                     )
-                    self.draw = ImageDraw.Draw(self.card, "RGBA")
-                elif element_type == "image":
-                    self.image_renderer.render(
-                        self.card,
-                        element,
-                        self._calculate_absolute_position,
-                        self._store_element_position,
-                    )
-                elif element_type in [
-                    "circle",
-                    "ellipse",
-                    "polygon",
-                    "regular-polygon",
-                    "rectangle",
-                ]:
-                    self.card = self.shape_renderer.render(
-                        self.card,
-                        element,
-                        self._calculate_absolute_position,
-                        self._store_element_position,
-                    )
-                    # Re-create draw object because shape renderer might have composited a new image
-                    self.draw = ImageDraw.Draw(self.card, "RGBA")
-            except Exception as exc:
-                logger.error(
-                    "Error drawing element %s: %s\n%s",
-                    element_type,
-                    exc,
-                    traceback.format_exc(),
-                )
-                raise exc
+                    raise
+            else:
+                logger.warning("Unknown element type: %s", element_type)
 
         return self.card
+
+    def _render_text(self, element: Dict[str, Any]):
+        """Renders a text element."""
+        self.card = self.text_renderer.render(
+            self.card,
+            element,
+            self._calculate_absolute_position,
+            self._store_element_position,
+        )
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
+
+    def _render_image(self, element: Dict[str, Any]):
+        """Renders an image element."""
+        self.image_renderer.render(
+            self.card,
+            element,
+            self._calculate_absolute_position,
+            self._store_element_position,
+        )
+
+    def _render_shape(self, element: Dict[str, Any]):
+        """Renders a shape element."""
+        self.card = self.shape_renderer.render(
+            self.card,
+            element,
+            self._calculate_absolute_position,
+            self._store_element_position,
+        )
+        # Re-create draw object because shape renderer might have composited a new image
+        self.draw = ImageDraw.Draw(self.card, "RGBA")
 
     def build(self, output_path: Path):
         """
         Builds the card image and saves it to the specified path.
+
         Args:
             output_path (Path): The path where the card image will be saved.
         """
