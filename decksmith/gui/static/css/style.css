@@ -292,6 +292,10 @@ html {
     font-size: 0.95em;
 }
 
+.control-group.actions {
+    margin-right: 8px;
+}
+
 .select-wrapper {
     position: relative;
 }

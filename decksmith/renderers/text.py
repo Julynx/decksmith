@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import pandas as pd
-from PIL import ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont
 
 from decksmith.logger import logger
 from decksmith.utils import apply_anchor, get_wrapped_text
@@ -23,18 +23,20 @@ class TextRenderer:
 
     def render(
         self,
-        draw: ImageDraw.ImageDraw,
+        card: Image.Image,
         element: Dict[str, Any],
         calculate_pos_func,
         store_pos_func,
-    ):
+    ) -> Image.Image:
         """
         Draws text on the card.
         Args:
-            draw (ImageDraw.ImageDraw): The PIL ImageDraw object.
+            card (Image.Image): The card image object.
             element (Dict[str, Any]): The text element specification.
             calculate_pos_func (callable): Function to calculate absolute position.
             store_pos_func (callable): Function to store element position.
+        Returns:
+            Image.Image: The updated card image.
         """
         assert element.pop("type") == "text", "Element type must be 'text'"
 
@@ -42,6 +44,9 @@ class TextRenderer:
 
         original_pos = calculate_pos_func(element)
         element["position"] = original_pos
+
+        layer = Image.new("RGBA", card.size, (0, 0, 0, 0))
+        draw = ImageDraw.Draw(layer, "RGBA")
 
         # Calculate anchor offset if needed
         if "anchor" in element:
@@ -67,6 +72,8 @@ class TextRenderer:
             stroke_fill=element.get("stroke_color", None),
         )
 
+        card = Image.alpha_composite(card, layer)
+
         # Store position
         if "id" in element:
             bbox = draw.textbbox(
@@ -77,6 +84,8 @@ class TextRenderer:
                 align=element.get("align", "left"),
             )
             store_pos_func(element["id"], bbox)
+
+        return card
 
     def _prepare_text_element(self, element: Dict[str, Any]) -> Dict[str, Any]:
         """Prepares text element properties."""

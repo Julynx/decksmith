@@ -119,3 +119,16 @@ class ImageOps:
         if direction == "vertical":
             return img.transpose(Image.FLIP_TOP_BOTTOM)
         return img
+
+    @staticmethod
+    def _filter_opacity(img: Image.Image, opacity: int) -> Image.Image:
+        if opacity < 0:
+            opacity = 0
+        if opacity > 100:
+            opacity = 100
+
+        img = img.convert("RGBA")
+        alpha = img.split()[3]
+        alpha = alpha.point(lambda p: int(p * opacity / 100))
+        img.putalpha(alpha)
+        return img

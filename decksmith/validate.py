@@ -39,6 +39,7 @@ SPECS_FOR_TYPE: Dict[str, Dict[str, Any]] = {
             "?*rotate": "<?int>",
             "?*flip": "<?str>",
             "?*resize": ["<?int>"],
+            "?*opacity": "<?int>",
         },
     },
     "circle": {

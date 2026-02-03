@@ -1,0 +1,70 @@
+{
+  "id": "canvas",
+  "width": 2750,
+  "height": 4750,
+  "background_color": [
+    200,
+    200,
+    200
+  ],
+  "elements": [
+    {
+      "id": "image",
+      "type": "image",
+      "position": [
+        0,
+        10
+      ],
+      "relative_to": [
+        "canvas",
+        "center"
+      ],
+      "anchor": "center",
+      "path": "tests/resources/example.webp",
+      "filters": {
+        "resize": [
+          null,
+          4750
+        ]
+      }
+    },
+    {
+      "id": "top-rectangle",
+      "type": "rectangle",
+      "position": [
+        0,
+        0
+      ],
+      "size": [2750, 2000],
+      "color": [100, 50, 150, 200],
+      "relative_to": [
+        "canvas",
+        "top-center"
+      ],
+      "anchor": "center"
+    },
+    {
+      "id": "number",
+      "type": "text",
+      "position": [
+        0,
+        300
+      ],
+      "relative_to": [
+        "canvas",
+        "top-center"
+      ],
+      "anchor": "center",
+      "text": "42",
+      "color": [
+        255,
+        255,
+        255,
+        128
+      ],
+      "font_path": "tests/resources/noto_sans_jp.ttf",
+      "font_size": 200,
+      "align": "center"
+    }
+  ]
+}

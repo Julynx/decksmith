@@ -1,0 +1,17 @@
+{
+  "width": 500,
+  "height": 500,
+  "background_color": [255, 0, 0],
+  "elements": [
+    {
+      "id": "image",
+      "type": "image",
+      "path": "tests/resources/example.webp",
+      "position": [0, 0],
+      "filters": {
+        "resize": [500, 500],
+        "opacity": 50
+      }
+    }
+  ]
+}

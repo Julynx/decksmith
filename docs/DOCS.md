@@ -162,6 +162,7 @@ filters:
   rotate: 90
   flip: horizontal | vertical
   resize: [400, 400]
+  opacity: 50
 ```
 
 Positive values in a `crop_xxxx` filter will cut rows/columns of pixels from that side of the image moving inwards, while negative values will add rows/columns of transparent pixels to that side of the image moving outwards.

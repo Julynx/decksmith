@@ -95,12 +95,13 @@ class CardBuilder:
             element_type = element.get("type")
             try:
                 if element_type == "text":
-                    self.text_renderer.render(
-                        self.draw,
+                    self.card = self.text_renderer.render(
+                        self.card,
                         element,
                         self._calculate_absolute_position,
                         self._store_element_position,
                     )
+                    self.draw = ImageDraw.Draw(self.card, "RGBA")
                 elif element_type == "image":
                     self.image_renderer.render(
                         self.card,
