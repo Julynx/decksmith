@@ -80,8 +80,7 @@ def build(ctx, output, spec, data):
     # pylint: disable=W0718
     except Exception as exc:
         logger.error("(x) Error building deck '%s' from spec '%s':", data, spec)
-        logger.error("    %s", exc)
-        logger.debug(traceback.format_exc())
+        logger.error("    %s\n%s", exc, traceback.format_exc())
         ctx.exit(1)
 
     logger.info("(✔) Deck built successfully.")
@@ -137,8 +136,7 @@ def export(image_folder, output, page_size, width, height, gap, margins):
     # pylint: disable=W0718
     except Exception as exc:
         logger.error("(x) Error exporting images to '%s':", output)
-        logger.error("    %s", exc)
-        logger.debug(traceback.format_exc())
+        logger.error("    %s\n%s", exc, traceback.format_exc())
 
 
 if __name__ == "__main__":

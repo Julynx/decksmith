@@ -405,7 +405,7 @@ select:focus {
 /* Status Bar */
 #status-bar {
     padding: 4px 12px;
-    background: var(--accent-color);
+    background: var(--success-color);
     color: white;
     font-size: 0.85em;
     font-weight: 500;
@@ -424,6 +424,18 @@ select:focus {
 
 #status-bar.success {
     background-color: var(--success-color);
+}
+
+#status-bar.error {
+    background-color: var(--danger-color);
+}
+
+#status-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+    flex: 1;
 }
 
 .status-line {
@@ -708,4 +720,9 @@ input[type="number"]:focus {
     height: 100%;
     vertical-align: middle;
     margin-top: -1px;
+}
+
+/* Input Error State */
+.input-error {
+    border-color: var(--danger-color) !important;
 }

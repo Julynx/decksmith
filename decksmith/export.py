@@ -2,6 +2,7 @@
 This module provides the functionality to export images from a folder to a PDF file.
 """
 
+import traceback
 from pathlib import Path
 from typing import List, Tuple
 
@@ -166,5 +167,7 @@ class PdfExporter:
             self.pdf.save()
             logger.info("Successfully exported PDF to %s", self.output_path)
         except Exception as e:
-            logger.error("An error occurred during PDF export: %s", e)
+            logger.error(
+                "An error occurred during PDF export: %s\n%s", e, traceback.format_exc()
+            )
             raise

@@ -3,6 +3,7 @@ This module contains the ImageRenderer class for drawing images on cards.
 """
 
 import operator
+import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -49,7 +50,7 @@ class ImageRenderer:
         try:
             img = Image.open(path)
         except FileNotFoundError:
-            logger.error("Image not found: %s", path)
+            logger.error("Image not found: %s", path, traceback.format_exc())
             return
 
         img = ImageOps.apply_filters(img, element.get("filters", {}))

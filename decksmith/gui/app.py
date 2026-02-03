@@ -8,6 +8,7 @@ import os
 import signal
 import threading
 import time
+import traceback
 import webbrowser
 from io import StringIO
 from pathlib import Path
@@ -96,8 +97,8 @@ def get_default_path():
         default_path.mkdir(parents=True, exist_ok=True)
         return jsonify({"path": str(default_path)})
     except Exception as e:
-        logger.error("Error creating default path: %s", e)
-        return jsonify({"error": str(e)}), 500
+        logger.error("Error creating default path: %s\n%s", e, traceback.format_exc())
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/api/system/browse", methods=["POST"])
@@ -115,23 +116,26 @@ def browse_folder():
             return jsonify({"path": folder_path})
         return jsonify({"path": None})
     except ImportError as e:
-        logger.error("crossfiledialog import failed: %s", e)
-        return jsonify({"error": f"Browse feature unavailable: {e}"}), 501
+        logger.error("crossfiledialog import failed: %s\n%s", e, traceback.format_exc())
+        return jsonify(
+            {"status": "error", "message": f"Browse feature unavailable: {e}"}
+        ), 501
     except Exception as e:
-        logger.error("Error browsing folder: %s", e)
-        return jsonify({"error": str(e)}), 500
+        logger.error("Error browsing folder: %s\n%s", e, traceback.format_exc())
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/api/project/select", methods=["POST"])
 def select_project():
     """Selects a project directory."""
-    path_str = request.json.get("path")
+    data = request.json or {}
+    path_str = data.get("path")
     if not path_str:
-        return jsonify({"error": "Path is required"}), 400
+        return jsonify({"status": "error", "message": "Path is required"}), 400
 
     path = Path(path_str)
     if not path.exists() or not path.is_dir():
-        return jsonify({"error": "Directory does not exist"}), 400
+        return jsonify({"status": "error", "message": "Directory does not exist"}), 400
 
     project_manager.set_working_dir(path)
     return jsonify({"status": "success", "path": str(path)})
@@ -147,9 +151,10 @@ def close_project():
 @app.route("/api/project/create", methods=["POST"])
 def create_project():
     """Creates a new project."""
-    path_str = request.json.get("path")
+    data = request.json or {}
+    path_str = data.get("path")
     if not path_str:
-        return jsonify({"error": "Path is required"}), 400
+        return jsonify({"status": "error", "message": "Path is required"}), 400
 
     path = Path(path_str)
 
@@ -157,8 +162,8 @@ def create_project():
         project_manager.create_project(path)
         return jsonify({"status": "success", "path": str(path)})
     except Exception as e:
-        logger.error("Error creating project: %s", e)
-        return jsonify({"error": str(e)}), 500
+        logger.error("Error creating project: %s\n%s", e, traceback.format_exc())
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/api/load", methods=["GET"])
@@ -172,7 +177,7 @@ def load_files():
 def save_files():
     """Saves project files."""
     if project_manager.get_working_dir() is None:
-        return jsonify({"error": "No project selected"}), 400
+        return jsonify({"status": "error", "message": "No project selected"}), 400
 
     data = request.json
     yaml_content = data.get("yaml")
@@ -182,8 +187,8 @@ def save_files():
         project_manager.save_files(yaml_content, csv_content)
         return jsonify({"status": "success"})
     except Exception as e:
-        logger.error("Error saving files: %s", e)
-        return jsonify({"error": str(e)}), 500
+        logger.error("Error saving files: %s\n%s", e, traceback.format_exc())
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route("/api/cards", methods=["GET"])
@@ -201,7 +206,7 @@ def list_cards():
         csv_table = pd.read_csv(csv_path, sep=";")
         return jsonify(csv_table.to_dict(orient="records"))
     except Exception as e:
-        logger.error("Error listing cards: %s", e)
+        logger.error("Error listing cards: %s\n%s", e, traceback.format_exc())
         return jsonify({"error": str(e)}), 400
 
 
@@ -242,7 +247,7 @@ def preview_card(card_index):
         return send_file(image_buffer, mimetype="image/png")
 
     except Exception as e:
-        logger.error("Error previewing card: %s", e)
+        logger.error("Error previewing card: %s\n%s", e, traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 
@@ -271,7 +276,7 @@ def build_deck():
 
         return jsonify({"status": "success", "message": f"Deck built in {output_path}"})
     except Exception as e:
-        logger.error("Error building deck: %s", e)
+        logger.error("Error building deck: %s\n%s", e, traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 
@@ -313,7 +318,7 @@ def export_pdf():
             {"status": "success", "message": f"PDF exported to {output_pdf}"}
         )
     except Exception as e:
-        logger.error("Error exporting PDF: %s", e)
+        logger.error("Error exporting PDF: %s\n%s", e, traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
 

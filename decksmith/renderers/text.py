@@ -3,6 +3,7 @@ This module contains the TextRenderer class for drawing text on cards.
 """
 
 import operator
+import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -106,7 +107,11 @@ class TextRenderer:
                     font_path, font_size, encoding="unic"
                 )
             except OSError:
-                logger.error("Could not load font: %s. Using default.", font_path)
+                logger.error(
+                    "Could not load font: %s. Using default.\n%s",
+                    font_path,
+                    traceback.format_exc(),
+                )
                 element["font"] = ImageFont.load_default(font_size)
         else:
             element["font"] = ImageFont.load_default(font_size)

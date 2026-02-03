@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // --- Initialization ---
-    
+
     // Initialize Split.js
     Split(['#left-pane', '#right-pane'], {
         sizes: [50, 50],
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
         statusIcon: document.getElementById('status-icon'),
         statusLine: document.getElementById('status-line'),
         toastContainer: document.getElementById('toast-container'),
-        
+
         // Project controls
         currentProjectPath: document.getElementById('current-project-path'),
         openProjectBtn: document.getElementById('open-project-btn'),
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
         projectNameInput: document.getElementById('project-name-input'),
         modalCancelBtn: document.getElementById('modal-cancel-btn'),
         modalConfirmBtn: document.getElementById('modal-confirm-btn'),
-        
+
         // Welcome screen & Browse
         welcomeScreen: document.getElementById('welcome-screen'),
         welcomeOpenBtn: document.getElementById('welcome-open-btn'),
@@ -93,8 +93,29 @@ document.addEventListener('DOMContentLoaded', function() {
         modalMode: 'open', // 'open' or 'new'
         isPreviewing: false,
         pendingPreview: false,
-        isProjectOpen: false
+        isProjectOpen: false,
+        hasSyntaxError: false
     };
+
+    // --- Annotation Handler ---
+    function checkAnnotations() {
+        // Wait slightly for Ace to update annotations
+        setTimeout(() => {
+            const annotations = yamlEditor.getSession().getAnnotations();
+            const errors = annotations.filter(a => a.type === 'error');
+
+            if (errors.length > 0) {
+                state.hasSyntaxError = true;
+                // Use the first error message
+                setStatus(`YAML Syntax Error: ${errors[0].text} (Line ${errors[0].row + 1})`, 'error');
+            } else {
+                if (state.hasSyntaxError) {
+                    state.hasSyntaxError = false;
+                    setStatus('Ready'); // Clear error status
+                }
+            }
+        }, 100);
+    }
 
     // --- UI Helpers ---
 
@@ -107,9 +128,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
         toast.textContent = message;
-        
+
         elements.toastContainer.appendChild(toast);
-        
+
         requestAnimationFrame(() => {
             toast.classList.add('show');
         });
@@ -131,11 +152,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function setStatus(message, type = null) {
         elements.statusText.textContent = message;
-        
+
         // Reset status bar state
-        elements.statusBar.classList.remove('processing', 'success');
+        elements.statusBar.classList.remove('processing', 'success', 'error');
         elements.statusSpinner.classList.add('hidden');
         elements.statusIcon.classList.remove('hidden');
+
+        // Reset icon to default
+        elements.statusIcon.className = 'fa-solid fa-circle-info fa-fw';
 
         if (type === 'processing') {
             elements.statusBar.classList.add('processing');
@@ -145,6 +169,11 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (type === 'success') {
             elements.statusBar.classList.add('success');
             updateStatusLine('success');
+        } else if (type === 'error') {
+            elements.statusBar.classList.add('error');
+            updateStatusLine('error');
+            // Change icon to danger
+            elements.statusIcon.className = 'fa-solid fa-triangle-exclamation fa-fw';
         } else {
             if (type) updateStatusLine(type);
         }
@@ -194,7 +223,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     option.textContent = `${index + 1}: ${label}`;
                     elements.cardSelector.appendChild(option);
                 });
-                
+
                 if (state.currentCardIndex >= 0 && state.currentCardIndex < cards.length) {
                     elements.cardSelector.value = state.currentCardIndex;
                 } else if (cards.length > 0) {
@@ -222,7 +251,7 @@ document.addEventListener('DOMContentLoaded', function() {
         state.currentCardIndex = index;
         state.isPreviewing = true;
         state.pendingPreview = false;
-        
+
         elements.loadingIndicator.classList.remove('hidden');
         elements.placeholderText.classList.add('hidden');
         setStatus('Generating preview...', 'loading');
@@ -237,33 +266,33 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw new Error(err.error || 'Preview failed'); });
-            }
-            return response.blob();
-        })
-        .then(blob => {
-            const url = URL.createObjectURL(blob);
-            elements.previewImage.src = url;
-            elements.previewImage.onload = () => {
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => { throw new Error(err.error || 'Preview failed'); });
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = URL.createObjectURL(blob);
+                elements.previewImage.src = url;
+                elements.previewImage.onload = () => {
+                    elements.loadingIndicator.classList.add('hidden');
+                    elements.previewImage.classList.remove('hidden');
+                    setStatus('Preview updated');
+                    updateStatusLine('success');
+                };
+            })
+            .catch(err => {
                 elements.loadingIndicator.classList.add('hidden');
-                elements.previewImage.classList.remove('hidden');
-                setStatus('Preview updated');
-                updateStatusLine('success');
-            };
-        })
-        .catch(err => {
-            elements.loadingIndicator.classList.add('hidden');
-            setStatus(`Error: ${err.message}`, 'error');
-            console.error(err);
-        })
-        .finally(() => {
-            state.isPreviewing = false;
-            if (state.pendingPreview) {
-                updatePreview();
-            }
-        });
+                setStatus(`Error: ${err.message}`, 'error');
+                console.error(err);
+            })
+            .finally(() => {
+                state.isPreviewing = false;
+                if (state.pendingPreview) {
+                    updatePreview();
+                }
+            });
     }
 
     function autoSave() {
@@ -272,7 +301,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!elements.statusText.textContent.includes('preview')) {
             setStatus('Saving...');
         }
-        
+
         const payload = {
             yaml: yamlEditor.getValue(),
             csv: csvEditor.getValue()
@@ -283,17 +312,17 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (!elements.statusText.textContent.includes('preview')) {
-                setStatus('Saved');
-            }
-            loadCards();
-        })
-        .catch(err => {
-            setStatus('Error saving');
-            console.error(err);
-        });
+            .then(response => response.json())
+            .then(data => {
+                // if (!elements.statusText.textContent.includes('preview')) {
+                //     setStatus('Saved');
+                // }
+                loadCards();
+            })
+            .catch(err => {
+                setStatus('Error saving');
+                console.error(err);
+            });
     }
 
     function buildDeck() {
@@ -302,21 +331,24 @@ document.addEventListener('DOMContentLoaded', function() {
             yaml: yamlEditor.getValue(),
             csv: csvEditor.getValue()
         };
-        
-        fetch('/api/build', {
+
+        return fetch('/api/build', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw new Error(data.error);
-            setStatus(data.message, 'success');
-        })
-        .catch(err => {
-            setStatus('Build failed', 'error');
-            showNotification('Build failed: ' + err.message, 'error');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                setStatus(data.message, 'success');
+                showNotification(data.message, 'success');
+                return data;
+            })
+            .catch(err => {
+                setStatus('Build failed: ' + err.message, 'error');
+                showNotification('Build failed: ' + err.message, 'error');
+                throw err;
+            });
     }
 
     function showExportModal() {
@@ -339,7 +371,16 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         hideExportModal();
-        exportPdf(params);
+
+        // Chain build then export
+        buildDeck()
+            .then(() => {
+                exportPdf(params);
+            })
+            .catch(() => {
+                // Build failed, error already handled by buildDeck UI updates
+                console.log('Export cancelled due to build failure');
+            });
     }
 
     function exportPdf(params) {
@@ -349,15 +390,16 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(params)
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw new Error(data.error);
-            setStatus(data.message, 'success');
-        })
-        .catch(err => {
-            setStatus('Export failed', 'error');
-            showNotification('Export failed: ' + err.message, 'error');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+                setStatus(data.message, 'success');
+                showNotification(data.message, 'success');
+            })
+            .catch(err => {
+                setStatus('Export failed: ' + err.message, 'error');
+                showNotification('Export failed: ' + err.message, 'error');
+            });
     }
 
     // --- Project Management ---
@@ -367,6 +409,8 @@ document.addEventListener('DOMContentLoaded', function() {
         elements.modalTitle.textContent = mode === 'open' ? 'Open Project' : 'New Project';
         elements.projectPathInput.value = '';
         elements.projectNameInput.value = '';
+        elements.projectPathInput.classList.remove('input-error');
+        elements.projectNameInput.classList.remove('input-error');
         elements.pathModal.classList.remove('hidden');
 
         if (mode === 'new') {
@@ -414,24 +458,23 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: path })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw new Error(data.error);
-            
-            state.isProjectOpen = true;
-            elements.currentProjectPath.textContent = data.path;
-            elements.currentProjectPath.title = data.path;
-            
-            // showNotification('Project opened', 'success');
-            setStatus('Ready');
-            
-            loadInitialData();
-            elements.welcomeScreen.classList.add('hidden');
-        })
-        .catch(err => {
-            showNotification(err.message, 'error');
-            setStatus('Error', 'error');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+
+                state.isProjectOpen = true;
+                elements.currentProjectPath.textContent = data.path;
+                elements.currentProjectPath.title = data.path;
+
+                // showNotification('Project opened', 'success');
+                setStatus('Ready');
+
+                loadInitialData();
+                elements.welcomeScreen.classList.add('hidden');
+            })
+            .catch(err => {
+                setStatus('Error: ' + err.message, 'error');
+            });
     }
 
     function handleDirectOpen() {
@@ -445,17 +488,28 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(err => console.error('Error browsing:', err));
     }
 
+    // Clear error on input
+    elements.projectPathInput.addEventListener('input', () => {
+        elements.projectPathInput.classList.remove('input-error');
+    });
+
+    elements.projectNameInput.addEventListener('input', () => {
+        elements.projectNameInput.classList.remove('input-error');
+    });
+
     function handleProjectAction() {
         let path = elements.projectPathInput.value.trim();
         if (!path) {
-            showNotification('Please enter a path', 'error');
+            elements.projectPathInput.classList.add('input-error');
+            // showNotification('Please enter a path', 'error');
             return;
         }
 
         if (state.modalMode === 'new') {
             const name = elements.projectNameInput.value.trim();
             if (!name) {
-                showNotification('Please enter a project name', 'error');
+                elements.projectNameInput.classList.add('input-error');
+                // showNotification('Please enter a project name', 'error');
                 return;
             }
             const separator = path.includes('\\') ? '\\' : '/';
@@ -463,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const endpoint = state.modalMode === 'open' ? '/api/project/select' : '/api/project/create';
-        
+
         setStatus(state.modalMode === 'open' ? 'Opening project...' : 'Creating project...');
 
         fetch(endpoint, {
@@ -471,26 +525,25 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ path: path })
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) throw new Error(data.error);
-            
-            hideModal();
-            state.isProjectOpen = true;
-            elements.currentProjectPath.textContent = data.path;
-            elements.currentProjectPath.title = data.path;
-            
-            // showNotification(state.modalMode === 'open' ? 'Project opened' : 'Project created', 'success');
-            setStatus('Ready');
-            
-            // Reload data
-            loadInitialData();
-            elements.welcomeScreen.classList.add('hidden');
-        })
-        .catch(err => {
-            showNotification(err.message, 'error');
-            setStatus('Error', 'error');
-        });
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) throw new Error(data.error);
+
+                hideModal();
+                state.isProjectOpen = true;
+                elements.currentProjectPath.textContent = data.path;
+                elements.currentProjectPath.title = data.path;
+
+                // showNotification(state.modalMode === 'open' ? 'Project opened' : 'Project created', 'success');
+                setStatus('Ready');
+
+                // Reload data
+                loadInitialData();
+                elements.welcomeScreen.classList.add('hidden');
+            })
+            .catch(err => {
+                setStatus('Error: ' + err.message, 'error');
+            });
     }
 
     function closeProject() {
@@ -500,16 +553,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 state.isProjectOpen = false;
                 elements.currentProjectPath.textContent = 'No project selected';
                 elements.currentProjectPath.title = '';
-                
+
                 // Clear editors
                 yamlEditor.setValue('', -1);
                 csvEditor.setValue('', -1);
                 state.isDirty = false; // Reset dirty flag after clearing editors
-                
+
                 elements.cardSelector.innerHTML = '<option value="-1">Select a card...</option>';
                 elements.previewImage.classList.add('hidden');
                 elements.placeholderText.classList.remove('hidden');
-                
+
                 elements.welcomeScreen.classList.remove('hidden');
                 // showNotification('Project closed', 'info');
             })
@@ -542,6 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     yamlEditor.session.on('change', markDirty);
+    yamlEditor.session.on('changeAnnotation', checkAnnotations);
     csvEditor.session.on('change', markDirty);
 
     // Auto-save loop
@@ -569,7 +623,7 @@ document.addEventListener('DOMContentLoaded', function() {
     evtSource.onmessage = (e) => {
         // Ignore keepalive
         if (e.data === ': keepalive') return;
-        
+
         try {
             const data = JSON.parse(e.data);
             if (data.type === 'shutdown') {

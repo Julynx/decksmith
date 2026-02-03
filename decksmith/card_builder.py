@@ -4,6 +4,7 @@ which is used to create card images based on a YAML specification.
 """
 
 import operator
+import traceback
 from pathlib import Path
 from typing import Any, Dict, Optional, Tuple
 
@@ -124,9 +125,14 @@ class CardBuilder:
                     )
                     # Re-create draw object because shape renderer might have composited a new image
                     self.draw = ImageDraw.Draw(self.card, "RGBA")
-            except Exception as e:
-                logger.error("Error drawing element %s: %s", element_type, e)
-                # Continue drawing other elements
+            except Exception as exc:
+                logger.error(
+                    "Error drawing element %s: %s\n%s",
+                    element_type,
+                    exc,
+                    traceback.format_exc(),
+                )
+                raise exc
 
         return self.card
 

@@ -95,6 +95,8 @@ def validate_element(element: Dict[str, Any], element_type: str):
         element (dict): The card element.
         element_type (str): The type of the element
     """
+    if element_type not in SPECS_FOR_TYPE:
+        raise ValueError(f"Unknown element type: {element_type}")
     spec = ELEMENT_SPEC | SPECS_FOR_TYPE[element_type]
     validate(element, spec)
 
@@ -124,6 +126,8 @@ def transform_card(card: Dict[str, Any]) -> Dict[str, Any]:
         Dict[str, Any]: The transformed card with all automatic casts applied.
     """
     for element in card.get("elements", []):
+        if isinstance(element, str):
+            raise ValueError(f"Element '{element}' cannot be empty")
         if element.get("type") == "text" and "text" in element:
             if pd.isna(element["text"]):
                 element["text"] = None

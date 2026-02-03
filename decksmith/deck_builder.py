@@ -5,6 +5,7 @@ and a CSV file.
 """
 
 import concurrent.futures
+import traceback
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -62,7 +63,7 @@ class DeckBuilder:
         try:
             dataframe = pd.read_csv(self.csv_path, encoding="utf-8", sep=";", header=0)
         except Exception as e:
-            logger.error("Error reading CSV file: %s", e)
+            logger.error("Error reading CSV file: %s\n%s", e, traceback.format_exc())
             return
 
         def build_card(row_tuple: tuple[int, Series]):
@@ -78,8 +79,14 @@ class DeckBuilder:
                 spec = MacroResolver.resolve(self.spec, row.to_dict())
                 card_builder = CardBuilder(spec, base_path=base_path)
                 card_builder.build(output_path / f"card_{idx + 1}.png")
-            except Exception as e:
-                logger.error("Error building card %s: %s", idx + 1, e)
+            except Exception as exc:
+                logger.error(
+                    "Error building card %s: %s\n%s",
+                    idx + 1,
+                    exc,
+                    traceback.format_exc(),
+                )
+                raise exc
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             list(executor.map(build_card, dataframe.iterrows()))
