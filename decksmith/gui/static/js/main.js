@@ -1,6 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    // --- Initialization ---
-
     // Initialize Split.js
     Split(['#left-pane', '#right-pane'], {
         sizes: [50, 50],
@@ -34,7 +32,6 @@ document.addEventListener('DOMContentLoaded', function () {
         showPrintMargin: false,
     });
 
-    // --- Elements ---
     const elements = {
         cardSelector: document.getElementById('card-selector'),
         buildBtn: document.getElementById('build-btn'),
@@ -86,7 +83,6 @@ document.addEventListener('DOMContentLoaded', function () {
         exportConfirmBtn: document.getElementById('export-confirm-btn'),
     };
 
-    // --- State ---
     let state = {
         currentCardIndex: -1,
         isDirty: false,
@@ -97,7 +93,9 @@ document.addEventListener('DOMContentLoaded', function () {
         hasSyntaxError: false
     };
 
-    // --- Annotation Handler ---
+    /**
+     * Checks for YAML syntax errors in the editor and updates the status.
+     */
     function checkAnnotations() {
         // Wait slightly for Ace to update annotations
         setTimeout(() => {
@@ -111,19 +109,26 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 if (state.hasSyntaxError) {
                     state.hasSyntaxError = false;
-                    setStatus('Ready'); // Clear error status
+                    setStatus('Ready', 'success'); // Clear error status
                 }
             }
         }, 100);
     }
 
-    // --- UI Helpers ---
-
+    /**
+     * Displays the shutdown screen with a reason.
+     * @param {string} reason - The reason for the shutdown.
+     */
     function showShutdownScreen(reason) {
         elements.shutdownReason.textContent = reason || 'The DeckSmith service stopped.';
         elements.shutdownScreen.classList.remove('hidden');
     }
 
+    /**
+     * Shows a toast notification.
+     * @param {string} message - The message to display.
+     * @param {('info'|'success'|'error')} [type='info'] - The type of notification.
+     */
     function showNotification(message, type = 'info') {
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
@@ -143,6 +148,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 3000);
     }
 
+    /**
+     * Updates the status line color based on status.
+     * @param {('processing'|'success'|'error')} status - The status type.
+     */
     function updateStatusLine(status) {
         elements.statusLine.className = 'status-line';
         if (status) {
@@ -150,6 +159,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    /**
+     * Updates the application status bar.
+     * @param {string} message - The status message.
+     * @param {('processing'|'success'|'error'|'info')} [type=null] - The status type.
+     */
     function setStatus(message, type = null) {
         elements.statusText.textContent = message;
 
@@ -165,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function () {
             elements.statusBar.classList.add('processing');
             elements.statusSpinner.classList.remove('hidden');
             elements.statusIcon.classList.add('hidden');
-            updateStatusLine('loading');
+            updateStatusLine('processing');
         } else if (type === 'success') {
             elements.statusBar.classList.add('success');
             updateStatusLine('success');
@@ -179,8 +193,9 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // --- API Interactions ---
-
+    /**
+     * Loads the current project path from the backend.
+     */
     function loadCurrentProject() {
         fetch('/api/project/current')
             .then(response => response.json())
@@ -200,6 +215,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error loading project path:', err));
     }
 
+    /**
+     * Loads initial data (YAML and CSV) for the project.
+     */
     function loadInitialData() {
         fetch('/api/load')
             .then(response => response.json())
@@ -211,6 +229,9 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error loading data:', err));
     }
 
+    /**
+     * Fetches the list of cards from the backend and updates the selector.
+     */
     function loadCards() {
         fetch('/api/cards')
             .then(response => response.json())
@@ -234,6 +255,10 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error loading cards:', err));
     }
 
+    /**
+     * Updates the card preview image.
+     * Handles debounce and status updates during generation.
+     */
     function updatePreview() {
         const index = parseInt(elements.cardSelector.value);
         if (index === -1) {
@@ -254,7 +279,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         elements.loadingIndicator.classList.remove('hidden');
         elements.placeholderText.classList.add('hidden');
-        setStatus('Generating preview...', 'loading');
+        setStatus('Generating preview...', 'processing');
 
         const payload = {
             yaml: yamlEditor.getValue(),
@@ -278,7 +303,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 elements.previewImage.onload = () => {
                     elements.loadingIndicator.classList.add('hidden');
                     elements.previewImage.classList.remove('hidden');
-                    setStatus('Preview updated');
+                    setStatus('Preview updated', 'success');
                     updateStatusLine('success');
                 };
             })
@@ -295,11 +320,15 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    /**
+     * Automatically saves the current editor content.
+     * Runs periodically if changes are detected.
+     */
     function autoSave() {
         if (!state.isProjectOpen) return;
 
         if (!elements.statusText.textContent.includes('preview')) {
-            setStatus('Saving...');
+            setStatus('Saving...', 'processing');
         }
 
         const payload = {
@@ -320,11 +349,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 loadCards();
             })
             .catch(err => {
-                setStatus('Error saving');
+                setStatus('Error saving', 'error');
                 console.error(err);
             });
     }
 
+    /**
+     * Triggers the deck build process.
+     * @returns {Promise<Object>} The build result.
+     */
     function buildDeck() {
         setStatus('Building deck...', 'processing');
         const payload = {
@@ -351,14 +384,24 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    /**
+     * Shows the export modal dialog.
+     */
     function showExportModal() {
         elements.exportModal.classList.remove('hidden');
     }
 
+    /**
+     * Hides the export modal dialog.
+     */
     function hideExportModal() {
         elements.exportModal.classList.add('hidden');
     }
 
+    /**
+     * Handles the export confirmation action.
+     * Builds the deck first, then triggers export.
+     */
     function handleExportConfirm() {
         const params = {
             filename: elements.exportFilename.value,
@@ -383,6 +426,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    /**
+     * Sends the export request to the backend.
+     * @param {Object} params - Export parameters (filename, page_size, dimensions, etc).
+     */
     function exportPdf(params) {
         setStatus('Exporting PDF...', 'processing');
         fetch('/api/export', {
@@ -402,8 +449,10 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
-    // --- Project Management ---
-
+    /**
+     * Shows the project modal (Open or New).
+     * @param {('open'|'new')} mode - The modal mode.
+     */
     function showModal(mode) {
         state.modalMode = mode;
         elements.modalTitle.textContent = mode === 'open' ? 'Open Project' : 'New Project';
@@ -436,10 +485,16 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    /**
+     * Hides the project modal.
+     */
     function hideModal() {
         elements.pathModal.classList.add('hidden');
     }
 
+    /**
+     * Triggers the native folder browser dialog via backend.
+     */
     function browseFolder() {
         fetch('/api/system/browse', { method: 'POST' })
             .then(response => response.json())
@@ -451,8 +506,12 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error browsing:', err));
     }
 
+    /**
+     * Opens a project at the specified path.
+     * @param {string} path - The absolute path of the project.
+     */
     function openProject(path) {
-        setStatus('Opening project...');
+        setStatus('Opening project...', 'processing');
         fetch('/api/project/select', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -467,7 +526,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 elements.currentProjectPath.title = data.path;
 
                 // showNotification('Project opened', 'success');
-                setStatus('Ready');
+                setStatus('Ready', 'success');
 
                 loadInitialData();
                 elements.welcomeScreen.classList.add('hidden');
@@ -477,6 +536,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    /**
+     * Directly browses and opens a project without the modal.
+     */
     function handleDirectOpen() {
         fetch('/api/system/browse', { method: 'POST' })
             .then(response => response.json())
@@ -497,6 +559,9 @@ document.addEventListener('DOMContentLoaded', function () {
         elements.projectNameInput.classList.remove('input-error');
     });
 
+    /**
+     * Handles the confirm action in the project modal (Open or Create).
+     */
     function handleProjectAction() {
         let path = elements.projectPathInput.value.trim();
         if (!path) {
@@ -518,7 +583,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const endpoint = state.modalMode === 'open' ? '/api/project/select' : '/api/project/create';
 
-        setStatus(state.modalMode === 'open' ? 'Opening project...' : 'Creating project...');
+        setStatus(state.modalMode === 'open' ? 'Opening project...' : 'Creating project...', 'processing');
 
         fetch(endpoint, {
             method: 'POST',
@@ -535,7 +600,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 elements.currentProjectPath.title = data.path;
 
                 // showNotification(state.modalMode === 'open' ? 'Project opened' : 'Project created', 'success');
-                setStatus('Ready');
+                setStatus('Ready', 'success');
 
                 // Reload data
                 loadInitialData();
@@ -546,6 +611,9 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
 
+    /**
+     * Closes the current project and resets the UI.
+     */
     function closeProject() {
         fetch('/api/project/close', { method: 'POST' })
             .then(response => response.json())
@@ -569,7 +637,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(err => console.error('Error closing project:', err));
     }
 
-    // --- Event Listeners ---
+
 
     elements.cardSelector.addEventListener('change', updatePreview);
     elements.buildBtn.addEventListener('click', buildDeck);

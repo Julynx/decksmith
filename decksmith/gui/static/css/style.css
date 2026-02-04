@@ -453,7 +453,7 @@ select:focus {
     background-color: var(--danger-color);
 }
 
-.status-line.loading {
+.status-line.processing {
     background-color: var(--warning-color);
 }
 
