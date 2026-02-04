@@ -10,7 +10,6 @@ elements:
     anchor: top-center
     text: "%title%"
     color: [50, 50, 100]
-    font_path: arial.ttf
     font_size: 64
     align: center
   - id: line
@@ -27,7 +26,6 @@ elements:
     anchor: top-center
     text: "%first-paragraph%"
     color: [50, 100, 100]
-    font_path: arial.ttf
     font_size: 48
     line_spacing: 20
     width: 800
@@ -39,7 +37,6 @@ elements:
     anchor: top-center
     text: "%second-paragraph%"
     color: [50, 100, 100]
-    font_path: arial.ttf
     font_size: 48
     line_spacing: 20
     width: 800
