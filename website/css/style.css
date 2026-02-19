@@ -461,7 +461,7 @@ footer {
 
     .hero-subtitle {
         padding: 0 var(--spacing-md);
-        font-size: 1em;
+        font-size: 0.6em;
     }
 
     .hero-actions {
