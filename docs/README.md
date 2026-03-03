@@ -31,7 +31,12 @@ DeckSmith is ideal for automating the creation of all kinds of decks, including 
   - [Powerful image transformations using filters like crop, resize, rotate, or flip](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#images)
   - [Export your deck as images or as a PDF for printing](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#building-the-deck)
 
-## Getting started
+## Getting started (APP)
+
+1. Download and install the [latest release](https://github.com/Julynx/decksmith/releases/latest/download/DeckSmith_Setup.exe).
+2. Take a look at [this](https://julynx.github.io/decksmith/docs.html) to learn how to make the most out of the app and start building your first deck today!
+
+## Getting started (CLI)
 
 ### Installation
 
