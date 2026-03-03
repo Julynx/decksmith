@@ -19,10 +19,10 @@ DeckSmith is ideal for automating the creation of all kinds of decks, including 
 ## Why DeckSmith?
 
 - ✨ Consistent layout and formatting across all cards. Define once, edit anytime, generate as many cards as you need.
-- 🍳 Pure python, with easy installation via pip.
-- 🖥️ User-friendly GUI for easy project management and generation.
+- 🍳 Pure python, for easy installation [via pip](https://pypi.org/project/decksmith/) or with the [Windows installer](https://github.com/Julynx/decksmith/releases/latest/download/DeckSmith_Setup.exe).
+- 🖥️ Modern GUI with a live preview to visualize your changes in real time as you design.
 - ⚡ Highly performant card generation using parallel processing.
-- 📖 Intuitive syntax and extensive [documentation](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md) with examples to help you get started.
+- 📖 Intuitive syntax and extensive [documentation](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md) that includes examples to help you get started.
 - 🧰 Tons of powerful features such as:
   - [Start from a sample project and edit it instead of starting from scratch](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#creating-a-project)
   - [Extensive support for images](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#images), [text](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#text), [and all kinds of different shapes](https://github.com/Julynx/decksmith/blob/main/docs/DOCS.md#shapes)
