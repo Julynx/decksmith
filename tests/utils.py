@@ -26,7 +26,7 @@ def compare_images(img1_path: Path, img2_path: Path) -> Tuple[float, float, floa
         img1 = Image.open(img1_path).convert("RGBA")
         img2 = Image.open(img2_path).convert("RGBA")
     except Exception as e:
-        raise ValueError(f"Error opening images: {e}")
+        raise ValueError(f"Error opening images: {e}") from e
 
     if img1.size != img2.size:
         raise ValueError(f"Images have different sizes: {img1.size} vs {img2.size}")

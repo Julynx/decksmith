@@ -42,10 +42,10 @@ def apply_anchor(size: Tuple[int, ...], anchor: str) -> Tuple[int, int]:
     Returns:
         Tuple[int, int]: A tuple representing the position (x, y) based on the anchor.
     """
-    if len(size) == 2:
+    if len(size) == (_size_box := 2):
         width, height = size
         position_horizontal, position_vertical = 0, 0
-    elif len(size) == 4:
+    elif len(size) == (_bounding_box := 4):
         position_horizontal, position_vertical, position_right, position_bottom = size
         width, height = (
             position_right - position_horizontal,
@@ -73,3 +73,20 @@ def apply_anchor(size: Tuple[int, ...], anchor: str) -> Tuple[int, int]:
         raise ValueError(f"Unknown anchor: {anchor}")
 
     return anchor_points[anchor]
+
+
+def int_tuple(tuple_value: Tuple[any, ...]) -> Tuple[int, ...]:
+    """
+    Converts a tuple of any type to a tuple of integers.
+    Args:
+        tuple_value (Tuple[any, ...]): The tuple to convert.
+    Returns:
+        Tuple[int, ...]: The converted tuple.
+    """
+    converted = []
+    for element in tuple_value:
+        try:
+            converted.append(int(element))
+        except ValueError:
+            pass
+    return tuple(converted)

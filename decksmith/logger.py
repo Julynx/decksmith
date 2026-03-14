@@ -10,7 +10,6 @@ def setup_logging(log_file: str = "decksmith.log", level: int = logging.INFO):
     """
     Sets up the logging configuration.
     """
-    # Create a custom logger
     log = logging.getLogger("decksmith")
     log.setLevel(level)
 

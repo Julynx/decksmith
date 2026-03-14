@@ -50,7 +50,8 @@ class DeckBuilder:
 
     def build_deck(self, output_path: Path):
         """
-        Builds the deck of cards by reading the CSV file and creating CardBuilder instances.
+        Builds the deck of cards by reading the CSV file and creating CardBuilder
+        instances.
 
         Args:
             output_path (Path): The directory path to save the built cards.
@@ -73,12 +74,11 @@ class DeckBuilder:
             """
             Builds a single card from a row of the CSV file.
             Args:
-                row_tuple (tuple[int, Series]): A tuple containing the row index and the row data.
+                row_tuple (tuple[int, Series]): A tuple containing the row index and
+                the row data.
             """
             idx, row = row_tuple
             try:
-                # We need a deep copy of the spec for each card to avoid side effects
-                # But resolve_macros creates a new structure, so it should be fine
                 spec = MacroResolver.resolve(self.spec, row.to_dict())
                 card_builder = CardBuilder(spec, base_path=base_path)
                 card_builder.build(output_path / f"card_{idx + 1}.png")

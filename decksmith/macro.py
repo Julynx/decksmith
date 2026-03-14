@@ -26,9 +26,9 @@ class MacroResolver:
             if isinstance(value, str):
                 stripped_value = value.strip()
                 # First, check for an exact macro match to preserve type
-                for key in row:
-                    if stripped_value == f"%{key}%":
-                        return row[key]  # Return the raw value, preserving type
+                for row_key, row_value in row.items():
+                    if stripped_value == f"%{row_key}%":
+                        return row_value
 
                 # If no exact match, perform standard string replacement for all macros
                 for key, val in row.items():

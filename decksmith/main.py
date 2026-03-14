@@ -77,7 +77,6 @@ def build(ctx, output, spec, data):
     except FileNotFoundError as exc:
         click.echo(f"(x) {exc}")
         ctx.exit(1)
-    # pylint: disable=W0718
     except Exception as exc:
         logger.error("(x) Error building deck '%s' from spec '%s':", data, spec)
         logger.error("    %s\n%s", exc, traceback.format_exc())
@@ -135,7 +134,6 @@ def export(ctx, image_folder, output, page_size, width, height, gap, margins):
     except FileNotFoundError as exc:
         click.echo(f"(x) {exc}")
         ctx.exit(1)
-    # pylint: disable=W0718
     except Exception as exc:
         logger.error("(x) Error exporting images to '%s':", output)
         logger.error("    %s\n%s", exc, traceback.format_exc())
@@ -143,5 +141,4 @@ def export(ctx, image_folder, output, page_size, width, height, gap, margins):
 
 
 if __name__ == "__main__":
-    # pylint: disable=no-value-for-parameter
     cli()

@@ -78,7 +78,8 @@ class PdfExporter:
             page_height (float): The height of the page.
 
         Returns:
-            Tuple[int, int, bool]: The number of columns, rows, and if the layout is rotated.
+            Tuple[int, int, bool]: The number of columns, rows, and if the layout is
+            rotated.
         """
         best_fit = 0
         best_layout = (0, 0, False)

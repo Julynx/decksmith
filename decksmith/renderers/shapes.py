@@ -158,7 +158,7 @@ class ShapeRenderer:
 
         def draw(layer_draw, pos, element):
             # pos is the top-left of the bounding box
-            # We need to shift points so that (min_horizontal, min_vertical) aligns with pos
+            # Shift points so that (min_horizontal, min_vertical) aligns with pos
             offset_horizontal = pos[0] - min_horizontal
             offset_vertical = pos[1] - min_vertical
             final_points = [

@@ -14,6 +14,7 @@ from io import StringIO
 from pathlib import Path
 from threading import Timer
 
+import crossfiledialog
 import pandas as pd
 from flask import (
     Flask,
@@ -37,16 +38,23 @@ from decksmith.project import ProjectManager
 
 app = Flask(__name__)
 
-shutdown_event = threading.Event()
-SHUTDOWN_REASON = "Server stopped."
+
+class ServerState:
+    """Encapsulates the server's running state."""
+
+    def __init__(self):
+        self.shutdown_event = threading.Event()
+        self.shutdown_reason = "Server stopped."
 
 
-def signal_handler(sig, frame):  # pylint: disable=unused-argument
+state = ServerState()
+
+
+def signal_handler(sig, frame):
     """Handles system signals (e.g., SIGINT)."""
-    global SHUTDOWN_REASON  # pylint: disable=global-statement
-    SHUTDOWN_REASON = "Server stopped by user (Ctrl+C)."
-    logger.info(SHUTDOWN_REASON)
-    shutdown_event.set()
+    state.shutdown_reason = "Server stopped by user (Ctrl+C)."
+    logger.info(state.shutdown_reason)
+    state.shutdown_event.set()
 
     def delayed_exit():
         time.sleep(1)
@@ -63,11 +71,18 @@ def events():
     """Streams server events to the client."""
 
     def stream():
-        while not shutdown_event.is_set():
+        while not state.shutdown_event.is_set():
             time.sleep(0.5)
             yield ": keepalive\n\n"
 
-        yield f"data: {json.dumps({'type': 'shutdown', 'reason': SHUTDOWN_REASON})}\n\n"
+        yield f"data: {
+            json.dumps(
+                {
+                    'type': 'shutdown',
+                    'reason': state.shutdown_reason,
+                }
+            )
+        }\n\n"
 
     return Response(stream_with_context(stream()), mimetype="text/event-stream")
 
@@ -105,8 +120,6 @@ def get_default_path():
 def browse_folder():
     """Opens a folder selection dialog."""
     try:
-        import crossfiledialog  # pylint: disable=import-outside-toplevel
-
         folder_path = crossfiledialog.choose_folder(
             title="Select Project Folder",
             start_dir=str(Path.home()),
@@ -115,11 +128,6 @@ def browse_folder():
         if folder_path:
             return jsonify({"path": folder_path})
         return jsonify({"path": None})
-    except ImportError as e:
-        logger.error("crossfiledialog import failed: %s\n%s", e, traceback.format_exc())
-        return jsonify(
-            {"status": "error", "message": f"Browse feature unavailable: {e}"}
-        ), 501
     except Exception as e:
         logger.error("Error browsing folder: %s\n%s", e, traceback.format_exc())
         return jsonify({"status": "error", "message": str(e)}), 500
@@ -214,7 +222,6 @@ def list_cards():
 def preview_card(card_index):
     """Previews a specific card."""
     working_dir = project_manager.get_working_dir()
-    # Allow preview even without project, but base_path will be None
 
     data = request.json
     yaml_content = data.get("yaml")
@@ -253,7 +260,7 @@ def preview_card(card_index):
 
 @app.route("/api/build", methods=["POST"])
 def build_deck():
-    """Builds the deck."""
+    """Builds the deck for the current project."""
     working_dir = project_manager.get_working_dir()
     if working_dir is None:
         return jsonify({"error": "No project selected"}), 400

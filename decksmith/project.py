@@ -75,7 +75,8 @@ class ProjectManager:
         Loads the deck.yaml and deck.csv files from the current project.
 
         Returns:
-            Dict[str, str]: A dictionary with keys "yaml" and "csv" containing file contents.
+            Dict[str, str]: A dictionary with keys "yaml" and "csv"
+            containing file contents.
         """
         return {
             "yaml": self._load_file_or_template("deck.yaml"),

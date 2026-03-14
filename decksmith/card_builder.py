@@ -14,7 +14,7 @@ from decksmith.logger import logger
 from decksmith.renderers.image import ImageRenderer
 from decksmith.renderers.shapes import ShapeRenderer
 from decksmith.renderers.text import TextRenderer
-from decksmith.utils import apply_anchor
+from decksmith.utils import apply_anchor, int_tuple
 from decksmith.validate import transform_card, validate_card
 
 
@@ -65,20 +65,20 @@ class CardBuilder:
             ValueError: If the referenced element for relative positioning is not found.
         """
         if "relative_to" not in element:
-            return tuple(element.get("position", [0, 0]))
+            return int_tuple(tuple(element.get("position", [0, 0])))
 
-        # If the element has 'relative_to', resolve based on the reference element and anchor
         relative_identifier, anchor = element["relative_to"]
         if relative_identifier not in self.element_positions:
             raise ValueError(
-                f"Element with id '{relative_identifier}' not found for relative positioning."
+                f"Element with id '{relative_identifier}' not found "
+                "for relative positioning."
             )
 
         parent_bbox = self.element_positions[relative_identifier]
         anchor_point = apply_anchor(parent_bbox, anchor)
 
         offset = tuple(element.get("position", [0, 0]))
-        return tuple(map(operator.add, anchor_point, offset))
+        return int_tuple(tuple(map(operator.add, anchor_point, offset)))
 
     def _store_element_position(
         self, element_identifier: str, bbox: Tuple[int, int, int, int]
@@ -156,7 +156,6 @@ class CardBuilder:
             self._calculate_absolute_position,
             self._store_element_position,
         )
-        # Re-create draw object because shape renderer might have composited a new image
         self.draw = ImageDraw.Draw(self.card, "RGBA")
 
     def build(self, output_path: Path):

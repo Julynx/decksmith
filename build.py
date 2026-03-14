@@ -19,8 +19,8 @@ def get_dependencies():
         output = result.stdout
 
         dependencies = []
-        for line in output.splitlines():
-            line = line.strip()
+        for output_line in output.splitlines():
+            line = output_line.strip()
             if not line or line.startswith("#") or line.startswith("-e"):
                 continue
 
@@ -71,6 +71,13 @@ def get_dependencies():
 
 
 def main():
+    """
+    Builds the DeckSmith installer executable.
+    """
+    # 0. Clean up previous build
+    if Path("build_nsis").exists():
+        shutil.rmtree("build_nsis")
+
     # 1. Generate installer.cfg
     python_version = "3.11.0"
 
@@ -115,7 +122,7 @@ installer_name=DeckSmith_Setup.exe
     makensis_paths = [
         r"C:\Program Files (x86)\NSIS\makensis.exe",
         r"C:\Program Files\NSIS\makensis.exe",
-        "makensis",  # In PATH
+        "makensis",
     ]
 
     makensis_exe = None
@@ -129,7 +136,8 @@ installer_name=DeckSmith_Setup.exe
         print("Build complete!")
     else:
         print(
-            "WARNING: makensis.exe not found. Please install NSIS and run makensis manually on build_nsis/installer.nsi"
+            "WARNING: makensis.exe not found. "
+            "Please install NSIS and run makensis manually on build_nsis/installer.nsi"
         )
 
 

@@ -94,47 +94,12 @@ class TextRenderer:
         # Font setup
         font_size = element.pop("font_size", 10)
         if font_path := element.pop("font_path", None):
-            # Resolve font path relative to base_path if provided
-            if self.base_path and not Path(font_path).is_absolute():
-                potential_path = self.base_path / font_path
-                if potential_path.exists():
-                    font_path = str(potential_path)
-
-            try:
-                element["font"] = ImageFont.truetype(
-                    font_path, font_size, encoding="unic"
-                )
-            except OSError as exc:
-                raise OSError(f"Could not load font: {font_path}") from exc
+            element["font"] = self._resolve_font_path(font_path, font_size)
         else:
             element["font"] = ImageFont.load_default(font_size)
 
         if font_variant := element.pop("font_variant", None):
-            try:
-                names = element["font"].get_variation_names()
-            except (AttributeError, OSError):
-                names = []
-
-            # Normalize names to strings (some fonts return bytes)
-            names = [
-                name.decode("utf-8") if isinstance(name, bytes) else name
-                for name in names
-            ]
-
-            if names:
-                if font_variant not in names:
-                    raise ValueError(
-                        f"Font variant '{font_variant}' not found. "
-                        f"Available variants: {', '.join(names)}"
-                    )
-                element["font"].set_variation_by_name(font_variant)
-            else:
-                try:
-                    element["font"].set_variation_by_name(font_variant)
-                except (AttributeError, OSError) as exc:
-                    raise ValueError(
-                        f"Font variant '{font_variant}' not supported for this font."
-                    ) from exc
+            self._resolve_font_variant(element["font"], font_variant)
 
         # Text wrapping
         if line_length := element.pop("width", False):
@@ -151,3 +116,45 @@ class TextRenderer:
             element["stroke_color"] = tuple(stroke_color)
 
         return element
+
+    def _resolve_font_path(
+        self, font_path: str, font_size: int
+    ) -> ImageFont.FreeTypeFont:
+        """Resolves font path and returns an ImageFont object."""
+        # Resolve font path relative to base_path if provided
+        if self.base_path and not Path(font_path).is_absolute():
+            potential_path = self.base_path / font_path
+            if potential_path.exists():
+                font_path = str(potential_path)
+
+        try:
+            return ImageFont.truetype(font_path, font_size, encoding="unic")
+        except OSError as exc:
+            raise OSError(f"Could not load font: {font_path}") from exc
+
+    def _resolve_font_variant(self, font: ImageFont.FreeTypeFont, font_variant: str):
+        """Resolves and sets the font variant."""
+        try:
+            names = font.get_variation_names()
+        except (AttributeError, OSError):
+            names = []
+
+        # Normalize names to strings (some fonts return bytes)
+        names = [
+            name.decode("utf-8") if isinstance(name, bytes) else name for name in names
+        ]
+
+        if names:
+            if font_variant not in names:
+                raise ValueError(
+                    f"Font variant '{font_variant}' not found. "
+                    f"Available variants: {', '.join(names)}"
+                )
+            font.set_variation_by_name(font_variant)
+        else:
+            try:
+                font.set_variation_by_name(font_variant)
+            except (AttributeError, OSError) as exc:
+                raise ValueError(
+                    f"Font variant '{font_variant}' not supported for this font."
+                ) from exc

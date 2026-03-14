@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 from click.testing import CliRunner
@@ -48,7 +49,8 @@ def assert_images_match(output_path: Path, expected_path: Path):
     max_diff, avg_diff, percent_diff = compare_images(output_path, expected_path)
 
     assert percent_diff <= IMAGE_DIFF_THRESHOLD, (
-        f"Image difference {percent_diff:.4f}% exceeds threshold {IMAGE_DIFF_THRESHOLD}%. "
+        f"Image difference {percent_diff:.4f}% "
+        f"exceeds threshold {IMAGE_DIFF_THRESHOLD}%. "
         f"Max diff: {max_diff}, Avg diff: {avg_diff:.4f}. "
         "Please fix the code to match the expected output."
     )
@@ -98,8 +100,6 @@ def test_opacity_filter():
     # Then
     # For the first run, we might not have the expected image, so we check existence
     if not expected_card_path.exists():
-        import shutil
-
         shutil.copy(output_card_path, expected_card_path)
 
     assert_images_match(output_card_path, expected_card_path)
