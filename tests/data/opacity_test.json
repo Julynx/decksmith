@@ -1,7 +1,7 @@
 {
   "width": 500,
   "height": 500,
-  "background_color": [255, 0, 0],
+  "background_color": [255, 0, 0, 200],
   "elements": [
     {
       "id": "image",

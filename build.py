@@ -2,6 +2,8 @@ import shutil
 import subprocess
 from pathlib import Path
 
+import toml
+
 
 def get_dependencies():
     """Extract dependencies from uv export."""
@@ -75,9 +77,12 @@ def main():
     dependencies = get_dependencies()
     pypi_wheels_str = "\n    ".join(dependencies)
 
+    version = toml.load("pyproject.toml")["project"]["version"]
+    print(f"Using version from pyproject.toml: {version}")
+
     cfg_content = f"""[Application]
 name=DeckSmith
-version=0.9.4
+version={version}
 entry_point=decksmith.gui.app:main
 icon=docs/assets/decksmith.ico
 console=false

@@ -33,7 +33,8 @@ class ImageRenderer:
             card (Image.Image): The card image object.
             element (Dict[str, Any]): The image element specification.
             calculate_pos_func (callable): Function to calculate absolute position.
-            store_pos_func (callable): Function to store element position.
+        Returns:
+            Image.Image: The updated card image.
         """
         assert element.pop("type") == "image", "Element type must be 'image'"
 
@@ -57,10 +58,13 @@ class ImageRenderer:
             anchor_point = apply_anchor((img.width, img.height), element.pop("anchor"))
             position = tuple(map(operator.sub, position, anchor_point))
 
+        layer = Image.new("RGBA", card.size, (0, 0, 0, 0))
         if img.mode == "RGBA":
-            card.paste(img, position, mask=img)
+            layer.paste(img, position, mask=img)
         else:
-            card.paste(img, position)
+            layer.paste(img, position)
+
+        card = Image.alpha_composite(card, layer)
 
         if "id" in element:
             store_pos_func(
@@ -72,3 +76,5 @@ class ImageRenderer:
                     position[1] + img.height,
                 ),
             )
+
+        return card

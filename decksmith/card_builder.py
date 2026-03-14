@@ -141,7 +141,7 @@ class CardBuilder:
 
     def _render_image(self, element: Dict[str, Any]):
         """Renders an image element."""
-        self.image_renderer.render(
+        self.card = self.image_renderer.render(
             self.card,
             element,
             self._calculate_absolute_position,
