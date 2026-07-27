@@ -5,7 +5,7 @@
 *A powerful application to dynamically generate decks of cards from a YAML specification and a CSV data file.*
 
 <a href="https://github.com/Julynx/decksmith/releases/latest/download/DeckSmith_Setup.exe" target="_blank">
-<img src="https://raw.githubusercontent.com/Julynx/julynx/refs/heads/main/assets/download.png" height="64">
+<img src="https://raw.githubusercontent.com/Julynx/julynx/refs/heads/main/assets/download.png" height="48">
 </a><br><br>
 
 <p align="center">
