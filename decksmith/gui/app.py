@@ -203,7 +203,7 @@ def list_cards():
         return jsonify([])
 
     try:
-        csv_table = pd.read_csv(csv_path, sep=";")
+        csv_table = pd.read_csv(csv_path, sep=";").fillna("")
         return jsonify(csv_table.to_dict(orient="records"))
     except Exception as e:
         logger.error("Error listing cards: %s\n%s", e, traceback.format_exc())
@@ -226,7 +226,7 @@ def preview_card(card_index):
         return jsonify({"error": f"Invalid YAML: {e}"}), 400
 
     try:
-        csv_table = pd.read_csv(StringIO(csv_content), sep=";")
+        csv_table = pd.read_csv(StringIO(csv_content), sep=";").fillna("")
         if card_index < 0 or card_index >= len(csv_table):
             return jsonify({"error": "Index out of bounds"}), 400
         row = csv_table.iloc[card_index]
