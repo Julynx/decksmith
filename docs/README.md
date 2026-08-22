@@ -1,12 +1,30 @@
-# DeckSmith
+<p align="center">
+  <img
+    src="https://github.com/Julynx/decksmith/blob/main/docs/assets/decksmith.ico"
+    width="200px"
+  />
+</p>
 
-[julynx.github.io/decksmith](https://julynx.github.io/decksmith/)
+<h3 align="center">DeckSmith</h3>
+<p align="center">
+  <i
+    >A powerful application to dynamically generate decks of cards from a YAML specification and a CSV data file.</i
+  >
+</p>
 
-*A powerful application to dynamically generate decks of cards from a YAML specification and a CSV data file.*
+<hr />
 
-<a href="https://github.com/Julynx/decksmith/releases/latest/download/DeckSmith_Setup.exe" target="_blank">
-<img src="https://raw.githubusercontent.com/Julynx/julynx/refs/heads/main/assets/download.png" height="48">
-</a><br><br>
+<p align="center">
+  <a
+    href="https://github.com/Julynx/decksmith/releases/latest/download/DeckSmith_Setup.exe"
+    target="_blank"
+  >
+    <img
+      src="https://raw.githubusercontent.com/Julynx/julynx/refs/heads/main/assets/download.png"
+      height="48"
+    /> </a
+  ><br /><br />
+</p>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Julynx/decksmith/refs/heads/main/docs/assets/screenshot.png" width='100%'>
