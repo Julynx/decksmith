@@ -23,6 +23,15 @@
       src="https://raw.githubusercontent.com/Julynx/julynx/refs/heads/main/assets/download.png"
       height="48"
     /> </a
+  >&nbsp;&nbsp;
+    <a
+    href="https://pypi.org/project/decksmith/"
+    target="_blank"
+  >
+    <img
+      src="https://raw.githubusercontent.com/Julynx/julynx/refs/heads/main/assets/download-pypi.png"
+      height="48"
+    /> </a
   ><br /><br />
 </p>
 
