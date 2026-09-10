@@ -10,6 +10,8 @@
   <i
     >A powerful application to dynamically generate decks of cards from a YAML specification and a CSV data file.</i
   >
+  <br />
+  <a href="https://julynx.github.io/decksmith/" target="_blank">julynx.github.io/decksmith</a>
 </p>
 
 <hr />
